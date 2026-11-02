@@ -88,6 +88,13 @@ public final class VloxModule {
         if (keyCode < -1) {
             throw new IllegalArgumentException("Key code must be -1 (unbound) or a valid GLFW key code");
         }
+        if (keyCode >= 0) {
+            for (VloxModule other : VloxModules.ALL) {
+                if (other != this && other.keyCode == keyCode) {
+                    other.keyCode = -1;
+                }
+            }
+        }
         this.keyCode = keyCode;
         save();
     }
