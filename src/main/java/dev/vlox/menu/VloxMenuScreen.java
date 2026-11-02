@@ -1,7 +1,6 @@
 package dev.vlox.menu;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.FontDescription;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -21,8 +20,7 @@ public final class VloxMenuScreen extends Screen {
     private boolean waitingForKeybind;
 
     private void drawUiText(GuiGraphicsExtractor graphics, String text, int x, int y, int color, boolean shadow) {
-        Component styled = Component.literal(text).withStyle(style -> style.withFont(new FontDescription.Resource(Identifier.fromNamespaceAndPath("minecraft", "uniform"))));
-        graphics.text(this.font, styled, x, y, color, shadow);
+        graphics.text(this.font, text, x, y, color, shadow);
     }
 
     public VloxMenuScreen() {
