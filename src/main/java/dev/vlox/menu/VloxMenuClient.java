@@ -15,8 +15,8 @@ public final class VloxMenuClient implements ClientModInitializer {
             long window = client.getWindow().handle();
             boolean pressed = GLFW.glfwGetKey(window, MENU_KEY) == GLFW.GLFW_PRESS;
 
-            if (pressed && !wasPressed && client.screen == null) {
-                client.setScreen(new VloxMenuScreen());
+            if (pressed && !wasPressed && client.gui.screen() == null) {
+                client.gui.setScreen(new VloxMenuScreen());
             }
             wasPressed = pressed;
         });
