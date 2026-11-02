@@ -11,6 +11,7 @@ public final class VloxMenuClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        VloxHud.register();
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             long window = client.getWindow().handle();
             boolean pressed = GLFW.glfwGetKey(window, MENU_KEY) == GLFW.GLFW_PRESS;
