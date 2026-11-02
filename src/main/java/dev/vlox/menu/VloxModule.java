@@ -28,7 +28,7 @@ public final class VloxModule {
         this.name = name;
         this.category = category;
         this.icon = icon;
-        this.enabled = Boolean.parseBoolean(CONFIG.getProperty(key("enabled"), "false"));
+        this.enabled = Boolean.parseBoolean(CONFIG.getProperty(key("enabled"), CONFIG.getProperty(name, "false")));
         this.keyCode = parseInt(key("key"), -1);
         this.scale = parseFloat(key("scale"), 1.0f);
         this.offsetX = parseInt(key("x"), 0);
@@ -112,6 +112,7 @@ public final class VloxModule {
     private void save() {
         for (VloxModule module : VloxModules.ALL) {
             CONFIG.setProperty(module.key("enabled"), Boolean.toString(module.enabled));
+            CONFIG.setProperty(module.name, Boolean.toString(module.enabled));
             CONFIG.setProperty(module.key("key"), Integer.toString(module.keyCode));
             CONFIG.setProperty(module.key("scale"), Float.toString(module.scale));
             CONFIG.setProperty(module.key("x"), Integer.toString(module.offsetX));
