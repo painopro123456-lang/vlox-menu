@@ -3,6 +3,7 @@ package dev.vlox.menu;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -39,8 +40,7 @@ public final class VloxHud {
 
             if (VloxModules.isEnabled("World Time")) {
                 long ticks = client.level.getLevelData().getGameTime();
-                graphics.text(client.font, "WORLD TICKS  " + ticks,
-                    8, y, color, true);
+                graphics.text(client.font, "WORLD TICKS  " + ticks, 8, y, color, true);
                 y += 11;
             }
 
@@ -54,6 +54,41 @@ public final class VloxHud {
                 int light = client.level.getMaxLocalRawBrightness(client.player.blockPosition());
                 graphics.text(client.font, "LIGHT  " + light, 8, y, color, true);
                 y += 11;
+            }
+
+            if (VloxModules.isEnabled("Food Level HUD")) {
+                int food = client.player.getFoodData().getFoodLevel();
+                graphics.text(client.font, "FOOD  " + food + " / 20", 8, y, color, true);
+                y += 11;
+            }
+
+            if (VloxModules.isEnabled("Saturation HUD")) {
+                float saturation = client.player.getFoodData().getSaturationLevel();
+                graphics.text(client.font, String.format("SATURATION  %.1f", saturation),
+                    8, y, color, true);
+                y += 11;
+            }
+
+            if (VloxModules.isEnabled("Armor HUD")) {
+                graphics.text(client.font, "ARMOR  " + client.player.getArmorValue() + " / 20",
+                    8, y, color, true);
+                y += 11;
+            }
+
+            ItemStack heldItem = client.player.getMainHandItem();
+            if (heldItem.isDamageableItem()) {
+                int remaining = heldItem.getMaxDamage() - heldItem.getDamageValue();
+                if (VloxModules.isEnabled("Durability HUD")) {
+                    graphics.text(client.font, "DURABILITY  " + remaining + " / " + heldItem.getMaxDamage(),
+                        8, y, color, true);
+                    y += 11;
+                }
+                if (VloxModules.isEnabled("Durability Percentage")) {
+                    int percentage = Math.round(remaining * 100.0f / heldItem.getMaxDamage());
+                    graphics.text(client.font, "ITEM  " + percentage + "%",
+                        8, y, color, true);
+                    y += 11;
+                }
             }
 
             if (VloxModules.isEnabled("Memory Usage")) {
