@@ -23,7 +23,6 @@ public final class VloxHud {
 
             int y = 8;
             final int color = 0xFFEAF1FF;
-            final int shadow = 0xFF17243A;
 
             if (VloxModules.isEnabled("Coordinates")) {
                 graphics.text(client.font, String.format("XYZ  %.1f  %.1f  %.1f",
