@@ -116,7 +116,7 @@ public final class VloxHud {
             }
             if (VloxModules.isEnabled("Biome Display")) {
                 var biome = client.level.getBiome(client.player.blockPosition());
-                String biomeName = biome.unwrapKey().map(key -> key.location().toString()).orElse("unknown");
+                String biomeName = biome.getRegisteredName();
                 drawText(graphics, client, "Biome Display", "BIOME  " + biomeName, 8, y, color, true);
                 y += Math.round(11 * moduleScale("Biome Display"));
             }
