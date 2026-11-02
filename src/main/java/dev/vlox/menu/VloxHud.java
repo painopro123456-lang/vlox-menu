@@ -99,6 +99,22 @@ public final class VloxHud {
                 }
             }
 
+            if (VloxModules.isEnabled("Potion HUD") || VloxModules.isEnabled("Effect Timers")) {
+                for (var effect : client.player.getActiveEffects()) {
+                    String effectName = effect.getEffect().value().getDisplayName().getString();
+                    int amplifier = effect.getAmplifier() + 1;
+                    int duration = effect.getDuration();
+                    String timer = duration < 0 ? "∞" : String.format("%d:%02d", duration / 1200, (duration / 20) % 60);
+                    if (VloxModules.isEnabled("Potion HUD")) {
+                        drawText(graphics, client, "Potion HUD", effectName + " " + amplifier, 8, y, color, true);
+                        y += Math.round(11 * moduleScale("Potion HUD"));
+                    }
+                    if (VloxModules.isEnabled("Effect Timers")) {
+                        drawText(graphics, client, "Effect Timers", effectName + "  " + timer, 8, y, color, true);
+                        y += Math.round(11 * moduleScale("Effect Timers"));
+                    }
+                }
+            }
             if (VloxModules.isEnabled("FPS Display")) {
                 drawText(graphics, client, "FPS Display", "FPS  " + client.getFps(), 8, y, color, true);
                 y += Math.round(11 * moduleScale("FPS Display"));
