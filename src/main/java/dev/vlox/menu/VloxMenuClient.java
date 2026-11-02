@@ -16,8 +16,14 @@ public final class VloxMenuClient implements ClientModInitializer {
             long window = client.getWindow().handle();
             boolean pressed = GLFW.glfwGetKey(window, MENU_KEY) == GLFW.GLFW_PRESS;
 
-            if (pressed && !wasPressed && client.gui.screen() == null) {
-                client.gui.setScreen(new VloxMenuScreen());
+            // Treat Right Shift as a true toggle: open the menu from gameplay,
+            // and close it again when pressed while the VLOX screen is visible.
+            if (pressed && !wasPressed) {
+                if (client.gui.screen() instanceof VloxMenuScreen) {
+                    client.gui.setScreen(null);
+                } else if (client.gui.screen() == null) {
+                    client.gui.setScreen(new VloxMenuScreen());
+                }
             }
             wasPressed = pressed;
         });
