@@ -44,6 +44,20 @@ public final class VloxHud {
         graphics.text(client.font, message, x + module.offsetX(), y + module.offsetY(), adjustedColor, shadow);
     }
 
+    private static void drawKeycap(net.minecraft.client.gui.GuiGraphicsExtractor graphics, Minecraft client,
+                                    String label, boolean pressed, int x, int y, int width, int height) {
+        int fill = pressed ? 0xE65B91D0 : 0xB92A3B52;
+        int edge = pressed ? 0xFF9CCBFA : 0xB8D7E5F5;
+        graphics.fill(x, y, x + width, y + height, 0x66000000);
+        graphics.fill(x, y, x + width, y + height - 1, fill);
+        graphics.fill(x, y, x + width, y + 1, edge);
+        graphics.fill(x, y, x + 1, y + height - 1, edge);
+        String shown = label;
+        int textWidth = client.font.width(shown);
+        graphics.text(client.font, shown, x + Math.max(2, (width - textWidth) / 2),
+            y + (height - 9) / 2, 0xFFFFFFFF, true);
+    }
+
     private VloxHud() {
     }
 
@@ -126,14 +140,34 @@ public final class VloxHud {
                 y += Math.round(11 * moduleScale("Ping Display"));
                 }
             }
-            if (VloxModules.isEnabled("Keystrokes")) {
+            if (VloxModules.isEnabled("Keystrokes") && client.screen == null) {
                 long window = client.getWindow().handle();
-                String keys = (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_W) == GLFW.GLFW_PRESS ? "[W]" : " W ")
-                    + " " + (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_A) == GLFW.GLFW_PRESS ? "[A]" : " A ")
-                    + " " + (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_S) == GLFW.GLFW_PRESS ? "[S]" : " S ")
-                    + " " + (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_D) == GLFW.GLFW_PRESS ? "[D]" : " D ");
-                drawText(graphics, client, "Keystrokes", keys, 8, y, color, true);
-                y += Math.round(11 * moduleScale("Keystrokes"));
+                int keyX = 8;
+                int keyY = y + 12;
+                drawText(graphics, client, "Keystrokes", "KEYSTROKES", keyX, y, 0xFFEAF1FF, true);
+
+                // WASD cluster, matching the classic PvP keystrokes layout.
+                drawKeycap(graphics, client, "W", GLFW.glfwGetKey(window, GLFW.GLFW_KEY_W) == GLFW.GLFW_PRESS,
+                    keyX + 26, keyY, 24, 20);
+                drawKeycap(graphics, client, "A", GLFW.glfwGetKey(window, GLFW.GLFW_KEY_A) == GLFW.GLFW_PRESS,
+                    keyX, keyY + 22, 24, 20);
+                drawKeycap(graphics, client, "S", GLFW.glfwGetKey(window, GLFW.GLFW_KEY_S) == GLFW.GLFW_PRESS,
+                    keyX + 26, keyY + 22, 24, 20);
+                drawKeycap(graphics, client, "D", GLFW.glfwGetKey(window, GLFW.GLFW_KEY_D) == GLFW.GLFW_PRESS,
+                    keyX + 52, keyY + 22, 24, 20);
+
+                // Mouse buttons, jump, sneak and sprint are shown as individual live keys.
+                drawKeycap(graphics, client, "LMB", GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS,
+                    keyX, keyY + 44, 36, 18);
+                drawKeycap(graphics, client, "RMB", GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS,
+                    keyX + 40, keyY + 44, 36, 18);
+                drawKeycap(graphics, client, "SPACE", GLFW.glfwGetKey(window, GLFW.GLFW_KEY_SPACE) == GLFW.GLFW_PRESS,
+                    keyX, keyY + 64, 76, 18);
+                drawKeycap(graphics, client, "SHIFT", GLFW.glfwGetKey(window, GLFW.GLFW_KEY_LEFT_SHIFT) == GLFW.GLFW_PRESS,
+                    keyX, keyY + 84, 36, 18);
+                drawKeycap(graphics, client, "CTRL", GLFW.glfwGetKey(window, GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS,
+                    keyX + 40, keyY + 84, 36, 18);
+                y += Math.round(118 * moduleScale("Keystrokes"));
             }
             if (VloxModules.isEnabled("Direction HUD")) {
                 float yaw = client.player.getYRot() % 360.0f;
