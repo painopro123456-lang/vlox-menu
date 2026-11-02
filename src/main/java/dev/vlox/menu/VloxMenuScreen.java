@@ -4,21 +4,22 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
 public final class VloxMenuScreen extends Screen {
     private static final int PANEL_WIDTH = 570;
-    private static final int PANEL_HEIGHT = 390;
+    private static final int PANEL_HEIGHT = 430;
     private static final int CARD_WIDTH = 170;
-    private static final int CARD_HEIGHT = 60;
-    private static final int GAP = 8;
+    private static final int CARD_HEIGHT = 70;
+    private static final int GAP = 7;
     private static final int MODULES_PER_PAGE = 12;
     private int page;
     private VloxModule selectedModule;
     private boolean waitingForKeybind;
 
-    public VloxMenuScreen() {
+    private void drawUiText(GuiGraphicsExtractor graphics, String text, int x, int y, int color, boolean shadow) {\n        Component styled = Component.literal(text).withStyle(style -> style.withFont(Identifier.fromNamespaceAndPath("minecraft", "uniform")));\n        drawUiText(graphics, styled, x, y, color, shadow);\n    }\n\n    public VloxMenuScreen() {
         super(Component.literal("VLOX MENU"));
     }
 
@@ -47,7 +48,7 @@ public final class VloxMenuScreen extends Screen {
 
         List<VloxModule> modules = VloxModules.ALL;
         int startX = left + 20;
-        int startY = top + 98;
+        int startY = top + 94;
         int pageCount = (modules.size() + MODULES_PER_PAGE - 1) / MODULES_PER_PAGE;
         int first = page * MODULES_PER_PAGE;
         int end = Math.min(first + MODULES_PER_PAGE, modules.size());
@@ -63,31 +64,43 @@ public final class VloxMenuScreen extends Screen {
             boolean hovered = mouseX >= x && mouseX <= x + CARD_WIDTH
                 && mouseY >= y && mouseY <= y + CARD_HEIGHT;
 
-            // Soft layered card: a faint shadow, bright glass face and fine edge highlight.
+            // Vertical icon-first tile with a centered title underneath.
             graphics.fill(x + 1, y + 2, x + CARD_WIDTH + 1, y + CARD_HEIGHT + 2, 0x180E2745);
-            int background = module.enabled() ? 0xDDEAF8FF : (hovered ? 0xDDFEFFFF : 0xBFFFFFFF);
+            int background = module.enabled() ? 0xE6EAF5FF : (hovered ? 0xE6FFFFFF : 0xCFFFFFFF);
             graphics.fill(x, y, x + CARD_WIDTH, y + CARD_HEIGHT, background);
-            graphics.fill(x, y, x + CARD_WIDTH, y + 1, 0xCCFFFFFF);
-            graphics.fill(x, y + CARD_HEIGHT - 1, x + CARD_WIDTH, y + CARD_HEIGHT, 0x55849BB8);
+            graphics.fill(x, y, x + CARD_WIDTH, y + 1, 0xDDFFFFFF);
+            graphics.fill(x, y + CARD_HEIGHT - 1, x + CARD_WIDTH, y + CARD_HEIGHT, 0x66849BB8);
             graphics.fill(x, y, x + 3, y + CARD_HEIGHT, module.enabled() ? 0xFF548DD0 : 0x668DA4C0);
 
-            graphics.text(this.font, module.icon(), x + 11, y + 11, 0xFF42658C, false);
-            graphics.text(this.font, module.name(), x + 31, y + 10, 0xFF1D3048, false);
-            graphics.text(this.font, module.category().toUpperCase(), x + 31, y + 30, 0xFF71839A, false);
+            int iconCenter = x + CARD_WIDTH / 2;
+            int iconTileLeft = iconCenter - 18;
+            int iconTileTop = y + 5;
+            graphics.fill(iconTileLeft, iconTileTop, iconTileLeft + 36, iconTileTop + 34,
+                module.enabled() ? 0xFFD7E9FC : 0xFFEAF1F8);
+            graphics.fill(iconTileLeft, iconTileTop, iconTileLeft + 36, iconTileTop + 1, 0xFFFFFFFF);
+            String icon = module.icon();
+            int iconWidth = this.font.width(icon);
+            drawUiText(graphics, icon, iconCenter - iconWidth / 2, iconTileTop + 12,
+                module.enabled() ? 0xFF286DB5 : 0xFF506B89, false);
 
-            // Compact switch with a contrasting thumb; active state uses the VLOX blue accent.
-            int toggleLeft = x + CARD_WIDTH - 34;
-            int toggleTop = y + 12;
-            graphics.fill(toggleLeft, toggleTop, toggleLeft + 23, toggleTop + 12,
+            String moduleName = module.name();
+            int nameWidth = this.font.width(moduleName);
+            drawUiText(graphics, moduleName, x + Math.max(5, (CARD_WIDTH - nameWidth) / 2), y + 43,
+                0xFF1D3048, false);
+            String category = module.category().toUpperCase();
+            int categoryWidth = this.font.width(category);
+            drawUiText(graphics, category, x + (CARD_WIDTH - categoryWidth) / 2, y + 56,
+                0xFF71839A, false);
+
+            int pillLeft = x + CARD_WIDTH - 31;
+            int pillTop = y + 5;
+            graphics.fill(pillLeft, pillTop, pillLeft + 25, pillTop + 10,
                 module.enabled() ? 0xFF548DD0 : 0xFFB7C3D0);
-            graphics.fill(module.enabled() ? toggleLeft + 12 : toggleLeft + 2,
-                toggleTop + 2, module.enabled() ? toggleLeft + 21 : toggleLeft + 11,
-                toggleTop + 10, 0xFFFFFFFF);
-            graphics.text(this.font, module.enabled() ? "ON" : "OFF",
-                x + CARD_WIDTH - 34, y + 39, module.enabled() ? 0xFF477EBB : 0xFF8795A7, false);
+            drawUiText(graphics, module.enabled() ? "ON" : "OFF",
+                pillLeft + 4, pillTop + 1, 0xFFFFFFFF, false);
         }
 
-        if (selectedModule != null) {
+                if (selectedModule != null) {
             int mx = left + 120;
             int my = top + 105;
             graphics.fill(mx + 2, my + 3, mx + 332, my + 208, 0x300D2745);
@@ -158,7 +171,7 @@ public final class VloxMenuScreen extends Screen {
         }
         if (event.button() == 1) {
             int startX = panelLeft + 20;
-            int startY = panelTop + 98;
+            int startY = panelTop + 94;
             int first = page * MODULES_PER_PAGE;
             int end = Math.min(first + MODULES_PER_PAGE, VloxModules.ALL.size());
             for (int index = first; index < end; index++) {
