@@ -19,7 +19,12 @@ public final class VloxMenuScreen extends Screen {
     private VloxModule selectedModule;
     private boolean waitingForKeybind;
 
-    private void drawUiText(GuiGraphicsExtractor graphics, String text, int x, int y, int color, boolean shadow) {\n        Component styled = Component.literal(text).withStyle(style -> style.withFont(Identifier.fromNamespaceAndPath("minecraft", "uniform")));\n        drawUiText(graphics, styled, x, y, color, shadow);\n    }\n\n    public VloxMenuScreen() {
+    private void drawUiText(GuiGraphicsExtractor graphics, String text, int x, int y, int color, boolean shadow) {
+        Component styled = Component.literal(text).withStyle(style -> style.withFont(Identifier.fromNamespaceAndPath("minecraft", "uniform")));
+        graphics.text(this.font, styled, x, y, color, shadow);
+    }
+
+    public VloxMenuScreen() {
         super(Component.literal("VLOX MENU"));
     }
 
