@@ -35,11 +35,11 @@ public final class VloxMenuScreen extends Screen {
         graphics.fill(left, top + PANEL_HEIGHT - 1, left + PANEL_WIDTH, top + PANEL_HEIGHT, 0x557DAFFF);
 
         graphics.text(this.font, "VLOX MENU", left + 22, top + 18, 0xFFF4F7FF, false);
-        graphics.drawString(this.font, "26.2  /  FABRIC", left + 22, top + 34, 0xFF91A5C8, false);
-        graphics.drawString(this.font, "RIGHT SHIFT  •  CLOSE", left + PANEL_WIDTH - 150, top + 23, 0xFF91A5C8, false);
+        graphics.text(this.font, "26.2  /  FABRIC", left + 22, top + 34, 0xFF91A5C8, false);
+        graphics.text(this.font, "RIGHT SHIFT  •  CLOSE", left + PANEL_WIDTH - 150, top + 23, 0xFF91A5C8, false);
 
         graphics.fill(left + 20, top + 58, left + PANEL_WIDTH - 20, top + 83, 0x88343E50);
-        graphics.drawString(this.font, "⌕   MODULES", left + 30, top + 67, 0xFFB9C7DF, false);
+        graphics.text(this.font, "⌕   MODULES", left + 30, top + 67, 0xFFB9C7DF, false);
 
         List<VloxModule> modules = VloxModules.ALL;
         int startX = left + 20;
@@ -63,9 +63,9 @@ public final class VloxMenuScreen extends Screen {
             graphics.fill(x, y, x + CARD_WIDTH, y + CARD_HEIGHT, background);
             graphics.fill(x, y, x + 2, y + CARD_HEIGHT, module.enabled() ? 0xFF8DB5FF : 0x557D91B8);
 
-            graphics.drawString(this.font, module.icon(), x + 10, y + 10, 0xFFD8E5FF, false);
-            graphics.drawString(this.font, module.name(), x + 31, y + 10, 0xFFF3F6FC, false);
-            graphics.drawString(this.font, module.category(), x + 31, y + 29, 0xFF9EADC5, false);
+            graphics.text(this.font, module.icon(), x + 10, y + 10, 0xFFD8E5FF, false);
+            graphics.text(this.font, module.name(), x + 31, y + 10, 0xFFF3F6FC, false);
+            graphics.text(this.font, module.category(), x + 31, y + 29, 0xFF9EADC5, false);
 
             int toggleColor = module.enabled() ? 0xFF91B9FF : 0xFF657187;
             graphics.fill(x + CARD_WIDTH - 28, y + 25, x + CARD_WIDTH - 12, y + 34, toggleColor);
@@ -73,16 +73,16 @@ public final class VloxMenuScreen extends Screen {
                 y + 26, module.enabled() ? x + CARD_WIDTH - 12 : x + CARD_WIDTH - 18, y + 33, 0xFFFFFFFF);
         }
 
-        graphics.drawString(this.font, "Click a module to toggle it", left + 22,
+        graphics.text(this.font, "Click a module to toggle it", left + 22,
             top + PANEL_HEIGHT - 22, 0xFF91A1BA, false);
 
         if (pageCount > 1) {
             String pageLabel = "PAGE " + (page + 1) + " / " + pageCount;
-            graphics.drawString(this.font, "< PREV", left + PANEL_WIDTH - 150,
+            graphics.text(this.font, "< PREV", left + PANEL_WIDTH - 150,
                 top + PANEL_HEIGHT - 22, page > 0 ? 0xFFD8E5FF : 0xFF68758A, false);
-            graphics.drawString(this.font, pageLabel, left + PANEL_WIDTH - 91,
+            graphics.text(this.font, pageLabel, left + PANEL_WIDTH - 91,
                 top + PANEL_HEIGHT - 22, 0xFF91A1BA, false);
-            graphics.drawString(this.font, "NEXT >", left + PANEL_WIDTH - 48,
+            graphics.text(this.font, "NEXT >", left + PANEL_WIDTH - 48,
                 top + PANEL_HEIGHT - 22, page < pageCount - 1 ? 0xFFD8E5FF : 0xFF68758A, false);
         }
 
