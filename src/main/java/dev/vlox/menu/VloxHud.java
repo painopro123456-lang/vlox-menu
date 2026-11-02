@@ -11,6 +11,8 @@ import org.lwjgl.glfw.GLFW;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public final class VloxHud {
     private static final Identifier HUD_ID = Identifier.fromNamespaceAndPath("vlox_menu", "quality_of_life_hud");
@@ -19,6 +21,10 @@ public final class VloxHud {
     private static long stopwatchStartedAt;
     private static long stopwatchAccumulated;
     private static boolean stopwatchWasEnabled;
+    private static final Deque<Long> leftClicks = new ArrayDeque<>();
+    private static final Deque<Long> rightClicks = new ArrayDeque<>();
+    private static boolean leftMouseWasDown;
+    private static boolean rightMouseWasDown;
 
     private static VloxModule findModule(String name) {
         return VloxModules.ALL.stream().filter(module -> module.name().equals(name)).findFirst().orElse(null);
@@ -52,6 +58,19 @@ public final class VloxHud {
             final int color = 0xFFEAF1FF;
 
             long now = System.currentTimeMillis();
+            long windowHandle = client.getWindow().handle();
+            boolean leftMouseDown = GLFW.glfwGetMouseButton(windowHandle, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
+            boolean rightMouseDown = GLFW.glfwGetMouseButton(windowHandle, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
+            if (leftMouseDown && !leftMouseWasDown) leftClicks.addLast(now);
+            if (rightMouseDown && !rightMouseWasDown) rightClicks.addLast(now);
+            leftMouseWasDown = leftMouseDown;
+            rightMouseWasDown = rightMouseDown;
+            while (!leftClicks.isEmpty() && now - leftClicks.peekFirst() > 1000L) leftClicks.removeFirst();
+            while (!rightClicks.isEmpty() && now - rightClicks.peekFirst() > 1000L) rightClicks.removeFirst();
+            if (VloxModules.isEnabled("CPS Display")) {
+                drawText(graphics, client, "CPS Display", "CPS  L " + leftClicks.size() + "  R " + rightClicks.size(), 8, y, color, true);
+                y += Math.round(11 * moduleScale("CPS Display"));
+            }
             boolean stopwatchEnabled = VloxModules.isEnabled("Stopwatch");
             if (stopwatchEnabled && !stopwatchWasEnabled) stopwatchStartedAt = now;
             if (!stopwatchEnabled && stopwatchWasEnabled) stopwatchAccumulated += now - stopwatchStartedAt;
@@ -231,6 +250,7 @@ public final class VloxHud {
                 long maxMb = runtime.maxMemory() / (1024L * 1024L);
                 drawText(graphics, client, "Memory Usage", "MEMORY  " + usedMb + " / " + maxMb + " MB",
                     8, y, color, true);
+                y += Math.round(11 * moduleScale("Memory Usage"));
             }
         });
     }
