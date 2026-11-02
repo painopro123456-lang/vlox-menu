@@ -75,7 +75,7 @@ public final class VloxHud {
                 y += 11;
             }
             if (VloxModules.isEnabled("Days Played")) {
-                graphics.text(client.font, "WORLD DAYS  " + (client.level.getDayTime() / 24000L), 8, y, color, true);
+                graphics.text(client.font, "WORLD DAYS  " + (client.level.getLevelData().getGameTime() / 24000L), 8, y, color, true);
                 y += 11;
             }
             if (VloxModules.isEnabled("Targeted Block Info") && client.hitResult instanceof BlockHitResult blockHit
