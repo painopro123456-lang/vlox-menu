@@ -1,6 +1,7 @@
 package dev.vlox.menu;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -20,7 +21,7 @@ public final class VloxMenuScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int left = (this.width - PANEL_WIDTH) / 2;
         int top = (this.height - PANEL_HEIGHT) / 2;
 
@@ -33,7 +34,7 @@ public final class VloxMenuScreen extends Screen {
         graphics.fill(left + PANEL_WIDTH - 1, top, left + PANEL_WIDTH, top + PANEL_HEIGHT, 0x557DAFFF);
         graphics.fill(left, top + PANEL_HEIGHT - 1, left + PANEL_WIDTH, top + PANEL_HEIGHT, 0x557DAFFF);
 
-        graphics.drawString(this.font, "VLOX MENU", left + 22, top + 18, 0xFFF4F7FF, false);
+        graphics.text(this.font, "VLOX MENU", left + 22, top + 18, 0xFFF4F7FF, false);
         graphics.drawString(this.font, "26.2  /  FABRIC", left + 22, top + 34, 0xFF91A5C8, false);
         graphics.drawString(this.font, "RIGHT SHIFT  •  CLOSE", left + PANEL_WIDTH - 150, top + 23, 0xFF91A5C8, false);
 
@@ -85,12 +86,14 @@ public final class VloxMenuScreen extends Screen {
                 top + PANEL_HEIGHT - 22, page < pageCount - 1 ? 0xFFD8E5FF : 0xFF68758A, false);
         }
 
-        super.render(graphics, mouseX, mouseY, partialTick);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        if (event.button() == 0) {
             int panelLeft = (this.width - PANEL_WIDTH) / 2;
             int panelTop = (this.height - PANEL_HEIGHT) / 2;
             int pageCount = (VloxModules.ALL.size() + MODULES_PER_PAGE - 1) / MODULES_PER_PAGE;
@@ -127,7 +130,7 @@ public final class VloxMenuScreen extends Screen {
                 }
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
