@@ -32,6 +32,11 @@ public final class VloxModules {
         new VloxModule("Light Level", "HUD", "☼"),
         new VloxModule("Chunk Coordinates", "HUD", "▦"),
         new VloxModule("Durability Percentage", "HUD", "◇"),
+        new VloxModule("World Border Distance", "HUD", "▣"),
+        new VloxModule("Nearby Entity Count", "HUD", "♙"),
+        new VloxModule("Block Break Progress", "HUD", "▧"),
+        new VloxModule("Harvest Tool Hint", "HUD", "⚒"),
+        new VloxModule("Current Game Mode", "HUD", "▤"),
         // Visual
         new VloxModule("Fullbright", "Visual", "☼"),
         new VloxModule("Zoom", "Visual", "◎"),
@@ -50,6 +55,11 @@ public final class VloxModules {
         new VloxModule("Cloud Style", "Visual", "☁"),
         new VloxModule("Rain Particles", "Visual", "☂"),
         new VloxModule("Beacon Beam Style", "Visual", "♢"),
+        new VloxModule("Held Item Swing", "Visual", "⚒"),
+        new VloxModule("Portal Overlay Toggle", "Visual", "◈"),
+        new VloxModule("Underwater Overlay", "Visual", "≋"),
+        new VloxModule("Damage Flash Style", "Visual", "♡"),
+        new VloxModule("Sign Text Contrast", "Visual", "▤"),
         // Performance
         new VloxModule("Dynamic FPS", "Performance", "ϟ"),
         new VloxModule("Particle Reducer", "Performance", "✧"),
@@ -60,6 +70,10 @@ public final class VloxModules {
         new VloxModule("Reduced Screen Animations", "Performance", "▤"),
         new VloxModule("Cloud Rendering", "Performance", "☁"),
         new VloxModule("Weather Rendering", "Performance", "☂"),
+        new VloxModule("Entity Animation Detail", "Performance", "♙"),
+        new VloxModule("Particle Distance", "Performance", "✧"),
+        new VloxModule("Texture Animation Toggle", "Performance", "▧"),
+        new VloxModule("MipMap Quality", "Performance", "▦"),
         // Utility
         new VloxModule("Chat Customizer", "Utility", "▤"),
         new VloxModule("Screenshot Toast", "Utility", "▧"),
@@ -76,6 +90,11 @@ public final class VloxModules {
         new VloxModule("World Save Reminder", "Utility", "▤"),
         new VloxModule("Screenshot Metadata", "Utility", "▧"),
         new VloxModule("Resource Pack Reminder", "Utility", "▣"),
+        new VloxModule("Copy Coordinates", "Utility", "⌖"),
+        new VloxModule("Copy Server Address", "Utility", "⌁"),
+        new VloxModule("Death Location Marker", "Utility", "✕"),
+        new VloxModule("Waypoint Notes", "Utility", "⚑"),
+        new VloxModule("Chat Mention Highlight", "Utility", "@"),
         // Customization
         new VloxModule("GUI Customizer", "Customization", "⚙"),
         new VloxModule("Crosshair Customizer", "Customization", "⊕"),
@@ -85,7 +104,11 @@ public final class VloxModules {
         new VloxModule("Font Scale", "Customization", "A"),
         new VloxModule("Interface Blur", "Customization", "◉"),
         new VloxModule("Card Spacing", "Customization", "▤"),
-        new VloxModule("Module Sorting", "Customization", "↕")
+        new VloxModule("Module Sorting", "Customization", "↕"),
+        new VloxModule("HUD Scale Presets", "Customization", "A"),
+        new VloxModule("HUD Anchor Presets", "Customization", "⌖"),
+        new VloxModule("Accent Color Picker", "Customization", "◈"),
+        new VloxModule("Compact Module Cards", "Customization", "▤")
     );
 
     public static boolean isEnabled(String name) {
