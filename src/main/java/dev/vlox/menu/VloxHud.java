@@ -57,6 +57,23 @@ public final class VloxHud {
                 graphics.text(client.font, "FACING  " + direction, 8, y, color, true);
                 y += 11;
             }
+            if (VloxModules.isEnabled("Compass HUD")) {
+                float yaw = client.player.getYRot() % 360.0f;
+                if (yaw < 0) yaw += 360.0f;
+                graphics.text(client.font, String.format("COMPASS  %.0f°", yaw), 8, y, color, true);
+                y += 11;
+            }
+            if (VloxModules.isEnabled("Biome Display")) {
+                var biome = client.level.getBiome(client.player.blockPosition());
+                String biomeName = biome.unwrapKey().map(key -> key.location().toString()).orElse("unknown");
+                graphics.text(client.font, "BIOME  " + biomeName, 8, y, color, true);
+                y += 11;
+            }
+            if (VloxModules.isEnabled("World Border Distance")) {
+                double distance = client.level.getWorldBorder().getDistanceToBorder(client.player);
+                graphics.text(client.font, String.format("BORDER  %.1f blocks", distance), 8, y, color, true);
+                y += 11;
+            }
             if (VloxModules.isEnabled("Speedometer")) {
                 var velocity = client.player.getDeltaMovement();
                 double speed = Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z) * 20.0;
