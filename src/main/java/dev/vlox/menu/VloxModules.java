@@ -21,6 +21,13 @@ public final class VloxModules {
         new VloxModule("Speedometer", "HUD", "➟"),
         new VloxModule("Biome Display", "HUD", "♧"),
         new VloxModule("Jump Circle", "HUD", "◯"),
+        new VloxModule("Durability HUD", "HUD", "♢"),
+        new VloxModule("Targeted Block Info", "HUD", "▦"),
+        new VloxModule("Food Level HUD", "HUD", "◒"),
+        new VloxModule("World Time", "HUD", "☼"),
+        new VloxModule("Recipe Reminder", "HUD", "▤"),
+        new VloxModule("CPS Display", "HUD", "⌁"),
+        new VloxModule("Memory Usage", "HUD", "▥"),
         // Visual
         new VloxModule("Fullbright", "Visual", "☼"),
         new VloxModule("Zoom", "Visual", "◎"),
@@ -31,10 +38,17 @@ public final class VloxModules {
         new VloxModule("Entity Shadows", "Visual", "◌"),
         new VloxModule("Damage Tilt", "Visual", "↝"),
         new VloxModule("Hide Pumpkin Overlay", "Visual", "▱"),
+        new VloxModule("Fog Control", "Visual", "〰"),
+        new VloxModule("Sky Color", "Visual", "☁"),
+        new VloxModule("Fire Overlay Style", "Visual", "♨"),
+        new VloxModule("Block Outline Style", "Visual", "▧"),
         // Performance
         new VloxModule("Dynamic FPS", "Performance", "ϟ"),
         new VloxModule("Particle Reducer", "Performance", "✧"),
         new VloxModule("Low Fire", "Performance", "♨"),
+        new VloxModule("Entity Render Distance", "Performance", "◉"),
+        new VloxModule("Animation Optimizer", "Performance", "〰"),
+        new VloxModule("Background Throttle", "Performance", "ϟ"),
         // Utility
         new VloxModule("Chat Customizer", "Utility", "▤"),
         new VloxModule("Screenshot Toast", "Utility", "▧"),
@@ -43,11 +57,15 @@ public final class VloxModules {
         new VloxModule("Chat Timestamps", "Utility", "◷"),
         new VloxModule("Auto Reconnect", "Utility", "↻"),
         new VloxModule("Screenshot Organizer", "Utility", "▧"),
+        new VloxModule("Item Pickup Log", "Utility", "▣"),
+        new VloxModule("World Join Message", "Utility", "➤"),
+        new VloxModule("Quick Screenshot", "Utility", "▧"),
         // Customization
         new VloxModule("GUI Customizer", "Customization", "⚙"),
         new VloxModule("Crosshair Customizer", "Customization", "⊕"),
         new VloxModule("HUD Editor", "Customization", "▦"),
-        new VloxModule("Color Presets", "Customization", "◈")
+        new VloxModule("Color Presets", "Customization", "◈"),
+        new VloxModule("Corner Rounding", "Customization", "▢")
     );
 
     private VloxModules() {
