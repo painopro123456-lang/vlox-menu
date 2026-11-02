@@ -28,6 +28,15 @@ public final class VloxMenuClient implements ClientModInitializer {
             }
             wasMenuPressed = menuPressed;
 
+            if (client.gui.screen() instanceof VloxMenuScreen menu && menu.waitingForKeybind()) {
+                for (int key = GLFW.GLFW_KEY_SPACE; key <= GLFW.GLFW_KEY_LAST; key++) {
+                    if (GLFW.glfwGetKey(window, key) == GLFW.GLFW_PRESS) {
+                        menu.captureKeybind(key);
+                        break;
+                    }
+                }
+            }
+
             Set<Integer> pressedNow = new HashSet<>();
             Set<Integer> triggeredThisTick = new HashSet<>();
             if (client.gui.screen() == null) {
