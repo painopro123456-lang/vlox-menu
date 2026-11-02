@@ -1,6 +1,7 @@
 package dev.vlox.menu;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.FontDescription;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -20,7 +21,7 @@ public final class VloxMenuScreen extends Screen {
     private boolean waitingForKeybind;
 
     private void drawUiText(GuiGraphicsExtractor graphics, String text, int x, int y, int color, boolean shadow) {
-        Component styled = Component.literal(text).withStyle(style -> style.withFont(Identifier.fromNamespaceAndPath("minecraft", "uniform")));
+        Component styled = Component.literal(text).withStyle(style -> style.withFont(new FontDescription.Resource(Identifier.fromNamespaceAndPath("minecraft", "uniform"))));
         graphics.text(this.font, styled, x, y, color, shadow);
     }
 
@@ -85,8 +86,12 @@ public final class VloxMenuScreen extends Screen {
             graphics.fill(iconTileLeft, iconTileTop, iconTileLeft + 36, iconTileTop + 1, 0xFFFFFFFF);
             String icon = module.icon();
             int iconWidth = this.font.width(icon);
-            drawUiText(graphics, icon, iconCenter - iconWidth / 2, iconTileTop + 12,
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(iconCenter - iconWidth * 0.9f, iconTileTop + 7);
+            graphics.pose().scale(1.8f, 1.8f);
+            drawUiText(graphics, icon, 0, 0,
                 module.enabled() ? 0xFF286DB5 : 0xFF506B89, false);
+            graphics.pose().popMatrix();
 
             String moduleName = module.name();
             int nameWidth = this.font.width(moduleName);
