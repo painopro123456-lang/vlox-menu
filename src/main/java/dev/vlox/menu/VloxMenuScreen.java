@@ -15,6 +15,8 @@ public final class VloxMenuScreen extends Screen {
     private static final int GAP = 8;
     private static final int MODULES_PER_PAGE = 12;
     private int page;
+    private VloxModule selectedModule;
+    private boolean waitingForKeybind;
 
     public VloxMenuScreen() {
         super(Component.literal("VLOX MENU"));
@@ -73,6 +75,20 @@ public final class VloxMenuScreen extends Screen {
                 y + 26, module.enabled() ? x + CARD_WIDTH - 12 : x + CARD_WIDTH - 18, y + 33, 0xFFFFFFFF);
         }
 
+        if (selectedModule != null) {
+            int mx = left + 120;
+            int my = top + 105;
+            graphics.fill(mx, my, mx + 330, my + 205, 0xF01B2434);
+            graphics.fill(mx, my, mx + 330, my + 2, 0xFF8DB5FF);
+            graphics.text(this.font, selectedModule.name() + " SETTINGS", mx + 16, my + 14, 0xFFF4F7FF, false);
+            graphics.text(this.font, "Scale: " + String.format("%.2f", selectedModule.scale()) + "   [-]  [+]", mx + 16, my + 43, 0xFFD8E5FF, false);
+            graphics.text(this.font, "Opacity: " + String.format("%.2f", selectedModule.opacity()) + "   [-]  [+]", mx + 16, my + 70, 0xFFD8E5FF, false);
+            graphics.text(this.font, "Position: " + selectedModule.offsetX() + ", " + selectedModule.offsetY() + "   [RESET]", mx + 16, my + 97, 0xFFD8E5FF, false);
+            String keyLabel = waitingForKeybind ? "PRESS A KEY... (ESC CANCEL / BACKSPACE UNBIND)" : "Key code: " + (selectedModule.keyCode() < 0 ? "Unbound" : selectedModule.keyCode()) + "   [SET KEY]";
+            graphics.text(this.font, keyLabel, mx + 16, my + 124, 0xFFD8E5FF, false);
+            graphics.text(this.font, "[CLOSE]", mx + 16, my + 169, 0xFF91B9FF, false);
+        }
+
         graphics.text(this.font, "Click a module to toggle it", left + 22,
             top + PANEL_HEIGHT - 22, 0xFF91A1BA, false);
 
@@ -93,6 +109,45 @@ public final class VloxMenuScreen extends Screen {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double mouseX = event.x();
         double mouseY = event.y();
+        int panelLeft = (this.width - PANEL_WIDTH) / 2;
+        int panelTop = (this.height - PANEL_HEIGHT) / 2;
+        if (selectedModule != null && event.button() == 0) {
+            int mx = panelLeft + 120;
+            int my = panelTop + 105;
+            if (mouseX >= mx && mouseX <= mx + 330 && mouseY >= my && mouseY <= my + 205) {
+                if (mouseY >= my + 35 && mouseY < my + 61) {
+                    if (mouseX < mx + 170) selectedModule.setScale(selectedModule.scale() - 0.1f);
+                    else selectedModule.setScale(selectedModule.scale() + 0.1f);
+                } else if (mouseY >= my + 62 && mouseY < my + 88) {
+                    if (mouseX < mx + 170) selectedModule.setOpacity(selectedModule.opacity() - 0.1f);
+                    else selectedModule.setOpacity(selectedModule.opacity() + 0.1f);
+                } else if (mouseY >= my + 89 && mouseY < my + 115) {
+                    selectedModule.setPosition(0, 0);
+                } else if (mouseY >= my + 116 && mouseY < my + 145) {
+                    waitingForKeybind = true;
+                } else {
+                    selectedModule = null;
+                    waitingForKeybind = false;
+                }
+                return true;
+            }
+            return true;
+        }
+        if (event.button() == 1) {
+            int startX = panelLeft + 20;
+            int startY = panelTop + 98;
+            int first = page * MODULES_PER_PAGE;
+            int end = Math.min(first + MODULES_PER_PAGE, VloxModules.ALL.size());
+            for (int index = first; index < end; index++) {
+                int visibleIndex = index - first;
+                int x = startX + (visibleIndex % 3) * (CARD_WIDTH + GAP);
+                int y = startY + (visibleIndex / 3) * (CARD_HEIGHT + GAP);
+                if (mouseX >= x && mouseX <= x + CARD_WIDTH && mouseY >= y && mouseY <= y + CARD_HEIGHT) {
+                    selectedModule = VloxModules.ALL.get(index);
+                    return true;
+                }
+            }
+        }
         if (event.button() == 0) {
             int panelLeft = (this.width - PANEL_WIDTH) / 2;
             int panelTop = (this.height - PANEL_HEIGHT) / 2;
@@ -131,6 +186,23 @@ public final class VloxMenuScreen extends Screen {
             }
         }
         return super.mouseClicked(event, doubleClick);
+    }
+
+    public boolean waitingForKeybind() {
+        return waitingForKeybind && selectedModule != null;
+    }
+
+    public void captureKeybind(int keyCode) {
+        if (selectedModule == null || !waitingForKeybind) return;
+        if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+            waitingForKeybind = false;
+        } else if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSPACE || keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_DELETE) {
+            selectedModule.setKeyCode(-1);
+            waitingForKeybind = false;
+        } else if (keyCode >= 0 && keyCode != org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_SHIFT) {
+            selectedModule.setKeyCode(keyCode);
+            waitingForKeybind = false;
+        }
     }
 
     @Override
