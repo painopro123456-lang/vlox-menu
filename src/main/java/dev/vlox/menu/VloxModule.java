@@ -85,6 +85,9 @@ public final class VloxModule {
     }
 
     public void setKeyCode(int keyCode) {
+        if (keyCode < -1) {
+            throw new IllegalArgumentException("Key code must be -1 (unbound) or a valid GLFW key code");
+        }
         this.keyCode = keyCode;
         save();
     }
@@ -95,8 +98,8 @@ public final class VloxModule {
     }
 
     public void setPosition(int x, int y) {
-        this.offsetX = clamp(x, -2000, 2000);
-        this.offsetY = clamp(y, -2000, 2000);
+        this.offsetX = Math.max(-2000, Math.min(2000, x));
+        this.offsetY = Math.max(-2000, Math.min(2000, y));
         save();
     }
 
