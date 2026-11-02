@@ -88,6 +88,10 @@ public final class VloxModules {
         new VloxModule("Module Sorting", "Customization", "↕")
     );
 
+    public static boolean isEnabled(String name) {
+        return ALL.stream().anyMatch(module -> module.name().equals(name) && module.enabled());
+    }
+
     private VloxModules() {
     }
 }
