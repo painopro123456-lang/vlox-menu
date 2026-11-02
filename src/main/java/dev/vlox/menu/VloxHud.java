@@ -140,7 +140,7 @@ public final class VloxHud {
                 y += Math.round(11 * moduleScale("Ping Display"));
                 }
             }
-            if (VloxModules.isEnabled("Keystrokes") && client.screen == null) {
+            if (VloxModules.isEnabled("Keystrokes") && client.gui.screen() == null) {
                 long window = client.getWindow().handle();
                 int keyX = 8;
                 int keyY = y + 12;
