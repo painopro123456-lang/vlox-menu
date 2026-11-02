@@ -42,6 +42,7 @@ public final class VloxModules {
         new VloxModule("Local Difficulty", "HUD", "▥"),
         new VloxModule("Targeted Entity Health", "HUD", "♡"),
         new VloxModule("Block State Info", "HUD", "▦"),
+        new VloxModule("Saturation HUD", "HUD", "◒"),
         // Visual
         new VloxModule("Fullbright", "Visual", "☼"),
         new VloxModule("Zoom", "Visual", "◎"),
