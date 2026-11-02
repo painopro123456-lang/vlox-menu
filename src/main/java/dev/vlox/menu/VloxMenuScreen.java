@@ -93,6 +93,13 @@ public final class VloxMenuScreen extends Screen {
                 module.enabled() ? 0xFF286DB5 : 0xFF506B89, false);
             graphics.pose().popMatrix();
 
+            // Always-visible settings gear anchored to the icon tile's bottom-right corner.
+            int gearX = iconTileLeft + 24;
+            int gearY = iconTileTop + 22;
+            graphics.fill(gearX - 2, gearY - 2, gearX + 13, gearY + 13, 0xFFEAF3FC);
+            graphics.fill(gearX - 2, gearY - 2, gearX + 13, gearY - 1, 0xFFFFFFFF);
+            drawUiText(graphics, "⚙", gearX, gearY, 0xFF426F9E, false);
+
             String moduleName = module.name();
             int nameWidth = this.font.width(moduleName);
             drawUiText(graphics, moduleName, x + Math.max(5, (CARD_WIDTH - nameWidth) / 2), y + 43,
@@ -132,7 +139,7 @@ public final class VloxMenuScreen extends Screen {
             graphics.text(this.font, "[ CLOSE ]", mx + 16, my + 174, 0xFF477DBD, false);
         }
 
-        graphics.text(this.font, "LEFT CLICK: TOGGLE     RIGHT CLICK: SETTINGS", left + 22,
+        graphics.text(this.font, "CLICK MODULE: TOGGLE     GEAR: SETTINGS", left + 22,
             top + PANEL_HEIGHT - 22, 0xFF718097, false);
 
         if (pageCount > 1) {
@@ -179,21 +186,6 @@ public final class VloxMenuScreen extends Screen {
             }
             return true;
         }
-        if (event.button() == 1) {
-            int startX = panelLeft + 20;
-            int startY = panelTop + 94;
-            int first = page * MODULES_PER_PAGE;
-            int end = Math.min(first + MODULES_PER_PAGE, VloxModules.ALL.size());
-            for (int index = first; index < end; index++) {
-                int visibleIndex = index - first;
-                int x = startX + (visibleIndex % 3) * (CARD_WIDTH + GAP);
-                int y = startY + (visibleIndex / 3) * (CARD_HEIGHT + GAP);
-                if (mouseX >= x && mouseX <= x + CARD_WIDTH && mouseY >= y && mouseY <= y + CARD_HEIGHT) {
-                    selectedModule = VloxModules.ALL.get(index);
-                    return true;
-                }
-            }
-        }
         if (event.button() == 0) {
             int pageCount = (VloxModules.ALL.size() + MODULES_PER_PAGE - 1) / MODULES_PER_PAGE;
 
@@ -211,7 +203,7 @@ public final class VloxMenuScreen extends Screen {
             }
 
             int startX = panelLeft + 20;
-            int startY = panelTop + 98;
+            int startY = panelTop + 94;
             int first = page * MODULES_PER_PAGE;
             int end = Math.min(first + MODULES_PER_PAGE, VloxModules.ALL.size());
 
@@ -224,7 +216,17 @@ public final class VloxMenuScreen extends Screen {
 
                 if (mouseX >= x && mouseX <= x + CARD_WIDTH
                     && mouseY >= y && mouseY <= y + CARD_HEIGHT) {
-                    VloxModules.ALL.get(index).toggle();
+                    int iconLeft = x + CARD_WIDTH / 2 - 18;
+                    int iconTop = y + 5;
+                    int gearLeft = iconLeft + 22;
+                    int gearTop = iconTop + 20;
+                    if (mouseX >= gearLeft - 3 && mouseX <= gearLeft + 14
+                        && mouseY >= gearTop - 3 && mouseY <= gearTop + 14) {
+                        selectedModule = VloxModules.ALL.get(index);
+                        waitingForKeybind = false;
+                    } else {
+                        VloxModules.ALL.get(index).toggle();
+                    }
                     return true;
                 }
             }
