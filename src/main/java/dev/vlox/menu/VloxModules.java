@@ -37,6 +37,11 @@ public final class VloxModules {
         new VloxModule("Block Break Progress", "HUD", "▧"),
         new VloxModule("Harvest Tool Hint", "HUD", "⚒"),
         new VloxModule("Current Game Mode", "HUD", "▤"),
+        new VloxModule("Days Played", "HUD", "◷"),
+        new VloxModule("Moon Phase", "HUD", "☾"),
+        new VloxModule("Local Difficulty", "HUD", "▥"),
+        new VloxModule("Targeted Entity Health", "HUD", "♡"),
+        new VloxModule("Block State Info", "HUD", "▦")
         // Visual
         new VloxModule("Fullbright", "Visual", "☼"),
         new VloxModule("Zoom", "Visual", "◎"),
@@ -60,6 +65,11 @@ public final class VloxModules {
         new VloxModule("Underwater Overlay", "Visual", "≋"),
         new VloxModule("Damage Flash Style", "Visual", "♡"),
         new VloxModule("Sign Text Contrast", "Visual", "▤"),
+        new VloxModule("Potion Particle Toggle", "Visual", "⚗"),
+        new VloxModule("Item Glint Toggle", "Visual", "✧"),
+        new VloxModule("Firework Particle Style", "Visual", "✦"),
+        new VloxModule("Enchantment Glint Intensity", "Visual", "◇"),
+        new VloxModule("Screen Dimmer Control", "Visual", "◐")
         // Performance
         new VloxModule("Dynamic FPS", "Performance", "ϟ"),
         new VloxModule("Particle Reducer", "Performance", "✧"),
@@ -74,6 +84,11 @@ public final class VloxModules {
         new VloxModule("Particle Distance", "Performance", "✧"),
         new VloxModule("Texture Animation Toggle", "Performance", "▧"),
         new VloxModule("MipMap Quality", "Performance", "▦"),
+        new VloxModule("Render Distance Presets", "Performance", "◉"),
+        new VloxModule("Simulation Distance Presets", "Performance", "▦"),
+        new VloxModule("Biome Blend Quality", "Performance", "♧"),
+        new VloxModule("Particle Density Presets", "Performance", "✧"),
+        new VloxModule("Animation Tick Limiter", "Performance", "ϟ")
         // Utility
         new VloxModule("Chat Customizer", "Utility", "▤"),
         new VloxModule("Screenshot Toast", "Utility", "▧"),
@@ -95,6 +110,11 @@ public final class VloxModules {
         new VloxModule("Death Location Marker", "Utility", "✕"),
         new VloxModule("Waypoint Notes", "Utility", "⚑"),
         new VloxModule("Chat Mention Highlight", "Utility", "@"),
+        new VloxModule("Copy Item ID", "Utility", "▣"),
+        new VloxModule("Copy Block ID", "Utility", "▦"),
+        new VloxModule("Clear Chat", "Utility", "▤"),
+        new VloxModule("Open Screenshot Folder", "Utility", "▧"),
+        new VloxModule("Quick Disconnect", "Utility", "↩")
         // Customization
         new VloxModule("GUI Customizer", "Customization", "⚙"),
         new VloxModule("Crosshair Customizer", "Customization", "⊕"),
@@ -108,7 +128,12 @@ public final class VloxModules {
         new VloxModule("HUD Scale Presets", "Customization", "A"),
         new VloxModule("HUD Anchor Presets", "Customization", "⌖"),
         new VloxModule("Accent Color Picker", "Customization", "◈"),
-        new VloxModule("Compact Module Cards", "Customization", "▤")
+        new VloxModule("Compact Module Cards", "Customization", "▤"),
+        new VloxModule("Theme Presets", "Customization", "◈"),
+        new VloxModule("HUD Opacity", "Customization", "◐"),
+        new VloxModule("HUD Background Toggle", "Customization", "▧"),
+        new VloxModule("Module Search", "Customization", "⌕"),
+        new VloxModule("Category Filters", "Customization", "☷")
     );
 
     public static boolean isEnabled(String name) {
