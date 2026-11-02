@@ -41,7 +41,7 @@ public final class VloxModules {
         new VloxModule("Moon Phase", "HUD", "☾"),
         new VloxModule("Local Difficulty", "HUD", "▥"),
         new VloxModule("Targeted Entity Health", "HUD", "♡"),
-        new VloxModule("Block State Info", "HUD", "▦")
+        new VloxModule("Block State Info", "HUD", "▦"),
         // Visual
         new VloxModule("Fullbright", "Visual", "☼"),
         new VloxModule("Zoom", "Visual", "◎"),
@@ -69,7 +69,7 @@ public final class VloxModules {
         new VloxModule("Item Glint Toggle", "Visual", "✧"),
         new VloxModule("Firework Particle Style", "Visual", "✦"),
         new VloxModule("Enchantment Glint Intensity", "Visual", "◇"),
-        new VloxModule("Screen Dimmer Control", "Visual", "◐")
+        new VloxModule("Screen Dimmer Control", "Visual", "◐"),
         // Performance
         new VloxModule("Dynamic FPS", "Performance", "ϟ"),
         new VloxModule("Particle Reducer", "Performance", "✧"),
@@ -88,7 +88,7 @@ public final class VloxModules {
         new VloxModule("Simulation Distance Presets", "Performance", "▦"),
         new VloxModule("Biome Blend Quality", "Performance", "♧"),
         new VloxModule("Particle Density Presets", "Performance", "✧"),
-        new VloxModule("Animation Tick Limiter", "Performance", "ϟ")
+        new VloxModule("Animation Tick Limiter", "Performance", "ϟ"),
         // Utility
         new VloxModule("Chat Customizer", "Utility", "▤"),
         new VloxModule("Screenshot Toast", "Utility", "▧"),
@@ -114,7 +114,7 @@ public final class VloxModules {
         new VloxModule("Copy Block ID", "Utility", "▦"),
         new VloxModule("Clear Chat", "Utility", "▤"),
         new VloxModule("Open Screenshot Folder", "Utility", "▧"),
-        new VloxModule("Quick Disconnect", "Utility", "↩")
+        new VloxModule("Quick Disconnect", "Utility", "↩"),
         // Customization
         new VloxModule("GUI Customizer", "Customization", "⚙"),
         new VloxModule("Crosshair Customizer", "Customization", "⊕"),
