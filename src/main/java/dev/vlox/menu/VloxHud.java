@@ -15,6 +15,10 @@ import java.time.format.DateTimeFormatter;
 public final class VloxHud {
     private static final Identifier HUD_ID = Identifier.fromNamespaceAndPath("vlox_menu", "quality_of_life_hud");
     private static final DateTimeFormatter CLOCK_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private static final long SESSION_STARTED_AT = System.currentTimeMillis();
+    private static long stopwatchStartedAt;
+    private static long stopwatchAccumulated;
+    private static boolean stopwatchWasEnabled;
 
     private static VloxModule findModule(String name) {
         return VloxModules.ALL.stream().filter(module -> module.name().equals(name)).findFirst().orElse(null);
@@ -46,6 +50,35 @@ public final class VloxHud {
 
             int y = 8;
             final int color = 0xFFEAF1FF;
+
+            long now = System.currentTimeMillis();
+            boolean stopwatchEnabled = VloxModules.isEnabled("Stopwatch");
+            if (stopwatchEnabled && !stopwatchWasEnabled) stopwatchStartedAt = now;
+            if (!stopwatchEnabled && stopwatchWasEnabled) stopwatchAccumulated += now - stopwatchStartedAt;
+            stopwatchWasEnabled = stopwatchEnabled;
+
+            if (VloxModules.isEnabled("Session Stats")) {
+                long seconds = (now - SESSION_STARTED_AT) / 1000L;
+                drawText(graphics, client, "Session Stats", "SESSION  " + String.format("%02d:%02d:%02d", seconds / 3600, (seconds / 60) % 60, seconds % 60), 8, y, color, true);
+                y += Math.round(11 * moduleScale("Session Stats"));
+            }
+            if (stopwatchEnabled) {
+                long elapsed = (stopwatchAccumulated + now - stopwatchStartedAt) / 1000L;
+                drawText(graphics, client, "Stopwatch", "STOPWATCH  " + String.format("%02d:%02d:%02d", elapsed / 3600, (elapsed / 60) % 60, elapsed % 60), 8, y, color, true);
+                y += Math.round(11 * moduleScale("Stopwatch"));
+            }
+            if (VloxModules.isEnabled("Low Health Alert") && client.player.getHealth() <= 6.0f) {
+                drawText(graphics, client, "Low Health Alert", "LOW HEALTH  " + String.format("%.1f", client.player.getHealth()) + " HP", 8, y, 0xFFFF7777, true);
+                y += Math.round(11 * moduleScale("Low Health Alert"));
+            }
+            ItemStack warningStack = client.player.getMainHandItem();
+            if (VloxModules.isEnabled("Durability Warning") && warningStack.isDamageableItem()) {
+                int remaining = warningStack.getMaxDamage() - warningStack.getDamageValue();
+                if (remaining <= Math.max(1, warningStack.getMaxDamage() / 5)) {
+                    drawText(graphics, client, "Durability Warning", "LOW DURABILITY  " + remaining + " LEFT", 8, y, 0xFFFFAA66, true);
+                    y += Math.round(11 * moduleScale("Durability Warning"));
+                }
+            }
 
             if (VloxModules.isEnabled("FPS Display")) {
                 drawText(graphics, client, "FPS Display", "FPS  " + client.getFps(), 8, y, color, true);
