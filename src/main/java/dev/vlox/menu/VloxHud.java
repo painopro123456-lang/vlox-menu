@@ -16,6 +16,24 @@ public final class VloxHud {
     private static final Identifier HUD_ID = Identifier.fromNamespaceAndPath("vlox_menu", "quality_of_life_hud");
     private static final DateTimeFormatter CLOCK_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
+    private static VloxModule findModule(String name) {
+        return VloxModules.ALL.stream().filter(module -> module.name().equals(name)).findFirst().orElse(null);
+    }
+
+    private static float moduleScale(String name) {
+        VloxModule module = findModule(name);
+        return module == null ? 1.0f : module.scale();
+    }
+
+    private static void drawText(net.minecraft.client.gui.GuiGraphicsExtractor graphics, Minecraft client,
+                                 String moduleName, String message, int x, int y, int color, boolean shadow) {
+        VloxModule module = findModule(moduleName);
+        if (module == null) return;
+        int alpha = Math.round(((color >>> 24) & 0xFF) * module.opacity());
+        int adjustedColor = (alpha << 24) | (color & 0x00FFFFFF);
+        graphics.text(client.font, message, x + module.offsetX(), y + module.offsetY(), adjustedColor, shadow);
+    }
+
     private VloxHud() {
     }
 
@@ -30,14 +48,14 @@ public final class VloxHud {
             final int color = 0xFFEAF1FF;
 
             if (VloxModules.isEnabled("FPS Display")) {
-                graphics.text(client.font, "FPS  " + client.getFps(), 8, y, color, true);
-                y += 11;
+                drawText(graphics, client, "FPS Display", "FPS  " + client.getFps(), 8, y, color, true);
+                y += Math.round(11 * moduleScale("FPS Display"));
             }
             if (VloxModules.isEnabled("Ping Display") && client.getConnection() != null) {
                 var info = client.getConnection().getPlayerInfo(client.player.getUUID());
                 if (info != null) {
-                    graphics.text(client.font, "PING  " + info.getLatency() + " ms", 8, y, color, true);
-                    y += 11;
+                    drawText(graphics, client, "Ping Display", "PING  " + info.getLatency() + " ms", 8, y, color, true);
+                y += Math.round(11 * moduleScale("Ping Display"));
                 }
             }
             if (VloxModules.isEnabled("Keystrokes")) {
@@ -46,131 +64,131 @@ public final class VloxHud {
                     + " " + (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_A) == GLFW.GLFW_PRESS ? "[A]" : " A ")
                     + " " + (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_S) == GLFW.GLFW_PRESS ? "[S]" : " S ")
                     + " " + (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_D) == GLFW.GLFW_PRESS ? "[D]" : " D ");
-                graphics.text(client.font, keys, 8, y, color, true);
-                y += 11;
+                drawText(graphics, client, "Keystrokes", keys, 8, y, color, true);
+                y += Math.round(11 * moduleScale("Keystrokes"));
             }
             if (VloxModules.isEnabled("Direction HUD")) {
                 float yaw = client.player.getYRot() % 360.0f;
                 if (yaw < 0) yaw += 360.0f;
                 String direction = yaw < 45 || yaw >= 315 ? "SOUTH"
                     : yaw < 135 ? "WEST" : yaw < 225 ? "NORTH" : "EAST";
-                graphics.text(client.font, "FACING  " + direction, 8, y, color, true);
-                y += 11;
+                drawText(graphics, client, "Direction HUD", "FACING  " + direction, 8, y, color, true);
+                y += Math.round(11 * moduleScale("Direction HUD"));
             }
             if (VloxModules.isEnabled("Compass HUD")) {
                 float yaw = client.player.getYRot() % 360.0f;
                 if (yaw < 0) yaw += 360.0f;
-                graphics.text(client.font, String.format("COMPASS  %.0f°", yaw), 8, y, color, true);
-                y += 11;
+                drawText(graphics, client, "Compass HUD", String.format("COMPASS  %.0f°", yaw), 8, y, color, true);
+                y += Math.round(11 * moduleScale("Compass HUD"));
             }
             if (VloxModules.isEnabled("Biome Display")) {
                 var biome = client.level.getBiome(client.player.blockPosition());
                 String biomeName = biome.unwrapKey().map(key -> key.location().toString()).orElse("unknown");
-                graphics.text(client.font, "BIOME  " + biomeName, 8, y, color, true);
-                y += 11;
+                drawText(graphics, client, "Biome Display", "BIOME  " + biomeName, 8, y, color, true);
+                y += Math.round(11 * moduleScale("Biome Display"));
             }
             if (VloxModules.isEnabled("World Border Distance")) {
                 double distance = client.level.getWorldBorder().getDistanceToBorder(client.player);
-                graphics.text(client.font, String.format("BORDER  %.1f blocks", distance), 8, y, color, true);
-                y += 11;
+                drawText(graphics, client, "World Border Distance", String.format("BORDER  %.1f blocks", distance), 8, y, color, true);
+                y += Math.round(11 * moduleScale("World Border Distance"));
             }
             if (VloxModules.isEnabled("Speedometer")) {
                 var velocity = client.player.getDeltaMovement();
                 double speed = Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z) * 20.0;
-                graphics.text(client.font, String.format("SPEED  %.2f blocks/s", speed), 8, y, color, true);
-                y += 11;
+                drawText(graphics, client, "Speedometer", String.format("SPEED  %.2f blocks/s", speed), 8, y, color, true);
+                y += Math.round(11 * moduleScale("Speedometer"));
             }
             if (VloxModules.isEnabled("Item Counter")) {
                 ItemStack stack = client.player.getMainHandItem();
-                graphics.text(client.font, "HELD  " + (stack.isEmpty() ? "EMPTY" : stack.getCount() + "x " + stack.getHoverName().getString()),
+                drawText(graphics, client, "Item Counter", "HELD  " + (stack.isEmpty() ? "EMPTY" : stack.getCount() + "x " + stack.getHoverName().getString()),
                     8, y, color, true);
-                y += 11;
+                y += Math.round(11 * moduleScale("Item Counter"));
             }
             if (VloxModules.isEnabled("Nearby Entity Count")) {
                 int count = client.level.getEntities(client.player, client.player.getBoundingBox().inflate(16.0)).size();
-                graphics.text(client.font, "ENTITIES NEARBY  " + count, 8, y, color, true);
-                y += 11;
+                drawText(graphics, client, "Nearby Entity Count", "ENTITIES NEARBY  " + count, 8, y, color, true);
+                y += Math.round(11 * moduleScale("Nearby Entity Count"));
             }
             if (VloxModules.isEnabled("Days Played")) {
-                graphics.text(client.font, "WORLD DAYS  " + (client.level.getLevelData().getGameTime() / 24000L), 8, y, color, true);
-                y += 11;
+                drawText(graphics, client, "Days Played", "WORLD DAYS  " + (client.level.getLevelData().getGameTime() / 24000L), 8, y, color, true);
+                y += Math.round(11 * moduleScale("Days Played"));
             }
             if (VloxModules.isEnabled("Targeted Block Info") && client.hitResult instanceof BlockHitResult blockHit
                 && client.hitResult.getType() == HitResult.Type.BLOCK) {
                 var state = client.level.getBlockState(blockHit.getBlockPos());
-                graphics.text(client.font, "BLOCK  " + state.getBlock().getName().getString(), 8, y, color, true);
-                y += 11;
+                drawText(graphics, client, "Targeted Block Info", "BLOCK  " + state.getBlock().getName().getString(), 8, y, color, true);
+                y += Math.round(11 * moduleScale("Targeted Block Info"));
             }
             if (VloxModules.isEnabled("Targeted Entity Health") && client.hitResult instanceof EntityHitResult entityHit
                 && entityHit.getEntity() instanceof net.minecraft.world.entity.LivingEntity living) {
-                graphics.text(client.font, String.format("TARGET HP  %.1f / %.1f", living.getHealth(), living.getMaxHealth()),
+                drawText(graphics, client, "Targeted Entity Health", String.format("TARGET HP  %.1f / %.1f", living.getHealth(), living.getMaxHealth()),
                     8, y, color, true);
-                y += 11;
+                y += Math.round(11 * moduleScale("Targeted Entity Health"));
             }
 
             if (VloxModules.isEnabled("Coordinates")) {
-                graphics.text(client.font, String.format("XYZ  %.1f  %.1f  %.1f",
+                drawText(graphics, client, "Coordinates", String.format("XYZ  %.1f  %.1f  %.1f",
                     client.player.getX(), client.player.getY(), client.player.getZ()), 8, y, color, true);
-                y += 11;
+                y += Math.round(11 * moduleScale("Coordinates"));
             }
 
             if (VloxModules.isEnabled("Chunk Coordinates")) {
                 var pos = client.player.blockPosition();
-                graphics.text(client.font, "CHUNK  " + (pos.getX() >> 4) + "  " + (pos.getZ() >> 4),
+                drawText(graphics, client, "Chunk Coordinates", "CHUNK  " + (pos.getX() >> 4) + "  " + (pos.getZ() >> 4),
                     8, y, color, true);
-                y += 11;
+                y += Math.round(11 * moduleScale("Chunk Coordinates"));
             }
 
             if (VloxModules.isEnabled("World Time")) {
-                long ticks = client.level.getDayTime() % 24000L;
-                graphics.text(client.font, "WORLD TIME  " + String.format("%02d:%02d", (ticks / 1000 + 6) % 24, (ticks % 1000) * 60 / 1000), 8, y, color, true);
-                y += 11;
+                long ticks = client.level.getLevelData().getGameTime() % 24000L;
+                drawText(graphics, client, "World Time", "WORLD TIME  " + String.format("%02d:%02d", (ticks / 1000 + 6) % 24, (ticks % 1000) * 60 / 1000), 8, y, color, true);
+                y += Math.round(11 * moduleScale("World Time"));
             }
 
             if (VloxModules.isEnabled("Clock")) {
-                graphics.text(client.font, "LOCAL  " + LocalTime.now().format(CLOCK_FORMAT),
+                drawText(graphics, client, "Clock", "LOCAL  " + LocalTime.now().format(CLOCK_FORMAT),
                     8, y, color, true);
-                y += 11;
+                y += Math.round(11 * moduleScale("Clock"));
             }
 
             if (VloxModules.isEnabled("Light Level")) {
                 int light = client.level.getMaxLocalRawBrightness(client.player.blockPosition());
-                graphics.text(client.font, "LIGHT  " + light, 8, y, color, true);
-                y += 11;
+                drawText(graphics, client, "Light Level", "LIGHT  " + light, 8, y, color, true);
+                y += Math.round(11 * moduleScale("Light Level"));
             }
 
             if (VloxModules.isEnabled("Food Level HUD")) {
                 int food = client.player.getFoodData().getFoodLevel();
-                graphics.text(client.font, "FOOD  " + food + " / 20", 8, y, color, true);
-                y += 11;
+                drawText(graphics, client, "Food Level HUD", "FOOD  " + food + " / 20", 8, y, color, true);
+                y += Math.round(11 * moduleScale("Food Level HUD"));
             }
 
             if (VloxModules.isEnabled("Saturation HUD")) {
                 float saturation = client.player.getFoodData().getSaturationLevel();
-                graphics.text(client.font, String.format("SATURATION  %.1f", saturation),
+                drawText(graphics, client, "Saturation HUD", String.format("SATURATION  %.1f", saturation),
                     8, y, color, true);
-                y += 11;
+                y += Math.round(11 * moduleScale("Saturation HUD"));
             }
 
             if (VloxModules.isEnabled("Armor HUD")) {
-                graphics.text(client.font, "ARMOR  " + client.player.getArmorValue() + " / 20",
+                drawText(graphics, client, "Armor HUD", "ARMOR  " + client.player.getArmorValue() + " / 20",
                     8, y, color, true);
-                y += 11;
+                y += Math.round(11 * moduleScale("Armor HUD"));
             }
 
             ItemStack heldItem = client.player.getMainHandItem();
             if (heldItem.isDamageableItem()) {
                 int remaining = heldItem.getMaxDamage() - heldItem.getDamageValue();
                 if (VloxModules.isEnabled("Durability HUD")) {
-                    graphics.text(client.font, "DURABILITY  " + remaining + " / " + heldItem.getMaxDamage(),
+                    drawText(graphics, client, "Durability HUD", "DURABILITY  " + remaining + " / " + heldItem.getMaxDamage(),
                         8, y, color, true);
-                    y += 11;
+                y += Math.round(11 * moduleScale("Durability HUD"));
                 }
                 if (VloxModules.isEnabled("Durability Percentage")) {
                     int percentage = Math.round(remaining * 100.0f / heldItem.getMaxDamage());
-                    graphics.text(client.font, "ITEM  " + percentage + "%",
+                    drawText(graphics, client, "Durability Percentage", "ITEM  " + percentage + "%",
                         8, y, color, true);
-                    y += 11;
+                y += Math.round(11 * moduleScale("Durability Percentage"));
                 }
             }
 
@@ -178,7 +196,7 @@ public final class VloxHud {
                 Runtime runtime = Runtime.getRuntime();
                 long usedMb = (runtime.totalMemory() - runtime.freeMemory()) / (1024L * 1024L);
                 long maxMb = runtime.maxMemory() / (1024L * 1024L);
-                graphics.text(client.font, "MEMORY  " + usedMb + " / " + maxMb + " MB",
+                drawText(graphics, client, "Memory Usage", "MEMORY  " + usedMb + " / " + maxMb + " MB",
                     8, y, color, true);
             }
         });
