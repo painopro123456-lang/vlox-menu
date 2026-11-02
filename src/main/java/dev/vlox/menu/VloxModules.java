@@ -28,6 +28,10 @@ public final class VloxModules {
         new VloxModule("Recipe Reminder", "HUD", "▤"),
         new VloxModule("CPS Display", "HUD", "⌁"),
         new VloxModule("Memory Usage", "HUD", "▥"),
+        new VloxModule("Horse Stats", "HUD", "♞"),
+        new VloxModule("Light Level", "HUD", "☼"),
+        new VloxModule("Chunk Coordinates", "HUD", "▦"),
+        new VloxModule("Durability Percentage", "HUD", "◇"),
         // Visual
         new VloxModule("Fullbright", "Visual", "☼"),
         new VloxModule("Zoom", "Visual", "◎"),
@@ -42,6 +46,10 @@ public final class VloxModules {
         new VloxModule("Sky Color", "Visual", "☁"),
         new VloxModule("Fire Overlay Style", "Visual", "♨"),
         new VloxModule("Block Outline Style", "Visual", "▧"),
+        new VloxModule("Vignette Toggle", "Visual", "◉"),
+        new VloxModule("Cloud Style", "Visual", "☁"),
+        new VloxModule("Rain Particles", "Visual", "☂"),
+        new VloxModule("Beacon Beam Style", "Visual", "♢"),
         // Performance
         new VloxModule("Dynamic FPS", "Performance", "ϟ"),
         new VloxModule("Particle Reducer", "Performance", "✧"),
@@ -49,6 +57,9 @@ public final class VloxModules {
         new VloxModule("Entity Render Distance", "Performance", "◉"),
         new VloxModule("Animation Optimizer", "Performance", "〰"),
         new VloxModule("Background Throttle", "Performance", "ϟ"),
+        new VloxModule("Reduced Screen Animations", "Performance", "▤"),
+        new VloxModule("Cloud Rendering", "Performance", "☁"),
+        new VloxModule("Weather Rendering", "Performance", "☂"),
         // Utility
         new VloxModule("Chat Customizer", "Utility", "▤"),
         new VloxModule("Screenshot Toast", "Utility", "▧"),
@@ -60,12 +71,21 @@ public final class VloxModules {
         new VloxModule("Item Pickup Log", "Utility", "▣"),
         new VloxModule("World Join Message", "Utility", "➤"),
         new VloxModule("Quick Screenshot", "Utility", "▧"),
+        new VloxModule("Chat Copy Button", "Utility", "▣"),
+        new VloxModule("Server Info", "Utility", "⌁"),
+        new VloxModule("World Save Reminder", "Utility", "▤"),
+        new VloxModule("Screenshot Metadata", "Utility", "▧"),
+        new VloxModule("Resource Pack Reminder", "Utility", "▣"),
         // Customization
         new VloxModule("GUI Customizer", "Customization", "⚙"),
         new VloxModule("Crosshair Customizer", "Customization", "⊕"),
         new VloxModule("HUD Editor", "Customization", "▦"),
         new VloxModule("Color Presets", "Customization", "◈"),
-        new VloxModule("Corner Rounding", "Customization", "▢")
+        new VloxModule("Corner Rounding", "Customization", "▢"),
+        new VloxModule("Font Scale", "Customization", "A"),
+        new VloxModule("Interface Blur", "Customization", "◉"),
+        new VloxModule("Card Spacing", "Customization", "▤"),
+        new VloxModule("Module Sorting", "Customization", "↕")
     );
 
     private VloxModules() {
