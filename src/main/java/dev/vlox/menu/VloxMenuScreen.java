@@ -149,8 +149,6 @@ public final class VloxMenuScreen extends Screen {
             }
         }
         if (event.button() == 0) {
-            int panelLeft = (this.width - PANEL_WIDTH) / 2;
-            int panelTop = (this.height - PANEL_HEIGHT) / 2;
             int pageCount = (VloxModules.ALL.size() + MODULES_PER_PAGE - 1) / MODULES_PER_PAGE;
 
             // Page controls in the bottom-right footer.
