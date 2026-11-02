@@ -39,10 +39,8 @@ public final class VloxHud {
             }
 
             if (VloxModules.isEnabled("World Time")) {
-                long ticks = Math.floorMod(client.level.getDayTime(), 24000L);
-                long hours = (ticks / 1000 + 6) % 24;
-                long minutes = (ticks % 1000) * 60 / 1000;
-                graphics.text(client.font, String.format("WORLD TIME  %02d:%02d", hours, minutes),
+                long ticks = client.level.getLevelData().getGameTime();
+                graphics.text(client.font, "WORLD TICKS  " + ticks,
                     8, y, color, true);
                 y += 11;
             }
