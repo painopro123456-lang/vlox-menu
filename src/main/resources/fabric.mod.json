@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "vlox_menu",
+  "version": "${version}",
+  "name": "VLOX MENU",
+  "description": "A clean, glass-style quality-of-life menu for Minecraft.",
+  "authors": ["VLOX"],
+  "license": "All-Rights-Reserved",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.vlox.menu.VloxMenuClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
