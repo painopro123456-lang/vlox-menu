@@ -29,6 +29,7 @@ public final class VloxMenuClient implements ClientModInitializer {
             wasMenuPressed = menuPressed;
 
             Set<Integer> pressedNow = new HashSet<>();
+            Set<Integer> triggeredThisTick = new HashSet<>();
             if (client.gui.screen() == null) {
                 for (VloxModule module : VloxModules.ALL) {
                     int key = module.keyCode();
@@ -37,7 +38,7 @@ public final class VloxMenuClient implements ClientModInitializer {
                     }
                     if (GLFW.glfwGetKey(window, key) == GLFW.GLFW_PRESS) {
                         pressedNow.add(key);
-                        if (!previouslyPressed.contains(key)) {
+                        if (!previouslyPressed.contains(key) && triggeredThisTick.add(key)) {
                             module.toggle();
                         }
                     }
