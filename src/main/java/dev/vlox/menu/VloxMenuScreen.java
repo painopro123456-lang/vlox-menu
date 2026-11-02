@@ -83,13 +83,13 @@ public final class VloxMenuScreen extends Screen {
             graphics.text(this.font, selectedModule.name() + " SETTINGS", mx + 16, my + 14, 0xFFF4F7FF, false);
             graphics.text(this.font, "Scale: " + String.format("%.2f", selectedModule.scale()) + "   [-]  [+]", mx + 16, my + 43, 0xFFD8E5FF, false);
             graphics.text(this.font, "Opacity: " + String.format("%.2f", selectedModule.opacity()) + "   [-]  [+]", mx + 16, my + 70, 0xFFD8E5FF, false);
-            graphics.text(this.font, "Position: " + selectedModule.offsetX() + ", " + selectedModule.offsetY() + "   [RESET]", mx + 16, my + 97, 0xFFD8E5FF, false);
+            graphics.text(this.font, "Position: " + selectedModule.offsetX() + ", " + selectedModule.offsetY() + "   [LEFT] [UP] [DOWN] [RIGHT]", mx + 16, my + 97, 0xFFD8E5FF, false);
             String keyLabel = waitingForKeybind ? "PRESS A KEY... (ESC CANCEL / BACKSPACE UNBIND)" : "Key code: " + (selectedModule.keyCode() < 0 ? "Unbound" : selectedModule.keyCode()) + "   [SET KEY]";
             graphics.text(this.font, keyLabel, mx + 16, my + 124, 0xFFD8E5FF, false);
             graphics.text(this.font, "[CLOSE]", mx + 16, my + 169, 0xFF91B9FF, false);
         }
 
-        graphics.text(this.font, "Click a module to toggle it", left + 22,
+        graphics.text(this.font, "LEFT CLICK: TOGGLE     RIGHT CLICK: SETTINGS", left + 22,
             top + PANEL_HEIGHT - 22, 0xFF91A1BA, false);
 
         if (pageCount > 1) {
@@ -122,7 +122,10 @@ public final class VloxMenuScreen extends Screen {
                     if (mouseX < mx + 170) selectedModule.setOpacity(selectedModule.opacity() - 0.1f);
                     else selectedModule.setOpacity(selectedModule.opacity() + 0.1f);
                 } else if (mouseY >= my + 89 && mouseY < my + 115) {
-                    selectedModule.setPosition(0, 0);
+                    int section = Math.min(3, Math.max(0, (int) ((mouseX - mx) / 82.5)));
+                    int dx = section == 0 ? -5 : section == 3 ? 5 : 0;
+                    int dy = section == 1 ? -5 : section == 2 ? 5 : 0;
+                    selectedModule.setPosition(selectedModule.offsetX() + dx, selectedModule.offsetY() + dy);
                 } else if (mouseY >= my + 116 && mouseY < my + 145) {
                     waitingForKeybind = true;
                 } else {
