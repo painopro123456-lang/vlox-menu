@@ -124,22 +124,34 @@ public final class VloxMenuScreen extends Screen {
             int mx = left + 120;
             int my = top + 105;
             graphics.fill(mx + 2, my + 3, mx + 332, my + 208, 0x300D2745);
-            graphics.fill(mx, my, mx + 330, my + 205, 0xF2F9FCFF);
+            graphics.fill(mx, my, mx + 330, my + 205, 0xE0F9FCFF);
             graphics.fill(mx, my, mx + 330, my + 3, 0xFF6E9FD6);
-            graphics.fill(mx + 1, my + 3, mx + 329, my + 4, 0xAAFFFFFF);
             graphics.text(this.font, selectedModule.name() + " SETTINGS", mx + 16, my + 14, 0xFF20344D, false);
-            graphics.text(this.font, selectedModule.category().toUpperCase() + "  /  MODULE OPTIONS", mx + 16, my + 29, 0xFF7A8BA0, false);
-            graphics.fill(mx + 14, my + 39, mx + 316, my + 40, 0x55899DB5);
             graphics.text(this.font, "Scale", mx + 16, my + 49, 0xFF40546D, false);
-            graphics.text(this.font, String.format("%.2f", selectedModule.scale()) + "     [ - ]  [ + ]", mx + 145, my + 49, 0xFF315F91, false);
+            graphics.text(this.font, String.format("%.2f", selectedModule.scale()), mx + 165, my + 49, 0xFF315F91, false);
+            graphics.fill(mx + 230, my + 42, mx + 267, my + 62, 0xFFE6EFF8);
+            graphics.fill(mx + 273, my + 42, mx + 310, my + 62, 0xFFE6EFF8);
+            graphics.text(this.font, "−", mx + 244, my + 48, 0xFF315F91, false);
+            graphics.text(this.font, "+", mx + 287, my + 48, 0xFF315F91, false);
             graphics.text(this.font, "Opacity", mx + 16, my + 76, 0xFF40546D, false);
-            graphics.text(this.font, String.format("%.2f", selectedModule.opacity()) + "     [ - ]  [ + ]", mx + 145, my + 76, 0xFF315F91, false);
-            graphics.text(this.font, "Position", mx + 16, my + 103, 0xFF40546D, false);
-            graphics.text(this.font, selectedModule.offsetX() + ", " + selectedModule.offsetY() + "   [LEFT] [UP] [DOWN] [RIGHT]", mx + 100, my + 103, 0xFF315F91, false);
-            String keyLabel = waitingForKeybind ? "PRESS A KEY... (ESC CANCEL / BACKSPACE UNBIND)" : "Keybind: " + (selectedModule.keyCode() < 0 ? "Unbound" : selectedModule.keyCode()) + "   [SET KEY]";
-            graphics.text(this.font, keyLabel, mx + 16, my + 132, waitingForKeybind ? 0xFFB56A28 : 0xFF405F80, false);
-            graphics.fill(mx + 14, my + 153, mx + 316, my + 154, 0x55899DB5);
-            graphics.text(this.font, "[ CLOSE ]", mx + 16, my + 174, 0xFF477DBD, false);
+            graphics.text(this.font, String.format("%.2f", selectedModule.opacity()), mx + 165, my + 76, 0xFF315F91, false);
+            graphics.fill(mx + 230, my + 69, mx + 267, my + 89, 0xFFE6EFF8);
+            graphics.fill(mx + 273, my + 69, mx + 310, my + 89, 0xFFE6EFF8);
+            graphics.text(this.font, "−", mx + 244, my + 75, 0xFF315F91, false);
+            graphics.text(this.font, "+", mx + 287, my + 75, 0xFF315F91, false);
+            graphics.text(this.font, "Position  " + selectedModule.offsetX() + ", " + selectedModule.offsetY(), mx + 16, my + 103, 0xFF40546D, false);
+            String[] directions = {"←", "↑", "↓", "→"};
+            int[] dxs = {-5, 0, 0, 5};
+            int[] dys = {0, -5, 5, 0};
+            for (int i = 0; i < 4; i++) {
+                int bx = mx + 170 + i * 36;
+                graphics.fill(bx, my + 92, bx + 31, my + 113, 0xFFE6EFF8);
+                graphics.text(this.font, directions[i], bx + 10, my + 98, 0xFF315F91, false);
+            }
+            String keyLabel = waitingForKeybind ? "PRESS A KEY... (ESC CANCEL / BACKSPACE UNBIND)" : "KEYBIND  " + (selectedModule.keyCode() < 0 ? "UNBOUND" : selectedModule.keyCode()) + "   /   CLICK TO CHANGE";
+            graphics.text(this.font, keyLabel, mx + 16, my + 137, waitingForKeybind ? 0xFFB56A28 : 0xFF405F80, false);
+            graphics.fill(mx + 14, my + 160, mx + 316, my + 193, 0xFFE5EFF8);
+            graphics.text(this.font, "CLOSE SETTINGS", mx + 16, my + 172, 0xFF477DBD, false);
         }
 
         graphics.text(this.font, "CLICK MODULE: TOGGLE     GEAR: SETTINGS", left + 22,
@@ -168,28 +180,29 @@ public final class VloxMenuScreen extends Screen {
             int mx = panelLeft + 120;
             int my = panelTop + 105;
             if (mouseX >= mx && mouseX <= mx + 330 && mouseY >= my && mouseY <= my + 205) {
-                if (mouseY >= my + 35 && mouseY < my + 61) {
-                    if (mouseX < mx + 170) selectedModule.setScale(selectedModule.scale() - 0.1f);
-                    else selectedModule.setScale(selectedModule.scale() + 0.1f);
-                } else if (mouseY >= my + 62 && mouseY < my + 88) {
-                    if (mouseX < mx + 170) selectedModule.setOpacity(selectedModule.opacity() - 0.1f);
-                    else selectedModule.setOpacity(selectedModule.opacity() + 0.1f);
-                } else if (mouseY >= my + 89 && mouseY < my + 115) {
-                    int section = Math.min(3, Math.max(0, (int) ((mouseX - mx) / 82.5)));
-                    int dx = section == 0 ? -5 : section == 3 ? 5 : 0;
-                    int dy = section == 1 ? -5 : section == 2 ? 5 : 0;
-                    selectedModule.setPosition(selectedModule.offsetX() + dx, selectedModule.offsetY() + dy);
-                } else if (mouseY >= my + 116 && mouseY < my + 145) {
+                if (mouseY >= my + 39 && mouseY < my + 64) {
+                    if (mouseX >= mx + 228 && mouseX < mx + 270) selectedModule.setScale(selectedModule.scale() - 0.1f);
+                    else if (mouseX >= mx + 271 && mouseX < mx + 313) selectedModule.setScale(selectedModule.scale() + 0.1f);
+                } else if (mouseY >= my + 66 && mouseY < my + 91) {
+                    if (mouseX >= mx + 228 && mouseX < mx + 270) selectedModule.setOpacity(selectedModule.opacity() - 0.1f);
+                    else if (mouseX >= mx + 271 && mouseX < mx + 313) selectedModule.setOpacity(selectedModule.opacity() + 0.1f);
+                } else if (mouseY >= my + 91 && mouseY < my + 116) {
+                    int direction = (int) ((mouseX - (mx + 170)) / 36);
+                    if (direction >= 0 && direction < 4) {
+                        int[] dx = {-5, 0, 0, 5};
+                        int[] dy = {0, -5, 5, 0};
+                        selectedModule.setPosition(selectedModule.offsetX() + dx[direction], selectedModule.offsetY() + dy[direction]);
+                    }
+                } else if (mouseY >= my + 120 && mouseY < my + 151) {
                     waitingForKeybind = true;
-                } else {
+                } else if (mouseY >= my + 158 && mouseY < my + 198) {
                     selectedModule = null;
                     waitingForKeybind = false;
                 }
                 return true;
             }
             return true;
-        }
-        if (event.button() == 0) {
+        }        if (event.button() == 0) {
             if (mouseX >= panelLeft + 20 && mouseX <= panelLeft + PANEL_WIDTH - 20 && mouseY >= panelTop + 58 && mouseY <= panelTop + 83) {
                 searchFocused = true;
                 return true;
