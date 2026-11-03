@@ -275,7 +275,7 @@ public final class VloxHud {
             if (VloxModules.isEnabled("Armor HUD")) {
                 String[] armorLabels = {"BOOTS", "LEGS", "CHEST", "HELMET"};
                 for (int slot = 0; slot < 4; slot++) {
-                    ItemStack armor = client.player.getInventory().getArmor(slot);
+                    ItemStack armor = client.player.getInventory().getItem(36 + slot);
                     String status;
                     float durability = 0.0f;
                     if (armor.isEmpty()) {
