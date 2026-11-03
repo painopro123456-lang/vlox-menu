@@ -44,6 +44,10 @@ public final class VloxHud {
         graphics.text(client.font, message, x + module.offsetX(), y + module.offsetY(), adjustedColor, shadow);
     }
 
+    private static int withOpacity(int color, float opacity) {
+        int alpha = Math.round(((color >>> 24) & 0xFF) * Math.max(0.0f, Math.min(1.0f, opacity)));
+        return (alpha << 24) | (color & 0x00FFFFFF);
+    }
     private static void drawKeycap(net.minecraft.client.gui.GuiGraphicsExtractor graphics, Minecraft client,
                                     String label, boolean pressed, int x, int y, int width, int height) {
         int fill = pressed ? 0xE65B91D0 : 0xB92A3B52;
@@ -273,31 +277,59 @@ public final class VloxHud {
             }
 
             if (VloxModules.isEnabled("Armor HUD")) {
+                VloxModule armorModule = findModule("Armor HUD");
+                float scale = moduleScale("Armor HUD");
+                int panelX = 8 + (armorModule == null ? 0 : armorModule.offsetX());
+                int panelY = y + (armorModule == null ? 0 : armorModule.offsetY());
+                float opacity = armorModule == null ? 1.0f : armorModule.opacity();
+                int panelWidth = Math.round(246 * scale);
+                int rowHeight = Math.round(25 * scale);
+                int panelHeight = Math.round(23 * scale) + rowHeight * 4 + Math.round(5 * scale);
+                graphics.fill(panelX + 2, panelY + 3, panelX + panelWidth + 2, panelY + panelHeight + 3, 0x26000000);
+                graphics.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, withOpacity(0xE91A2637, opacity));
+                graphics.fill(panelX, panelY, panelX + panelWidth, panelY + Math.max(2, Math.round(2 * scale)), withOpacity(0xFF78B9F2, opacity));
+                graphics.fill(panelX + 1, panelY + Math.round(22 * scale), panelX + panelWidth - 1, panelY + Math.round(23 * scale), withOpacity(0x667FA7CE, opacity));
+                graphics.text(client.font, "ARMOR STATUS", panelX + Math.round(9 * scale), panelY + Math.round(7 * scale), withOpacity(0xFFF1F6FF, opacity), true);
                 String[] armorLabels = {"BOOTS", "LEGS", "CHEST", "HELMET"};
+                int equipped = 0;
                 for (int slot = 0; slot < 4; slot++) {
                     ItemStack armor = client.player.getInventory().getItem(36 + slot);
-                    String status;
-                    float durability = 0.0f;
+                    if (!armor.isEmpty()) equipped++;
+                    int rowY = panelY + Math.round(25 * scale) + slot * rowHeight;
+                    int left = panelX + Math.round(5 * scale);
+                    int right = panelX + panelWidth - Math.round(5 * scale);
+                    graphics.fill(left, rowY, right, rowY + rowHeight - 1, withOpacity(slot % 2 == 0 ? 0x553B5069 : 0x4432445B, opacity));
+                    graphics.fill(left, rowY, left + Math.max(2, Math.round(2 * scale)), rowY + rowHeight - 1, withOpacity(0xFF78B9F2, opacity));
+                    int labelX = panelX + Math.round(10 * scale);
+                    int labelY = rowY + Math.round(6 * scale);
+                    graphics.text(client.font, armorLabels[slot], labelX, labelY, withOpacity(0xFF9EB5CE, opacity), false);
+                    int contentX = panelX + Math.round(55 * scale);
                     if (armor.isEmpty()) {
-                        status = armorLabels[slot] + "  EMPTY";
-                    } else if (armor.isDamageableItem()) {
-                        int remaining = armor.getMaxDamage() - armor.getDamageValue();
-                        durability = Math.max(0.0f, Math.min(1.0f, remaining / (float) armor.getMaxDamage()));
-                        status = armorLabels[slot] + "  " + armor.getHoverName().getString() + "  " + Math.round(durability * 100.0f) + "%";
+                        graphics.text(client.font, "Empty slot", contentX, labelY, withOpacity(0xFF9BAABD, opacity), false);
+                        graphics.text(client.font, "—", panelX + panelWidth - Math.round(19 * scale), labelY, withOpacity(0xFF7F91A7, opacity), false);
                     } else {
-                        durability = 1.0f;
-                        status = armorLabels[slot] + "  " + armor.getHoverName().getString() + "  READY";
-                    }
-                    int rowY = y + slot * 15;
-                    drawText(graphics, client, "Armor HUD", status, 8, rowY, armor.isEmpty() ? 0xFFB7C3D0 : color, true);
-                    if (!armor.isEmpty()) {
-                        int barX = 210;
-                        graphics.fill(barX, rowY + 2, barX + 70, rowY + 8, 0x66506070);
-                        int barColor = durability > 0.5f ? 0xFF62B98A : durability > 0.2f ? 0xFFE0B45B : 0xFFE16C6C;
-                        graphics.fill(barX, rowY + 2, barX + Math.round(70 * durability), rowY + 8, barColor);
+                        int maxDamage = armor.getMaxDamage();
+                        int remaining = armor.isDamageableItem() ? Math.max(0, maxDamage - armor.getDamageValue()) : 0;
+                        float ratio = armor.isDamageableItem() && maxDamage > 0 ? Math.max(0.0f, Math.min(1.0f, remaining / (float) maxDamage)) : 1.0f;
+                        String itemName = armor.getHoverName().getString();
+                        int maxNameWidth = Math.round(105 * scale);
+                        while (client.font.width(itemName) > maxNameWidth && itemName.length() > 3) itemName = itemName.substring(0, itemName.length() - 2) + "…";
+                        graphics.text(client.font, itemName, contentX, rowY + Math.round(3 * scale), withOpacity(0xFFF0F5FC, opacity), false);
+                        String points = armor.isDamageableItem() ? remaining + " / " + maxDamage + " durability" : "No durability loss";
+                        graphics.text(client.font, points, contentX, rowY + Math.round(14 * scale), withOpacity(0xFFB3C2D4, opacity), false);
+                        int barX = panelX + Math.round(169 * scale);
+                        int barY = rowY + Math.round(15 * scale);
+                        int barWidth = Math.round(54 * scale);
+                        int barHeight = Math.max(3, Math.round(5 * scale));
+                        int barColor = ratio > 0.5f ? 0xFF62C99A : ratio > 0.2f ? 0xFFE6B85C : 0xFFEF7777;
+                        graphics.fill(barX, barY, barX + barWidth, barY + barHeight, withOpacity(0xFF526176, opacity));
+                        graphics.fill(barX, barY, barX + Math.round(barWidth * ratio), barY + barHeight, withOpacity(barColor, opacity));
+                        String percent = armor.isDamageableItem() ? Math.round(ratio * 100.0f) + "%" : "∞";
+                        graphics.text(client.font, percent, barX + Math.round(4 * scale), rowY + Math.round(3 * scale), withOpacity(0xFFF1F6FF, opacity), false);
                     }
                 }
-                y += Math.round(60 * moduleScale("Armor HUD"));
+                graphics.text(client.font, equipped + "/4 EQUIPPED", panelX + panelWidth - Math.round(75 * scale), panelY + Math.round(7 * scale), withOpacity(0xFFB7C9DD, opacity), false);
+                y += panelHeight + Math.round(6 * scale);
             }
 
             ItemStack heldItem = client.player.getMainHandItem();
