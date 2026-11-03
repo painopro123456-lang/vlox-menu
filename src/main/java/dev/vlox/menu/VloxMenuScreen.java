@@ -2,9 +2,10 @@ package dev.vlox.menu;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
@@ -18,6 +19,8 @@ public final class VloxMenuScreen extends Screen {
     private int page;
     private VloxModule selectedModule;
     private boolean waitingForKeybind;
+    private String searchQuery = "";
+    private boolean searchFocused;
 
     private void drawUiText(GuiGraphicsExtractor graphics, String text, int x, int y, int color, boolean shadow) {
         graphics.text(this.font, text, x, y, color, shadow);
@@ -46,14 +49,16 @@ public final class VloxMenuScreen extends Screen {
         graphics.text(this.font, "26.2  /  FABRIC", left + 22, top + 34, 0xFF65758D, false);
         graphics.text(this.font, "RIGHT SHIFT  •  CLOSE", left + PANEL_WIDTH - 150, top + 23, 0xFF91A5C8, false);
 
-        graphics.fill(left + 20, top + 58, left + PANEL_WIDTH - 20, top + 83, 0x66FFFFFF);
-        graphics.fill(left + 20, top + 58, left + PANEL_WIDTH - 20, top + 59, 0x88FFFFFF);
-        graphics.text(this.font, "⌕   MODULES", left + 30, top + 67, 0xFF53647C, false);
+        graphics.fill(left + 20, top + 58, left + PANEL_WIDTH - 20, top + 83, 0x55FFFFFF);
+        graphics.fill(left + 20, top + 58, left + PANEL_WIDTH - 20, top + 59, 0x99FFFFFF);
+        String searchLabel = searchQuery.isEmpty() ? "⌕   SEARCH MODULES..." : "⌕   " + searchQuery;
+        graphics.text(this.font, searchLabel, left + 30, top + 67, searchFocused ? 0xFF315F91 : 0xFF53647C, false);
+        if (searchFocused) graphics.fill(left + 30 + this.font.width(searchLabel), top + 65, left + 31 + this.font.width(searchLabel), top + 77, 0xFF477DBD);
 
-        List<VloxModule> modules = VloxModules.ALL;
+        List<VloxModule> modules = visibleModules();
         int startX = left + 20;
         int startY = top + 94;
-        int pageCount = (modules.size() + MODULES_PER_PAGE - 1) / MODULES_PER_PAGE;
+        int pageCount = Math.max(1, (modules.size() + MODULES_PER_PAGE - 1) / MODULES_PER_PAGE);
         int first = page * MODULES_PER_PAGE;
         int end = Math.min(first + MODULES_PER_PAGE, modules.size());
 
@@ -185,7 +190,13 @@ public final class VloxMenuScreen extends Screen {
             return true;
         }
         if (event.button() == 0) {
-            int pageCount = (VloxModules.ALL.size() + MODULES_PER_PAGE - 1) / MODULES_PER_PAGE;
+            if (mouseX >= panelLeft + 20 && mouseX <= panelLeft + PANEL_WIDTH - 20 && mouseY >= panelTop + 58 && mouseY <= panelTop + 83) {
+                searchFocused = true;
+                return true;
+            }
+            searchFocused = false;
+            List<VloxModule> modules = visibleModules();
+            int pageCount = Math.max(1, (modules.size() + MODULES_PER_PAGE - 1) / MODULES_PER_PAGE);
 
             // Page controls in the bottom-right footer.
             if (pageCount > 1 && mouseY >= panelTop + PANEL_HEIGHT - 30) {
@@ -203,7 +214,7 @@ public final class VloxMenuScreen extends Screen {
             int startX = panelLeft + 20;
             int startY = panelTop + 94;
             int first = page * MODULES_PER_PAGE;
-            int end = Math.min(first + MODULES_PER_PAGE, VloxModules.ALL.size());
+            int end = Math.min(first + MODULES_PER_PAGE, modules.size());
 
             for (int index = first; index < end; index++) {
                 int visibleIndex = index - first;
@@ -220,10 +231,10 @@ public final class VloxMenuScreen extends Screen {
                     int gearTop = iconTop + 20;
                     if (mouseX >= gearLeft - 3 && mouseX <= gearLeft + 14
                         && mouseY >= gearTop - 3 && mouseY <= gearTop + 14) {
-                        selectedModule = VloxModules.ALL.get(index);
+                        selectedModule = modules.get(index);
                         waitingForKeybind = false;
                     } else {
-                        VloxModules.ALL.get(index).toggle();
+                        modules.get(index).toggle();
                     }
                     return true;
                 }
@@ -232,6 +243,41 @@ public final class VloxMenuScreen extends Screen {
         return super.mouseClicked(event, doubleClick);
     }
 
+    private List<VloxModule> visibleModules() {
+        if (searchQuery.isBlank()) return VloxModules.ALL;
+        String query = searchQuery.toLowerCase(java.util.Locale.ROOT);
+        return VloxModules.ALL.stream().filter(module -> module.name().toLowerCase(java.util.Locale.ROOT).contains(query)
+            || module.category().toLowerCase(java.util.Locale.ROOT).contains(query)).toList();
+    }
+
+    @Override
+    public boolean charTyped(CharacterEvent event) {
+        if (searchFocused && selectedModule == null && !waitingForKeybind) {
+            int codePoint = event.codepoint();
+            if (!Character.isISOControl(codePoint) && Character.isValidCodePoint(codePoint)) {
+                searchQuery += new String(Character.toChars(codePoint));
+                page = 0;
+                return true;
+            }
+        }
+        return super.charTyped(event);
+    }
+
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (selectedModule == null && searchFocused) {
+            if (event.key() == org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSPACE && !searchQuery.isEmpty()) {
+                searchQuery = searchQuery.substring(0, searchQuery.offsetByCodePoints(searchQuery.length(), -1));
+                page = 0;
+                return true;
+            }
+            if (event.key() == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) { searchFocused = false; return true; }
+        }
+        if (event.key() == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE && selectedModule != null) {
+            selectedModule = null; waitingForKeybind = false; return true;
+        }
+        return super.keyPressed(event);
+    }
     public boolean waitingForKeybind() {
         return waitingForKeybind && selectedModule != null;
     }
