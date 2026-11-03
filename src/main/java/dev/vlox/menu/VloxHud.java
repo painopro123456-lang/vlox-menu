@@ -273,9 +273,31 @@ public final class VloxHud {
             }
 
             if (VloxModules.isEnabled("Armor HUD")) {
-                drawText(graphics, client, "Armor HUD", "ARMOR  " + client.player.getArmorValue() + " / 20",
-                    8, y, color, true);
-                y += Math.round(11 * moduleScale("Armor HUD"));
+                String[] armorLabels = {"BOOTS", "LEGS", "CHEST", "HELMET"};
+                for (int slot = 0; slot < 4; slot++) {
+                    ItemStack armor = client.player.getInventory().getArmor(slot);
+                    String status;
+                    float durability = 0.0f;
+                    if (armor.isEmpty()) {
+                        status = armorLabels[slot] + "  EMPTY";
+                    } else if (armor.isDamageableItem()) {
+                        int remaining = armor.getMaxDamage() - armor.getDamageValue();
+                        durability = Math.max(0.0f, Math.min(1.0f, remaining / (float) armor.getMaxDamage()));
+                        status = armorLabels[slot] + "  " + armor.getHoverName().getString() + "  " + Math.round(durability * 100.0f) + "%";
+                    } else {
+                        durability = 1.0f;
+                        status = armorLabels[slot] + "  " + armor.getHoverName().getString() + "  READY";
+                    }
+                    int rowY = y + slot * 15;
+                    drawText(graphics, client, "Armor HUD", status, 8, rowY, armor.isEmpty() ? 0xFFB7C3D0 : color, true);
+                    if (!armor.isEmpty()) {
+                        int barX = 210;
+                        graphics.fill(barX, rowY + 2, barX + 70, rowY + 8, 0x66506070);
+                        int barColor = durability > 0.5f ? 0xFF62B98A : durability > 0.2f ? 0xFFE0B45B : 0xFFE16C6C;
+                        graphics.fill(barX, rowY + 2, barX + Math.round(70 * durability), rowY + 8, barColor);
+                    }
+                }
+                y += Math.round(60 * moduleScale("Armor HUD"));
             }
 
             ItemStack heldItem = client.player.getMainHandItem();
