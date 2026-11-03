@@ -138,23 +138,29 @@ public final class VloxMenuScreen extends Screen {
                 if (selectedModule != null) {
             int mx = left + 120;
             int my = top + 105;
-            graphics.fill(mx + 2, my + 3, mx + 332, my + 208, 0x300D2745);
-            graphics.fill(mx, my, mx + 330, my + 205, 0xE0F9FCFF);
-            graphics.fill(mx, my, mx + 330, my + 3, 0xFF6E9FD6);
-            graphics.text(this.font, selectedModule.name() + " SETTINGS", mx + 16, my + 14, 0xFF20344D, false);
-            graphics.text(this.font, "Scale", mx + 16, my + 49, 0xFF40546D, false);
+            graphics.fill(mx + 3, my + 4, mx + 333, my + 209, 0x420D2745);
+            graphics.fill(mx, my, mx + 330, my + 205, 0xF2F5F9FD);
+            graphics.fill(mx, my, mx + 330, my + 4, 0xFF6099D3);
+            graphics.fill(mx + 1, my + 5, mx + 329, my + 6, 0x99FFFFFF);
+            graphics.text(this.font, "MODULE SETTINGS", mx + 16, my + 12, 0xFF7890AA, false);
+            graphics.text(this.font, selectedModule.name(), mx + 16, my + 26, 0xFF20344D, false);
+            graphics.fill(mx + 15, my + 39, mx + 315, my + 40, 0x337D9DBD);
+            graphics.fill(mx + 14, my + 44, mx + 316, my + 64, 0x66E3ECF5);
+            graphics.text(this.font, "Scale", mx + 23, my + 49, 0xFF40546D, false);
             graphics.text(this.font, String.format("%.2f", selectedModule.scale()), mx + 165, my + 49, 0xFF315F91, false);
             graphics.fill(mx + 230, my + 42, mx + 267, my + 62, 0xFFE6EFF8);
             graphics.fill(mx + 273, my + 42, mx + 310, my + 62, 0xFFE6EFF8);
             graphics.text(this.font, "−", mx + 244, my + 48, 0xFF315F91, false);
             graphics.text(this.font, "+", mx + 287, my + 48, 0xFF315F91, false);
-            graphics.text(this.font, "Opacity", mx + 16, my + 76, 0xFF40546D, false);
+            graphics.fill(mx + 14, my + 70, mx + 316, my + 91, 0x66E3ECF5);
+            graphics.text(this.font, "Opacity", mx + 23, my + 76, 0xFF40546D, false);
             graphics.text(this.font, String.format("%.2f", selectedModule.opacity()), mx + 165, my + 76, 0xFF315F91, false);
             graphics.fill(mx + 230, my + 69, mx + 267, my + 89, 0xFFE6EFF8);
             graphics.fill(mx + 273, my + 69, mx + 310, my + 89, 0xFFE6EFF8);
             graphics.text(this.font, "−", mx + 244, my + 75, 0xFF315F91, false);
             graphics.text(this.font, "+", mx + 287, my + 75, 0xFF315F91, false);
-            graphics.text(this.font, "Position  " + selectedModule.offsetX() + ", " + selectedModule.offsetY(), mx + 16, my + 103, 0xFF40546D, false);
+            graphics.fill(mx + 14, my + 96, mx + 316, my + 118, 0x66E3ECF5);
+            graphics.text(this.font, "Position  " + selectedModule.offsetX() + ", " + selectedModule.offsetY(), mx + 23, my + 103, 0xFF40546D, false);
             String[] directions = {"←", "↑", "↓", "→"};
             int[] dxs = {-5, 0, 0, 5};
             int[] dys = {0, -5, 5, 0};
@@ -164,9 +170,12 @@ public final class VloxMenuScreen extends Screen {
                 graphics.text(this.font, directions[i], bx + 10, my + 98, 0xFF315F91, false);
             }
             String keyLabel = waitingForKeybind ? "PRESS A KEY... (ESC CANCEL / BACKSPACE UNBIND)" : "KEYBIND  " + (selectedModule.keyCode() < 0 ? "UNBOUND" : selectedModule.keyCode()) + "   /   CLICK TO CHANGE";
-            graphics.text(this.font, keyLabel, mx + 16, my + 137, waitingForKeybind ? 0xFFB56A28 : 0xFF405F80, false);
-            graphics.fill(mx + 14, my + 160, mx + 316, my + 193, 0xFFE5EFF8);
-            graphics.text(this.font, "CLOSE SETTINGS", mx + 16, my + 172, 0xFF477DBD, false);
+            graphics.fill(mx + 14, my + 124, mx + 316, my + 153, 0x66E3ECF5);
+            graphics.text(this.font, "KEYBIND", mx + 23, my + 130, 0xFF71869F, false);
+            graphics.text(this.font, keyLabel, mx + 23, my + 141, waitingForKeybind ? 0xFFB56A28 : 0xFF405F80, false);
+            graphics.fill(mx + 14, my + 163, mx + 316, my + 194, 0xFFE1ECF6);
+            graphics.fill(mx + 14, my + 163, mx + 316, my + 164, 0xFFFFFFFF);
+            graphics.text(this.font, "DONE", mx + 154, my + 174, 0xFF477DBD, false);
         }
 
         graphics.text(this.font, "CLICK MODULE: TOGGLE     GEAR: SETTINGS", left + 22,
