@@ -35,25 +35,37 @@ public final class VloxMenuScreen extends Screen {
         int left = (this.width - PANEL_WIDTH) / 2;
         int top = (this.height - PANEL_HEIGHT) / 2;
 
-        graphics.fill(0, 0, this.width, this.height, 0x180D1420);
+        graphics.fill(0, 0, this.width, this.height, 0x32101A2B);
+        graphics.fill(left - 5, top - 5, left + PANEL_WIDTH + 5, top + PANEL_HEIGHT + 5, 0x180B1728);
 
-        // Light translucent glass surface: the world remains visible behind it.
-        graphics.fill(left, top, left + PANEL_WIDTH, top + PANEL_HEIGHT, 0x88F7FAFF);
+        // Layered frosted-glass shell with a cool blue edge and soft inner highlight.
+        graphics.fill(left, top, left + PANEL_WIDTH, top + PANEL_HEIGHT, 0xDDF5F8FD);
         graphics.fill(left, top, left + PANEL_WIDTH, top + 2, 0xDFFFFFFF);
         graphics.fill(left, top, left + 1, top + PANEL_HEIGHT, 0x88FFFFFF);
         graphics.fill(left + PANEL_WIDTH - 1, top, left + PANEL_WIDTH, top + PANEL_HEIGHT, 0x66FFFFFF);
         graphics.fill(left, top + PANEL_HEIGHT - 1, left + PANEL_WIDTH, top + PANEL_HEIGHT, 0x66FFFFFF);
-        graphics.fill(left + 2, top + 2, left + PANEL_WIDTH - 2, top + 3, 0x44FFFFFF);
+        graphics.fill(left + 2, top + 2, left + PANEL_WIDTH - 2, top + 3, 0x66FFFFFF);
+        graphics.fill(left + 18, top + 13, left + 21, top + 43, 0xFF5D9AD8);
+        graphics.fill(left + 26, top + 45, left + PANEL_WIDTH - 20, top + 46, 0x337B9BC0);
 
-        graphics.text(this.font, "VLOX MENU", left + 22, top + 18, 0xFF243247, false);
-        graphics.text(this.font, "26.2  /  FABRIC", left + 22, top + 34, 0xFF65758D, false);
-        graphics.text(this.font, "RIGHT SHIFT  •  CLOSE", left + PANEL_WIDTH - 150, top + 23, 0xFF91A5C8, false);
+        graphics.text(this.font, "VLOX", left + 30, top + 13, 0xFF1C2F48, false);
+        graphics.text(this.font, "MENU  /  26.2 FABRIC", left + 30, top + 29, 0xFF71839A, false);
+        int enabledCount = (int) VloxModules.ALL.stream().filter(VloxModule::enabled).count();
+        String activeLabel = enabledCount + " ACTIVE";
+        int activeWidth = this.font.width(activeLabel);
+        graphics.fill(left + PANEL_WIDTH - activeWidth - 65, top + 17, left + PANEL_WIDTH - 20, top + 38, 0xDDE7F0F8);
+        graphics.fill(left + PANEL_WIDTH - activeWidth - 65, top + 17, left + PANEL_WIDTH - 63, top + 38, 0xFF69A1D8);
+        graphics.text(this.font, activeLabel, left + PANEL_WIDTH - activeWidth - 55, top + 23, 0xFF426A91, false);
+        graphics.text(this.font, "RIGHT SHIFT TO CLOSE", left + PANEL_WIDTH - 150, top + 43, 0xFF8799AE, false);
 
-        graphics.fill(left + 20, top + 58, left + PANEL_WIDTH - 20, top + 83, 0x55FFFFFF);
-        graphics.fill(left + 20, top + 58, left + PANEL_WIDTH - 20, top + 59, 0x99FFFFFF);
-        String searchLabel = searchQuery.isEmpty() ? "⌕   SEARCH MODULES..." : "⌕   " + searchQuery;
-        graphics.text(this.font, searchLabel, left + 30, top + 67, searchFocused ? 0xFF315F91 : 0xFF53647C, false);
-        if (searchFocused) graphics.fill(left + 30 + this.font.width(searchLabel), top + 65, left + 31 + this.font.width(searchLabel), top + 77, 0xFF477DBD);
+        graphics.fill(left + 20, top + 57, left + PANEL_WIDTH - 20, top + 84, 0xBFEAF0F7);
+        graphics.fill(left + 20, top + 57, left + PANEL_WIDTH - 20, top + 58, 0xFFFFFFFF);
+        graphics.fill(left + 20, top + 83, left + PANEL_WIDTH - 20, top + 84, searchFocused ? 0xFF5A96D5 : 0x557D9DBD);
+        graphics.text(this.font, "⌕", left + 30, top + 66, 0xFF6284A7, false);
+        String searchLabel = searchQuery.isEmpty() ? "Search modules or categories" : searchQuery;
+        graphics.text(this.font, searchLabel, left + 47, top + 66, searchFocused ? 0xFF294F78 : 0xFF53647C, false);
+        if (!searchQuery.isEmpty()) graphics.text(this.font, "×", left + PANEL_WIDTH - 37, top + 65, 0xFF6483A3, false);
+        if (searchFocused) graphics.fill(left + 47 + this.font.width(searchLabel), top + 65, left + 48 + this.font.width(searchLabel), top + 77, 0xFF477DBD);
 
         List<VloxModule> modules = visibleModules();
         int startX = left + 20;
@@ -74,18 +86,20 @@ public final class VloxMenuScreen extends Screen {
                 && mouseY >= y && mouseY <= y + CARD_HEIGHT;
 
             // Vertical icon-first tile with a centered title underneath.
-            graphics.fill(x + 1, y + 2, x + CARD_WIDTH + 1, y + CARD_HEIGHT + 2, 0x180E2745);
-            int background = module.enabled() ? 0xE6EAF5FF : (hovered ? 0xE6FFFFFF : 0xCFFFFFFF);
+            graphics.fill(x + 1, y + 3, x + CARD_WIDTH + 1, y + CARD_HEIGHT + 3, 0x220E2745);
+            int background = module.enabled() ? 0xF0E5F0FC : (hovered ? 0xF0FFFFFF : 0xDDEFF4FA);
             graphics.fill(x, y, x + CARD_WIDTH, y + CARD_HEIGHT, background);
-            graphics.fill(x, y, x + CARD_WIDTH, y + 1, 0xDDFFFFFF);
-            graphics.fill(x, y + CARD_HEIGHT - 1, x + CARD_WIDTH, y + CARD_HEIGHT, 0x66849BB8);
-            graphics.fill(x, y, x + 3, y + CARD_HEIGHT, module.enabled() ? 0xFF548DD0 : 0x668DA4C0);
+            graphics.fill(x, y, x + CARD_WIDTH, y + 1, 0xFFFFFFFF);
+            graphics.fill(x, y + CARD_HEIGHT - 1, x + CARD_WIDTH, y + CARD_HEIGHT, hovered ? 0xAA78A5D2 : 0x557E9AB8);
+            graphics.fill(x, y, x + 3, y + CARD_HEIGHT, module.enabled() ? 0xFF4F91D2 : 0x668DA4C0);
+            if (hovered) graphics.fill(x + 3, y + 1, x + CARD_WIDTH - 1, y + 2, 0x6678A9D8);
 
             int iconCenter = x + CARD_WIDTH / 2;
             int iconTileLeft = iconCenter - 18;
             int iconTileTop = y + 5;
+            graphics.fill(iconTileLeft - 1, iconTileTop + 1, iconTileLeft + 37, iconTileTop + 35, 0x1D547AA4);
             graphics.fill(iconTileLeft, iconTileTop, iconTileLeft + 36, iconTileTop + 34,
-                module.enabled() ? 0xFFD7E9FC : 0xFFEAF1F8);
+                module.enabled() ? 0xFFD4E8FC : 0xFFE5EDF6);
             graphics.fill(iconTileLeft, iconTileTop, iconTileLeft + 36, iconTileTop + 1, 0xFFFFFFFF);
             String icon = module.icon();
             int iconWidth = this.font.width(icon);
@@ -104,6 +118,7 @@ public final class VloxMenuScreen extends Screen {
             drawUiText(graphics, "⚙", gearX, gearY, 0xFF426F9E, false);
 
             String moduleName = module.name();
+            while (this.font.width(moduleName) > CARD_WIDTH - 16 && moduleName.length() > 4) moduleName = moduleName.substring(0, moduleName.length() - 2) + "…";
             int nameWidth = this.font.width(moduleName);
             drawUiText(graphics, moduleName, x + Math.max(5, (CARD_WIDTH - nameWidth) / 2), y + 43,
                 0xFF1D3048, false);
@@ -115,7 +130,7 @@ public final class VloxMenuScreen extends Screen {
             int pillLeft = x + CARD_WIDTH - 31;
             int pillTop = y + 5;
             graphics.fill(pillLeft, pillTop, pillLeft + 25, pillTop + 10,
-                module.enabled() ? 0xFF548DD0 : 0xFFB7C3D0);
+                module.enabled() ? 0xFF548DD0 : 0xFF9EACBD);
             drawUiText(graphics, module.enabled() ? "ON" : "OFF",
                 pillLeft + 4, pillTop + 1, 0xFFFFFFFF, false);
         }
@@ -203,8 +218,9 @@ public final class VloxMenuScreen extends Screen {
             }
             return true;
         }        if (event.button() == 0) {
-            if (mouseX >= panelLeft + 20 && mouseX <= panelLeft + PANEL_WIDTH - 20 && mouseY >= panelTop + 58 && mouseY <= panelTop + 83) {
-                searchFocused = true;
+            if (mouseX >= panelLeft + 20 && mouseX <= panelLeft + PANEL_WIDTH - 20 && mouseY >= panelTop + 57 && mouseY <= panelTop + 84) {
+                if (mouseX >= panelLeft + PANEL_WIDTH - 43 && !searchQuery.isEmpty()) { searchQuery = ""; page = 0; }
+                else searchFocused = true;
                 return true;
             }
             searchFocused = false;
