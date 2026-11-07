@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VLOX Racing — lap-time optimiser</title>
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #080b10;
+    --panel: rgba(16, 22, 30, 0.82);
+    --line: rgba(255, 255, 255, 0.10);
+    --text: #e8eef6;
+    --muted: #8a9bb0;
+    --good: #35e08a;
+    --accent: #58b6ff;
+    --warn: #ff6b6b;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
+  }
+
+  #stage { position: fixed; inset: 0; }
+  canvas { display: block; width: 100%; height: 100%; }
+
+  .panel {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    width: 268px;
+    padding: 16px 18px 14px;
+    border-radius: 16px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  }
+
+  .brand {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .hero {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 2px;
+  }
+
+  .hero .value {
+    font-size: 34px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--good);
+    line-height: 1;
+  }
+
+  .hero .unit { font-size: 13px; color: var(--muted); }
+  .hero-label { font-size: 11px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+
+  .gain {
+    margin: 10px 0 14px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .gain b { color: var(--good); font-weight: 600; }
+
+  .rows {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 7px 10px;
+    font-size: 12.5px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+  .rows .k { color: var(--muted); }
+  .rows .v { font-variant-numeric: tabular-nums; text-align: right; }
+
+  .bar {
+    margin-top: 14px;
+    height: 4px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+  }
+  .bar > i {
+    display: block;
+    height: 100%;
+    width: 0%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--good));
+    transition: width 0.25s ease;
+  }
+
+  .controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  button {
+    flex: 1;
+    padding: 8px 10px;
+    font: inherit;
+    font-size: 12.5px;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  button:hover { background: rgba(255, 255, 255, 0.13); }
+
+  .legend {
+    position: fixed;
+    left: 18px;
+    bottom: 16px;
+    display: flex;
+    gap: 16px;
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .swatch { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+
+  .hint {
+    position: fixed;
+    right: 18px;
+    bottom: 16px;
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+  <div id="stage"><canvas id="circuit"></canvas></div>
+
+  <div class="panel">
+    <div class="brand">VLOX Racing · Baku</div>
+
+    <div class="hero-label">Best lap</div>
+    <div class="hero">
+      <div class="value" id="bestLap">—</div>
+      <div class="unit">s</div>
+    </div>
+    <div class="gain" id="gain">Waiting for the first lap…</div>
+
+    <div class="rows">
+      <div class="k">Centreline</div><div class="v" id="baseline">—</div>
+      <div class="k">Live lap</div><div class="v" id="liveLap">—</div>
+      <div class="k">Speed</div><div class="v" id="speed">0 km/h</div>
+      <div class="k">Iteration</div><div class="v" id="iteration">0</div>
+      <div class="k">Status</div><div class="v" id="status">Optimising</div>
+    </div>
+
+    <div class="bar"><i id="progress"></i></div>
+
+    <div class="controls">
+      <button id="toggle">Pause</button>
+      <button id="reset">Restart</button>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i class="swatch" style="background:#3a4859"></i>centreline</span>
+    <span><i class="swatch" style="background:#35e08a"></i>best line</span>
+    <span><i class="swatch" style="background:#58b6ff"></i>candidate</span>
+  </div>
+  <div class="hint">Space pauses · R restarts</div>
+
+  <script src="racing.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    const R = window.Racing;
+    const canvas = document.getElementById('circuit');
+    const ctx = canvas.getContext('2d');
+
+    const ui = {
+      bestLap: document.getElementById('bestLap'),
+      gain: document.getElementById('gain'),
+      baseline: document.getElementById('baseline'),
+      liveLap: document.getElementById('liveLap'),
+      speed: document.getElementById('speed'),
+      iteration: document.getElementById('iteration'),
+      status: document.getElementById('status'),
+      progress: document.getElementById('progress'),
+      toggle: document.getElementById('toggle'),
+      reset: document.getElementById('reset')
+    };
+
+    const track = R.createTrack();
+    const view = computeView(track);
+
+    let optimiser, snap, sim, training, done;
+
+    function computeView(t) {
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for (const p of t.points) {
+        if (p.x < minX) minX = p.x;
+        if (p.y < minY) minY = p.y;
+        if (p.x > maxX) maxX = p.x;
+        if (p.y > maxY) maxY = p.y;
+      }
+      const pad = t.halfWidth + 26;
+      return {
+        minX: minX - pad,
+        minY: minY - pad,
+        width: maxX - minX + pad * 2,
+        height: maxY - minY + pad * 2
+      };
+    }
+
+    function restart() {
+      optimiser = R.createOptimizer(track, { maxIterations: 600 });
+      snap = optimiser.snapshot();
+      training = true;
+      done = false;
+      startLap();
+      ui.toggle.textContent = 'Pause';
+    }
+
+    // The car always drives the best line known when the lap began, so a lap
+    // is never cut short by the line changing underneath it.
+    function startLap() {
+      sim = R.createSim(track, snap.best.line);
+    }
+
+    function fit() {
+      const dpr = window.devicePixelRatio || 1;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+      }
+      const scale = Math.min((w - 60) / view.width, (h - 60) / view.height) * dpr;
+      const ox = (canvas.width - view.width * scale) / 2 - view.minX * scale;
+      const oy = (canvas.height - view.height * scale) / 2 - view.minY * scale;
+      ctx.setTransform(scale, 0, 0, scale, ox, oy);
+      return { scale, ox, oy, dpr };
+    }
+
+    function offsetPoints(loop, amount) {
+      return loop.points.map((p, i) => ({
+        x: p.x + loop.normals[i].x * amount,
+        y: p.y + loop.normals[i].y * amount
+      }));
+    }
+
+    function strokeLoop(points, style, width, dash) {
+      ctx.beginPath();
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      }
+      ctx.closePath();
+      ctx.setLineDash(dash || []);
+      ctx.strokeStyle = style;
+      ctx.lineWidth = width;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    function drawTrack(scale) {
+      const outer = offsetPoints(track, track.halfWidth);
+      const inner = offsetPoints(track, -track.halfWidth);
+
+      ctx.beginPath();
+      for (let i = 0; i < outer.length; i++) {
+        const p = outer[i];
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      }
+      ctx.closePath();
+      for (let i = inner.length - 1; i >= 0; i--) {
+        const p = inner[i];
+        if (i === inner.length - 1) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = '#161e27';
+      ctx.fill('evenodd');
+
+      strokeLoop(outer, '#3d4d5f', 1.6 / scale);
+      strokeLoop(inner, '#3d4d5f', 1.6 / scale);
+      strokeLoop(track.points, 'rgba(255,255,255,0.07)', 1 / scale, [6 / scale, 10 / scale]);
+    }
+
+    function drawStartLine(scale) {
+      const p = track.points[0];
+      const n = track.normals[0];
+      const half = track.halfWidth;
+      const cells = 10;
+      for (let i = 0; i < cells; i++) {
+        const t0 = (i / cells) * 2 - 1;
+        const t1 = ((i + 1) / cells) * 2 - 1;
+        const x0 = p.x + n.x * t0 * half;
+        const y0 = p.y + n.y * t0 * half;
+        const x1 = p.x + n.x * t1 * half;
+        const y1 = p.y + n.y * t1 * half;
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(x1, y1);
+        ctx.strokeStyle = i % 2 === 0 ? '#f2f5f8' : '#20282f';
+        ctx.lineWidth = 3.4 / scale;
+        ctx.stroke();
+      }
+    }
+
+    function drawCar() {
+      const s = sim.state;
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      ctx.rotate(s.heading);
+      const len = R.CAR.length;
+      const wid = R.CAR.width;
+
+      ctx.beginPath();
+      ctx.roundRect(-len / 2, -wid / 2, len, wid, 1.1);
+      ctx.fillStyle = s.offTrackTime > 0.35 ? '#ff6b6b' : '#ffcc33';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.45)';
+      ctx.lineWidth = 0.25;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(len / 2 - 0.2, 0);
+      ctx.lineTo(len / 2 - 1.4, -wid / 2 + 0.35);
+      ctx.lineTo(len / 2 - 1.4, wid / 2 - 0.35);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function draw() {
+      const { scale } = fit();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.fillStyle = '#080b10';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      fit();
+
+      drawTrack(scale);
+
+      if (training && snap.currentLine) {
+        strokeLoop(snap.currentLine.points, 'rgba(88,182,255,0.45)', 2.2 / scale);
+      }
+      strokeLoop(snap.best.line.points, '#35e08a', 2.6 / scale);
+
+      drawStartLine(scale);
+      drawCar();
+    }
+
+    function updateHud() {
+      const best = snap.bestLapTime;
+      ui.bestLap.textContent = Number.isFinite(best) ? best.toFixed(3) : '—';
+      ui.baseline.textContent = snap.baselineLapTime.toFixed(3) + ' s';
+      ui.iteration.textContent = String(snap.iteration);
+
+      const gain = snap.baselineLapTime - best;
+      if (gain > 0.0005) {
+        ui.gain.innerHTML = '<b>−' + gain.toFixed(3) + ' s</b> vs the centreline (' +
+          ((gain / snap.baselineLapTime) * 100).toFixed(1) + '% faster)';
+      } else {
+        ui.gain.textContent = 'Starting from the centreline…';
+      }
+
+      const live = sim.state.finished ? (sim.state.lapTime || 0) : sim.state.time;
+      ui.liveLap.textContent = live.toFixed(3) + ' s';
+      ui.speed.textContent = Math.round(sim.state.speed * 3.6) + ' km/h';
+
+      ui.status.textContent = done ? 'Converged' : training ? 'Optimising' : 'Paused';
+      ui.status.style.color = done ? 'var(--good)' : training ? 'var(--text)' : 'var(--muted)';
+      ui.progress.style.width = Math.min(100, (snap.iteration / 200) * 100) + '%';
+    }
+
+    let last = performance.now();
+
+    function frame(now) {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+
+      if (training && !done) {
+        const budget = performance.now() + 9;
+        while (!done && performance.now() < budget) {
+          snap = optimiser.step();
+          if (snap.done) done = true;
+        }
+      }
+
+      // Advance the car in fixed physics steps.
+      let remaining = dt;
+      const step = 1 / 90;
+      while (remaining > 0) {
+        sim.step(Math.min(step, remaining));
+        remaining -= step;
+        if (sim.state.finished) break;
+      }
+
+      if (sim.state.finished) startLap();
+
+      draw();
+      updateHud();
+      requestAnimationFrame(frame);
+    }
+
+    ui.toggle.addEventListener('click', () => {
+      if (done) return;
+      training = !training;
+      ui.toggle.textContent = training ? 'Pause' : 'Resume';
+    });
+
+    ui.reset.addEventListener('click', restart);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (!done) {
+          training = !training;
+          ui.toggle.textContent = training ? 'Pause' : 'Resume';
+        }
+      } else if (e.key === 'r' || e.key === 'R') {
+        restart();
+      }
+    });
+
+    restart();
+    requestAnimationFrame(frame);
+  })();
+  </script>
+</body>
+</html>

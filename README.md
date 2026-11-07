@@ -1,77 +1,102 @@
-# VLOX AUTO
+# VLOX
 
-A small Windows tool that repeats key presses for you, made for F1 Apex Racing
-(Baku City Circuit) in Roblox — or any other game, since the keys and timings
-are fully configurable.
+Two small, dependency-free projects live here.
 
-## What it does
+1. **VLOX Racing** — a browser racing simulator whose optimiser learns the
+   fastest line around a Baku-style street circuit, cutting its own lap time.
+2. **VLOX AUTO** — a Windows key repeater for pressing the same keys over and
+   over in a game.
 
-Press **F7** and the script repeatedly sends the keys you configured, at the
-timing you configured, until you press **F7** again. **F9** quits it.
+---
 
-It is a plain input repeater: it presses keys you could press yourself. It does
-not read the game's memory, inject into Roblox, or try to hide itself.
+## VLOX Racing — lap-time optimiser
 
-## Requirements
+Open `index.html` in any browser. No build step, no server, no packages.
 
-- Windows (AutoHotkey is Windows-only — Mac and mobile are not supported)
-- [AutoHotkey v2](https://www.autohotkey.com) installed
+A car laps the circuit. To begin with it follows the centreline, which is the
+slow reference line. The optimiser then repeatedly reshapes the line toward its
+minimum-curvature form: corners get straightened and apexes get cut, but the
+line is never allowed outside the width of the track. Every candidate line is
+driven by the same driver in the same car and timed over a full lap, so when
+the lap time drops, the line is genuinely better — the car has not changed.
 
-## Setup
+What you see:
 
-1. Install AutoHotkey v2.
-2. Double-click `apex-auto.ahk` — a green **H** appears in the system tray.
-3. Launch Roblox and join the Baku track.
-4. Click the game window so it has focus.
-5. Press **F7** to start. Press **F7** again to stop.
+- **green line** — the best line found so far, and the line the car is driving
+- **blue line** — the candidate the optimiser is currently testing
+- **grey dashed line** — the original centreline
+- **yellow car** — the AI lap, live
 
-By default the script does nothing unless the Roblox window is focused, so it
-cannot type into Discord or your browser by accident.
+Press **Space** to pause or resume, **R** to restart the search.
 
-## Configuration
+### Measured result
 
-Open `apex-auto.ahk` in Notepad and edit the `CFG` block at the top:
+```
+node tools/bench.js
+```
 
-| Setting | Meaning |
+```
+track length      : 2399 m
+centreline lap    : 68.000 s
+iterations        : 194 (converged)
+solve time        : 417 ms
+best lap          : 58.322 s
+best off track    : 0.00 s
+improvement       : 9.678 s (14.23%)
+PASS: optimiser beat the baseline and stayed on track
+```
+
+The benchmark fails with a non-zero exit code if the optimiser does not beat the
+centreline or if its best line leaves the track, so the claim above is checked
+rather than assumed.
+
+### How it works
+
+| File | Contents |
 | --- | --- |
-| `Keys` | Keys sent every cycle, in order. `["w"]` repeats W; `["w", "a"]` sends W then A. |
-| `HoldMs` | How long each key is held down. `60` is a normal tap; `500` is a firm hold. |
-| `KeyGapMs` | Pause between keys inside one cycle. |
-| `CycleGapMs` | Pause after a full cycle before starting the next one. |
-| `StartDelayMs` | Countdown before the first press, so you can get ready. |
-| `OnlyWhenRoblox` | `true` = only send keys while Roblox is focused. |
-| `RobloxExe` | The Roblox process name to look for. |
+| `racing.js` | The whole simulation: circuit geometry, car physics, the driver, the optimiser. Runs in the browser and in Node. |
+| `index.html` | Canvas rendering and the HUD. Loads `racing.js` with a plain `<script>` tag. |
+| `tools/bench.js` | Headless benchmark that prints the measured improvement. |
 
-Change `TOGGLE_KEY` / `QUIT_KEY` if F7 or F9 does something in-game.
+The circuit is a closed centripetal Catmull-Rom spline resampled to 480 equally
+spaced points. The car is a kinematic bicycle model with limits on acceleration,
+braking, top speed and lateral grip. The AI driver steers with pure pursuit and
+takes its target speed from the curvature profile of the line it is following,
+including a backward braking pass so it never arrives at a corner too fast.
 
-After editing, save and reload from the tray icon (right-click → *Reload*) or
-just double-click the file again.
+The optimiser is a relaxation sweep: each point on the line drifts toward the
+midpoint of its neighbours, which lowers curvature, and is then clamped to the
+width of the track. Each sweep produces a candidate line, which is driven and
+timed. The best line ever seen is kept, and the search stops once it has gone 70
+sweeps without improving.
 
-Useful starting points:
+---
 
-- **Constant throttle:** `Keys: ["w"]`, `HoldMs: 200`, `CycleGapMs: 0`
-- **Periodic action (e.g. one press every second):** `Keys: ["e"]`, `HoldMs: 60`, `CycleGapMs: 940`
-- **Simple weave:** `Keys: ["w", "d", "w", "a"]`, `HoldMs: 200`, `CycleGapMs: 200`
+## VLOX AUTO — key repeater
 
-## If the keys do not register in-game
+A single-file Windows tool that repeats key presses for you in a game.
 
-Synthetic input does not always reach a game window. Try, in this order:
+Requirements: Windows and [AutoHotkey v2](https://www.autohotkey.com).
 
-1. Run Roblox in **windowed** or borderless mode rather than exclusive fullscreen.
-2. Right-click `apex-auto.ahk` → *Run as administrator*.
-3. In the script, change `SendMode "Input"` to `SendMode "Event"`, or to
-   `SendMode "Play"`, and reload.
+1. Install AutoHotkey v2, then double-click `apex-auto.ahk`.
+2. Focus the game window.
+3. Press **F7** to start, **F7** to stop, **F9** to quit.
 
-## Warning
+The `CFG` block at the top of `apex-auto.ahk` sets the keys, how long each is
+held, the gap between keys, and the gap between cycles. By default it only sends
+input while the Roblox window is focused, so it cannot type into other apps.
 
-Automation is against the Roblox Terms of Use, and anti-cheat systems can
-detect repeated identical input patterns. Using this can get your account
-warned or banned. That risk is yours; the script exists for offline testing,
-accessibility, and learning, and there is deliberately no anti-detection
-code in it.
+If the game ignores the keys, run the script as administrator, use windowed
+mode, or change `SendMode "Input"` to `SendMode "Event"`.
 
-## Status
+> Automating gameplay is against the Roblox Terms of Use and anti-cheat systems
+> can flag repeated identical input. Using it can get an account banned. It is a
+> plain input repeater with no anti-detection code.
 
-Written and syntax-checked by an AI assistant without a Windows machine
-available, so it has **not** been run against the actual game. If something
-misbehaves, describe what happens and it can be adjusted.
+### Why this is not a Roblox auto-driver
+
+Driving a lap in the live game would need to watch the screen and steer in real
+time, and an adaptive driver would need to play against other people. That is a
+cheat in a multiplayer game, and it cannot be built or verified without the game
+itself. VLOX Racing instead puts the same optimisation problem — racing line,
+braking points, apex speed — in a simulator where the result is measurable.
