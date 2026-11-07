@@ -4,103 +4,199 @@ SendMode "Input"
 SetWorkingDir A_ScriptDir
 
 ; =============================================================================
-; VLOX AUTO - repeated key actions for F1 Apex Racing (Baku)
+; VLOX AUTO - plays a timed sequence of key presses, so a whole lap can be
+; choreographed as a list of phases and looped.
 ;
 ; HOW TO USE
 ;   1. Install AutoHotkey v2 from https://www.autohotkey.com
 ;   2. Double-click this file.
-;   3. Join the track in Roblox, click the game window so it is focused.
-;   4. Press F7 to start. Press F7 again to stop. F9 quits the script.
+;   3. Join the track in Roblox and click the game window so it is focused.
+;   4. Press F7 to start. F7 again stops it and releases every key. F9 quits.
 ;
-; Everything below in CFG is yours to change. Save the file and reload the
-; script (right-click the tray icon -> Reload) after editing.
+; Each phase below is: hold some keys for a number of milliseconds, then
+; release them. Optional fields:
+;   repeat : how many times to do this phase (default 1)
+;   gap    : milliseconds to wait between repeats (default 0)
+;   label  : shown in the on-screen status while the phase runs
+;
+; Keys held together are listed together, e.g. ["w", "a"] is throttle + steer.
+; A phase with an empty key list (keys: []) just waits.
 ; =============================================================================
 
-CFG := {
-    ; Keys sent once per cycle, in order. Examples:
-    ;   ["w"]              -> press W over and over (gas / throttle)
-    ;   ["w", "a"]         -> W then A, repeating
-    ;   ["space"]          -> press Space repeatedly
-    ;   ["w", "d", "w", "a"] -> weave left/right
-    Keys          : ["w"],
+LAP := [
+    ; --- main straight ---------------------------------------------------
+    { keys: ["w"],            ms: 2600, label: "full throttle" },
+    { keys: ["w"],            ms: 900,  repeat: 3, gap: 0, label: "straight" },
 
-    HoldMs        : 60,      ; how long each key stays down (milliseconds)
-    KeyGapMs      : 40,      ; pause between keys inside one cycle (ms)
-    CycleGapMs    : 840,     ; pause after a full cycle before repeating (ms)
-    StartDelayMs  : 2000,    ; countdown before the first press, so you can
-                             ; get your hands on the keyboard (ms)
+    ; --- turn 1: brake, then turn in while on the throttle ---------------
+    { keys: ["s"],            ms: 500,  label: "braking" },
+    { keys: ["w", "a"],       ms: 900,  label: "turn in" },
+    { keys: ["w"],            ms: 700,  label: "exit" },
 
-    OnlyWhenRoblox: true,    ; safety: only send keys while Roblox is focused
-    RobloxExe     : "ahk_exe RobloxPlayerBeta.exe"
-}
+    ; --- castle section: short bursts of steering -------------------------
+    { keys: ["w", "d"],       ms: 600,  label: "right hander" },
+    { keys: ["w"],            ms: 400,  label: "straighten" },
+    { keys: ["s"],            ms: 350,  label: "brake" },
+    { keys: ["w", "a"],       ms: 1100, label: "long left" },
 
-TOGGLE_KEY := "F7"   ; change to a key Roblox itself does not use
-QUIT_KEY   := "F9"
+    ; --- a repeated tap, e.g. a shift or a look-around every second -------
+    { keys: ["e"],            ms: 60,   repeat: 5, gap: 940, label: "cycle action" },
+
+    ; --- final section back onto the straight ----------------------------
+    { keys: ["w"],            ms: 1500, label: "power down" },
+    { keys: ["s"],            ms: 600,  label: "brake for the last corner" },
+    { keys: ["w", "d"],       ms: 1000, label: "last corner" },
+    { keys: ["w"],            ms: 1200, label: "onto the straight" }
+]
+
+LAPS            := 0        ; how many laps to play; 0 = loop forever
+BETWEEN_LAPS_MS := 3000     ; pause between laps
+START_DELAY_MS  := 3000     ; countdown before the first phase
+ONLY_WHEN_ROBLOX := true    ; never send keys to any other window
+ROBLOX_EXE      := "ahk_exe RobloxPlayerBeta.exe"
+TIP_X           := 20       ; where the status tooltip appears
+TIP_Y           := 20
 
 ; -----------------------------------------------------------------------------
 ; Hotkeys
 ; -----------------------------------------------------------------------------
-F7::ToggleAuto()
+F7::ToggleLap()
 F9::ExitApp()
 
 ; -----------------------------------------------------------------------------
-; Logic
+; State
 ; -----------------------------------------------------------------------------
 global Running := false
+global SessionActive := false
+global Held := []
 
-ToggleAuto() {
-    global Running, CFG
+; -----------------------------------------------------------------------------
+; Start / stop
+; -----------------------------------------------------------------------------
+ToggleLap() {
+    global Running
 
     if Running {
         Running := false
-        SetTimer(RunCycle, 0)
-        ToolTip("VLOX AUTO: stopped")
-        SetTimer(ClearTip, -1500)
+        ReleaseHeld()
+        ShowTip("stopped")
+        SetTimer(HideTip, -1500)
         return
     }
 
-    if (CFG.OnlyWhenRoblox && !WinActive(CFG.RobloxExe)) {
-        ToolTip("VLOX AUTO: Roblox is not the active window")
-        SetTimer(ClearTip, -2500)
+    if (SessionActive) {
+        ShowTip("still stopping - try again in a moment")
+        SetTimer(HideTip, -2500)
+        return
+    }
+
+    if (ONLY_WHEN_ROBLOX && !WinActive(ROBLOX_EXE)) {
+        ShowTip("Roblox is not the active window")
+        SetTimer(HideTip, -2500)
         return
     }
 
     Running := true
-    ToolTip("VLOX AUTO: starting in " Round(CFG.StartDelayMs / 1000) "s")
-    SetTimer(ClearTip, -CFG.StartDelayMs)
-    SetTimer(RunCycle, -CFG.StartDelayMs)
+    ShowTip("starting in " Round(START_DELAY_MS / 1000) "s")
+    SetTimer(RunLaps, -START_DELAY_MS)
 }
 
-RunCycle() {
-    global Running, CFG
+StopForFocusLoss() {
+    global Running
+    Running := false
+    ReleaseHeld()
+    ShowTip("stopped - Roblox lost focus")
+    SetTimer(HideTip, -2500)
+}
 
-    if (!Running)
-        return
+; -----------------------------------------------------------------------------
+; The lap runner
+; -----------------------------------------------------------------------------
+RunLaps(*) {
+    global Running, SessionActive
 
-    if (CFG.OnlyWhenRoblox && !WinActive(CFG.RobloxExe)) {
-        Running := false
-        SetTimer(RunCycle, 0)
-        ToolTip("VLOX AUTO: stopped (Roblox lost focus)")
-        SetTimer(ClearTip, -2500)
-        return
+    SessionActive := true
+    lap := 0
+    while (Running && (LAPS = 0 || lap < LAPS)) {
+        lap++
+
+        for index, phase in LAP {
+            if (!Running)
+                break
+
+            if (ONLY_WHEN_ROBLOX && !WinActive(ROBLOX_EXE)) {
+                StopForFocusLoss()
+                return
+            }
+
+            label := phase.HasOwnProp("label") ? phase.label : "phase " index
+            ShowTip("lap " lap " - " label)
+            if (!RunPhase(phase))
+                break
+        }
+
+        if (Running && BETWEEN_LAPS_MS)
+            Sleep BETWEEN_LAPS_MS
     }
 
-    for key in CFG.Keys {
-        if (!Running)
-            break
-        Send "{" key " down}"
-        Sleep CFG.HoldMs
-        Send "{" key " up}"
-        Sleep CFG.KeyGapMs
-    }
+    ReleaseHeld()
+    SessionActive := false
 
     if (Running) {
-        Sleep CFG.CycleGapMs
-        if (Running)
-            SetTimer(RunCycle, -1)
+        Running := false
+        ShowTip("all laps complete")
+        SetTimer(HideTip, -2500)
     }
 }
 
-ClearTip(*) {
+RunPhase(phase) {
+    global Running
+
+    count := phase.HasOwnProp("repeat") ? phase.repeat : 1
+    gap := phase.HasOwnProp("gap") ? phase.gap : 0
+
+    index := 0
+    while (index < count) {
+        index++
+        if (!Running)
+            return false
+
+        HoldKeys(phase.keys)
+        Sleep phase.ms
+        ReleaseHeld()
+
+        if (gap && index < count)
+            Sleep gap
+    }
+
+    return Running
+}
+
+; -----------------------------------------------------------------------------
+; Key handling
+; -----------------------------------------------------------------------------
+HoldKeys(keys) {
+    global Held
+    for key in keys {
+        Send "{" key " down}"
+        Held.Push(key)
+    }
+}
+
+ReleaseHeld() {
+    global Held
+    for key in Held
+        Send "{" key " up}"
+    Held := []
+}
+
+; -----------------------------------------------------------------------------
+; Status tooltip
+; -----------------------------------------------------------------------------
+ShowTip(text) {
+    ToolTip("VLOX AUTO: " text, TIP_X, TIP_Y)
+}
+
+HideTip(*) {
     ToolTip()
 }

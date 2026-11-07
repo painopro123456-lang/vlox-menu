@@ -4,8 +4,8 @@ Two small, dependency-free projects live here.
 
 1. **VLOX Racing** — a browser racing simulator whose optimiser learns the
    fastest line around a Baku-style street circuit, cutting its own lap time.
-2. **VLOX AUTO** — a Windows key repeater for pressing the same keys over and
-   over in a game.
+2. **VLOX AUTO** — a Windows script that plays a timed sequence of key presses
+   in a game, looping a whole lap.
 
 ---
 
@@ -72,9 +72,10 @@ sweeps without improving.
 
 ---
 
-## VLOX AUTO — key repeater
+## VLOX AUTO — lap sequence player
 
-A single-file Windows tool that repeats key presses for you in a game.
+A single-file Windows tool that plays a timed sequence of key presses inside a
+game, so a whole lap can be choreographed as a list of phases and looped.
 
 Requirements: Windows and [AutoHotkey v2](https://www.autohotkey.com).
 
@@ -82,9 +83,26 @@ Requirements: Windows and [AutoHotkey v2](https://www.autohotkey.com).
 2. Focus the game window.
 3. Press **F7** to start, **F7** to stop, **F9** to quit.
 
-The `CFG` block at the top of `apex-auto.ahk` sets the keys, how long each is
-held, the gap between keys, and the gap between cycles. By default it only sends
-input while the Roblox window is focused, so it cannot type into other apps.
+The `LAP` array at the top of `apex-auto.ahk` is the choreography. Each entry is
+one phase, run in order:
+
+| Field | Meaning |
+| --- | --- |
+| `keys` | Keys held down together during the phase. `["w", "a"]` is throttle + steer left. `[]` just waits. |
+| `ms` | How long the keys are held, in milliseconds. |
+| `repeat` | How many times to run this phase (default 1). |
+| `gap` | Milliseconds to wait between repeats (default 0). |
+| `label` | Shown in the on-screen status while the phase runs. |
+
+`LAPS` sets how many laps to play (`0` loops forever), `BETWEEN_LAPS_MS` is the
+pause between laps, and `START_DELAY_MS` is the countdown before the first
+phase. The example that ships with the script is a placeholder choreography —
+the timings have to be tuned to the real circuit, because the script cannot see
+the car.
+
+By default the script only sends input while the Roblox window is focused. It
+stops and releases every key if the window loses focus or you press F7, so a key
+can never be left stuck down.
 
 If the game ignores the keys, run the script as administrator, use windowed
 mode, or change `SendMode "Input"` to `SendMode "Event"`.
