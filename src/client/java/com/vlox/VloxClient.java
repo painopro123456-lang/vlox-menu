@@ -37,6 +37,7 @@ public class VloxClient implements ClientModInitializer {
 				KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "main"))));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			VloxConfig.flushIfDirty();
 			while (menuKey.consumeClick()) {
 				client.setScreenAndShow(new VloxScreen());
 			}

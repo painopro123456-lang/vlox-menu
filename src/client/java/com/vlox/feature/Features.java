@@ -47,7 +47,14 @@ public final class Features {
 	public static final Feature HUD_PING = toggle(Category.HUD, "hud.ping", "Ping", "Latency to the current server.", false);
 	public static final Feature HUD_HEALTH = toggle(Category.HUD, "hud.health", "Health", "Health and absorption as numbers.", false);
 	public static final Feature HUD_HUNGER = toggle(Category.HUD, "hud.hunger", "Hunger", "Food level and saturation.", false);
-	public static final Feature HUD_ARMOR = toggle(Category.HUD, "hud.armor", "Armour", "Total armour points.", false);
+	public static final Feature HUD_ARMOR = choice(Category.HUD, "hud.armor", "Armour",
+			"Show armour as points, as the worn items, or with durability bars.", new String[] { "Points", "Icons", "Icons + durability" }, 2);
+	public static final Feature HUD_KEYSTROKES = toggle(Category.HUD, "hud.keystrokes", "Keystrokes",
+			"WASD and both mouse buttons, lit while held.", false);
+	public static final Feature HUD_CPS = toggle(Category.HUD, "hud.cps", "Clicks per second",
+			"Your left and right click rate.", false);
+	public static final Feature HUD_ITEMS = toggle(Category.HUD, "hud.items", "PvP items",
+			"Totems, pearls, arrows and golden apples in your inventory.", false);
 	public static final Feature HUD_HAND = toggle(Category.HUD, "hud.hand", "Held item", "Name, count and durability of the held item.", false);
 	public static final Feature HUD_XP = toggle(Category.HUD, "hud.xp", "Experience", "Level and progress to the next level.", false);
 	public static final Feature HUD_SPRINT = toggle(Category.HUD, "hud.sprint", "Sprint state", "Shows when you are sprinting.", false);
@@ -57,7 +64,8 @@ public final class Features {
 	public static final Feature HUD_PLAYTIME = toggle(Category.HUD, "hud.playtime", "Session time", "How long this game session has been open.", false);
 	public static final Feature HUD_CLOCK = toggle(Category.HUD, "hud.clock", "Real clock", "Your system time.", false);
 	public static final Feature HUD_SERVER = toggle(Category.HUD, "hud.server", "Server", "Address of the server you are on.", false);
-	public static final Feature HUD_EFFECTS = toggle(Category.HUD, "hud.effects", "Effects", "Active potion effect count.", false);
+	public static final Feature HUD_EFFECTS = choice(Category.HUD, "hud.effects", "Potion effects",
+			"Show a count, or list each effect with its remaining time.", new String[] { "Off", "Count", "List with timers" }, 0);
 	public static final Feature HUD_FALL = toggle(Category.HUD, "hud.fall", "Fall distance", "Distance fallen, so you know when to water bucket.", false);
 	public static final Feature HUD_DIFFICULTY = toggle(Category.HUD, "hud.difficulty", "Difficulty", "Current world difficulty.", false);
 

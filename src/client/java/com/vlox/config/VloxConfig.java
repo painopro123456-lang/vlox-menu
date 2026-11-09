@@ -19,6 +19,12 @@ import java.util.Map;
 public final class VloxConfig {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static final Map<String, Double> VALUES = new HashMap<>();
+	private static final long WRITE_DELAY_MS = 400L;
+
+	/** Bumped on every change, so the HUD knows when its cached layout is stale. */
+	private static long revision;
+	private static boolean dirty;
+	private static long dirtyAt;
 
 	private VloxConfig() {
 	}
@@ -48,7 +54,30 @@ public final class VloxConfig {
 		}
 	}
 
+	public static long revision() {
+		return revision;
+	}
+
+	/**
+	 * Writes the file if something changed and the change has had a moment to settle.
+	 * Dragging a slider then costs one write instead of one per pixel, and a sudden
+	 * crash loses at most {@link #WRITE_DELAY_MS} milliseconds of settings.
+	 */
+	public static void flushIfDirty() {
+		if (dirty && System.currentTimeMillis() - dirtyAt >= WRITE_DELAY_MS) {
+			save();
+		}
+	}
+
+	/** Writes now, whatever the timer says. */
+	public static void flush() {
+		if (dirty) {
+			save();
+		}
+	}
+
 	public static void save() {
+		dirty = false;
 		JsonObject values = new JsonObject();
 		for (String key : VALUES.keySet()) {
 			values.addProperty(key, VALUES.get(key));
@@ -76,8 +105,10 @@ public final class VloxConfig {
 
 	public static void set(Feature feature, double value) {
 		VALUES.put(feature.id, clamp(feature, value));
+		revision++;
+		dirty = true;
+		dirtyAt = System.currentTimeMillis();
 		feature.fireChange();
-		save();
 	}
 
 	public static void nudge(Feature feature, double delta) {
@@ -101,6 +132,8 @@ public final class VloxConfig {
 		for (Feature feature : Features.ALL) {
 			VALUES.put(feature.id, feature.def);
 		}
+		revision++;
+		dirty = true;
 		save();
 	}
 
