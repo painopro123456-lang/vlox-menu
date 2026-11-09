@@ -83,8 +83,10 @@ public final class VloxHud implements HudElement {
 
 		if (VloxConfig.flag(Features.HUD_BACKGROUND)) {
 			int backdrop = Math.round(154 * (float) VloxConfig.get(Features.HUD_BACKDROP_OPACITY));
-			Ui.rounded(graphics, x, y, boxWidth, boxHeight, 6, Ui.alpha(0x0A0F15, backdrop));
-			graphics.fill(x + 1, y + 7, x + 2, y + boxHeight - 7, Ui.alpha(Ui.accent(), 170));
+			// Accent underneath, panel on top: the accent border follows the panel's own
+			// curve and runs the full height, with no dark caps at either end.
+			Ui.rounded(graphics, x, y, boxWidth, boxHeight, 6, Ui.alpha(Ui.accent(), 200));
+			Ui.rounded(graphics, x + 3, y, boxWidth - 3, boxHeight, 6, Ui.alpha(0x0A0F15, backdrop));
 		}
 
 		Matrix3x2fStack pose = graphics.pose();
