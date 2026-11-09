@@ -10,6 +10,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.OptionInstance;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -149,9 +150,23 @@ public final class VloxScreen extends Screen {
 	}
 
 	private void buildRow(Feature feature, int x, int y, int width, int rowHeight) {
-		int controlX = x + width - CONTROL_WIDTH;
 		int controlHeight = rowHeight - 4;
 		int controlY = y + 2;
+
+		// Anything backed by a vanilla option gets vanilla's own control widget:
+		// correct range, correct stepping, correct clamping, saved by the game.
+		OptionInstance<?> option = Features.optionFor(feature);
+		if (option != null) {
+			Minecraft minecraft = Minecraft.getInstance();
+			if (minecraft != null && minecraft.options != null) {
+				AbstractWidget widget = option.createButton(minecraft.options, x + 2, controlY, width - 4);
+				widget.setHeight(controlHeight);
+				addRowWidget(widget);
+			}
+			return;
+		}
+
+		int controlX = x + width - CONTROL_WIDTH;
 
 		switch (feature.type) {
 			case TOGGLE -> {
@@ -163,25 +178,19 @@ public final class VloxScreen extends Screen {
 			}
 			case NUMBER -> {
 				int small = CONTROL_WIDTH / 2 - 1;
-				Button minus = Button.builder(Component.literal("-"), b -> {
-					VloxConfig.nudge(feature, -feature.step);
-					Features.apply(feature);
-				}).bounds(controlX, controlY, small, controlHeight).build();
-				Button plus = Button.builder(Component.literal("+"), b -> {
-					VloxConfig.nudge(feature, feature.step);
-					Features.apply(feature);
-				}).bounds(controlX + small + 2, controlY, small, controlHeight).build();
+				Button minus = Button.builder(Component.literal("-"), b -> VloxConfig.nudge(feature, -feature.step))
+						.bounds(controlX, controlY, small, controlHeight).build();
+				Button plus = Button.builder(Component.literal("+"), b -> VloxConfig.nudge(feature, feature.step))
+						.bounds(controlX + small + 2, controlY, small, controlHeight).build();
 				addRowWidget(minus);
 				addRowWidget(plus);
 			}
 			case CHOICE -> {
-				Button button = Button.builder(Component.literal(VloxConfig.get(feature) == 0 ? feature.choices[0] : ""), b -> {
+				Button button = Button.builder(Component.literal(feature.describeValue(VloxConfig.get(feature))), b -> {
 					int next = (VloxConfig.index(feature) + 1) % feature.choices.length;
 					VloxConfig.set(feature, next);
-					Features.apply(feature);
 					b.setMessage(Component.literal(feature.choices[next]));
 				}).bounds(controlX, controlY, CONTROL_WIDTH, controlHeight).build();
-				button.setMessage(Component.literal(feature.describeValue(VloxConfig.get(feature))));
 				addRowWidget(button);
 			}
 			case ACTION -> {
@@ -255,6 +264,11 @@ public final class VloxScreen extends Screen {
 			int y = contentTop + row * rowHeight;
 
 			graphics.fill(x, y, x + columnWidth - 4, y + rowHeight - 2, row % 2 == 0 ? ROW_ALT : PANEL);
+
+			if (Features.optionFor(feature) != null) {
+				// The vanilla widget draws its own name and value.
+				continue;
+			}
 
 			int textY = y + (rowHeight - 2 - this.font.lineHeight) / 2;
 			if (VloxConfig.flag(Features.MENU_DESCRIPTIONS) && !VloxConfig.flag(Features.MENU_COMPACT)) {

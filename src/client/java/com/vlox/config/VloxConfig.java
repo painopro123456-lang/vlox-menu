@@ -102,7 +102,6 @@ public final class VloxConfig {
 			VALUES.put(feature.id, feature.def);
 		}
 		save();
-		Features.applyAll();
 	}
 
 	private static double clamp(Feature feature, double value) {

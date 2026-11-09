@@ -1,0 +1,23 @@
+{
+	"schemaVersion": 1,
+	"id": "vlox",
+	"version": "1.0.0",
+	"name": "VLOX",
+	"description": "A client-side menu with 80+ comfort, HUD and visual features for Minecraft 26.2.",
+	"authors": [
+		"VLOX"
+	],
+	"license": "MIT",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"com.vlox.VloxClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

@@ -1,12 +1,8 @@
 package com.vlox.feature;
 
-import com.vlox.config.VloxConfig;
-import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
-import net.minecraft.client.PrioritizeChunkUpdates;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.player.ChatVisiblity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +10,10 @@ import java.util.List;
 /**
  * Every setting VLOX exposes, grouped by menu category.
  *
- * Features that drive a vanilla option are forwarded in {@link #apply(Feature)},
- * which is called on change and once at startup. Features that only affect
- * VLOX's own HUD are read while drawing and need no forwarding.
+ * Features that wrap a vanilla option are handed the game's own control widget
+ * by {@link #optionFor(Feature)}, so their range, stepping and clamping are
+ * exactly vanilla's and the value lives in options.txt where it belongs.
+ * Features that only affect VLOX's own drawing keep their value in vlox.json.
  */
 public final class Features {
 	public static final List<Feature> ALL = new ArrayList<>();
@@ -189,82 +186,71 @@ public final class Features {
 		return feature;
 	}
 
-	/** Pushes every stored value into the game. */
-	public static void applyAll() {
-		for (Feature feature : ALL) {
-			apply(feature);
-		}
-	}
-
-	/** Pushes one feature's value into the game, if it drives a vanilla option. */
-	public static void apply(Feature feature) {
+	/**
+	 * The vanilla option behind a feature, or null when the feature is VLOX-only.
+	 *
+	 * Returning the OptionInstance lets the menu build the game's own control, so
+	 * the range, step size and clamping are whatever vanilla says they are.
+	 */
+	public static OptionInstance<?> optionFor(Feature feature) {
 		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft == null) {
-			return;
+		if (minecraft == null || minecraft.options == null) {
+			return null;
 		}
-		Options options = minecraft.options;
-		if (options == null) {
-			return;
-		}
+		Options o = minecraft.options;
 
-		double raw = VloxConfig.get(feature);
-		int i = (int) Math.round(raw);
-		boolean b = raw >= 0.5;
+		return switch (feature.id) {
+			case "video.renderDistance" -> o.renderDistance();
+			case "video.simulationDistance" -> o.simulationDistance();
+			case "video.entityDistance" -> o.entityDistanceScaling();
+			case "video.fpsLimit" -> o.framerateLimit();
+			case "video.vsync" -> o.enableVsync();
+			case "video.clouds" -> o.cloudStatus();
+			case "video.cloudRange" -> o.cloudRange();
+			case "video.weatherRadius" -> o.weatherRadius();
+			case "video.cutoutLeaves" -> o.cutoutLeaves();
+			case "video.vignette" -> o.vignette();
+			case "video.improvedTransparency" -> o.improvedTransparency();
+			case "video.ambientOcclusion" -> o.ambientOcclusion();
+			case "video.chunkFade" -> o.chunkSectionFadeInTime();
+			case "video.chunkUpdates" -> o.prioritizeChunkUpdates();
+			case "video.entityShadows" -> o.entityShadows();
+			case "video.mipmaps" -> o.mipmapLevels();
+			case "video.biomeBlend" -> o.biomeBlendRadius();
+			case "video.anisotropy" -> o.maxAnisotropyBit();
+			case "video.menuBlur" -> o.menuBackgroundBlurriness();
+			case "video.panoramaSpeed" -> o.panoramaSpeed();
+			case "video.highContrast" -> o.highContrast();
+			case "video.highContrastOutline" -> o.highContrastBlockOutline();
+			case "video.hideLightning" -> o.hideLightningFlash();
+			case "video.hideSplash" -> o.hideSplashTexts();
 
-		switch (feature.id) {
-			case "video.renderDistance" -> options.renderDistance().set(i);
-			case "video.simulationDistance" -> options.simulationDistance().set(i);
-			case "video.entityDistance" -> options.entityDistanceScaling().set(raw);
-			case "video.fpsLimit" -> options.framerateLimit().set(i);
-			case "video.vsync" -> options.enableVsync().set(b);
-			case "video.clouds" -> options.cloudStatus().set(CloudStatus.values()[i]);
-			case "video.cloudRange" -> options.cloudRange().set(i);
-			case "video.weatherRadius" -> options.weatherRadius().set(i);
-			case "video.cutoutLeaves" -> options.cutoutLeaves().set(b);
-			case "video.vignette" -> options.vignette().set(b);
-			case "video.improvedTransparency" -> options.improvedTransparency().set(b);
-			case "video.ambientOcclusion" -> options.ambientOcclusion().set(b);
-			case "video.chunkFade" -> options.chunkSectionFadeInTime().set(raw);
-			case "video.chunkUpdates" -> options.prioritizeChunkUpdates().set(PrioritizeChunkUpdates.values()[i]);
-			case "video.entityShadows" -> options.entityShadows().set(b);
-			case "video.mipmaps" -> options.mipmapLevels().set(i);
-			case "video.biomeBlend" -> options.biomeBlendRadius().set(i);
-			case "video.anisotropy" -> options.maxAnisotropyBit().set(i);
-			case "video.menuBlur" -> options.menuBackgroundBlurriness().set(i);
-			case "video.panoramaSpeed" -> options.panoramaSpeed().set(raw);
-			case "video.highContrast" -> options.highContrast().set(b);
-			case "video.highContrastOutline" -> options.highContrastBlockOutline().set(b);
-			case "video.hideLightning" -> options.hideLightningFlash().set(b);
-			case "video.hideSplash" -> options.hideSplashTexts().set(b);
+			case "input.sensitivity" -> o.sensitivity();
+			case "input.mouseWheel" -> o.mouseWheelSensitivity();
+			case "input.invertX" -> o.invertMouseX();
+			case "input.invertY" -> o.invertMouseY();
+			case "input.raw" -> o.rawMouseInput();
+			case "input.discreteScroll" -> o.discreteMouseScroll();
+			case "input.cursorChanges" -> o.allowCursorChanges();
+			case "input.autoJump" -> o.autoJump();
+			case "input.minecartRotate" -> o.rotateWithMinecart();
+			case "input.mainHand" -> o.mainHand();
+			case "input.suggestions" -> o.autoSuggestions();
 
-			case "input.sensitivity" -> options.sensitivity().set(raw);
-			case "input.mouseWheel" -> options.mouseWheelSensitivity().set(raw);
-			case "input.invertX" -> options.invertMouseX().set(b);
-			case "input.invertY" -> options.invertMouseY().set(b);
-			case "input.raw" -> options.rawMouseInput().set(b);
-			case "input.discreteScroll" -> options.discreteMouseScroll().set(b);
-			case "input.cursorChanges" -> options.allowCursorChanges().set(b);
-			case "input.autoJump" -> options.autoJump().set(b);
-			case "input.minecartRotate" -> options.rotateWithMinecart().set(b);
-			case "input.mainHand" -> options.mainHand().set(i == 0 ? HumanoidArm.LEFT : HumanoidArm.RIGHT);
-			case "input.suggestions" -> options.autoSuggestions().set(b);
+			case "chat.visibility" -> o.chatVisibility();
+			case "chat.opacity" -> o.chatOpacity();
+			case "chat.scale" -> o.chatScale();
+			case "chat.lineSpacing" -> o.chatLineSpacing();
+			case "chat.width" -> o.chatWidth();
+			case "chat.heightFocused" -> o.chatHeightFocused();
+			case "chat.heightUnfocused" -> o.chatHeightUnfocused();
+			case "chat.colors" -> o.chatColors();
+			case "chat.links" -> o.chatLinks();
+			case "chat.backgroundOnly" -> o.backgroundForChatOnly();
+			case "chat.delay" -> o.chatDelay();
+			case "chat.textBackground" -> o.textBackgroundOpacity();
 
-			case "chat.visibility" -> options.chatVisibility().set(i == 0 ? ChatVisiblity.FULL : i == 1 ? ChatVisiblity.SYSTEM : ChatVisiblity.HIDDEN);
-			case "chat.opacity" -> options.chatOpacity().set(raw);
-			case "chat.scale" -> options.chatScale().set(raw);
-			case "chat.lineSpacing" -> options.chatLineSpacing().set(raw);
-			case "chat.width" -> options.chatWidth().set(raw);
-			case "chat.heightFocused" -> options.chatHeightFocused().set(raw);
-			case "chat.heightUnfocused" -> options.chatHeightUnfocused().set(raw);
-			case "chat.colors" -> options.chatColors().set(b);
-			case "chat.links" -> options.chatLinks().set(b);
-			case "chat.backgroundOnly" -> options.backgroundForChatOnly().set(b);
-			case "chat.delay" -> options.chatDelay().set(raw);
-			case "chat.textBackground" -> options.textBackgroundOpacity().set(raw);
-
-			default -> {
-				// Settings that only affect VLOX's own drawing need no forwarding.
-			}
-		}
+			default -> null;
+		};
 	}
 }

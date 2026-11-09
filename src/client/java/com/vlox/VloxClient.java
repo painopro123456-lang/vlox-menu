@@ -21,7 +21,6 @@ public class VloxClient implements ClientModInitializer {
 	public static final long SESSION_START = System.currentTimeMillis();
 
 	public static KeyMapping menuKey;
-	private static boolean applied;
 
 	@Override
 	public void onInitializeClient() {
@@ -38,11 +37,6 @@ public class VloxClient implements ClientModInitializer {
 				KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "main"))));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			if (!applied) {
-				Features.applyAll();
-				applied = true;
-			}
-
 			while (menuKey.consumeClick()) {
 				client.setScreenAndShow(new VloxScreen());
 			}
