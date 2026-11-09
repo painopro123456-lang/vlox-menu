@@ -1,0 +1,25 @@
+{
+	"schemaVersion": 1,
+	"id": "vloxboost",
+	"version": "${version}",
+	"name": "VloxBoost",
+	"description": "Client-side performance for Minecraft 26.2: distant entity and block entity culling, a particle cap, and a render distance that follows your frame rate.",
+	"authors": [
+		"VLOX"
+	],
+	"license": "MIT",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"com.vloxboost.VloxBoost"
+		]
+	},
+	"mixins": [
+		"vloxboost.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.2",
+		"java": ">=25"
+	}
+}
