@@ -1,5 +1,6 @@
 package com.vlox.gui;
 
+import com.vlox.config.Presets;
 import com.vlox.config.VloxConfig;
 import com.vlox.feature.Category;
 import com.vlox.feature.Feature;
@@ -46,6 +47,8 @@ public final class VloxScreen extends Screen {
 	private float scrollTarget;
 	private float scrollShown;
 	private long lastFrame = System.nanoTime();
+	private String status;
+	private long statusAt;
 
 	private int panelX;
 	private int panelY;
@@ -223,7 +226,7 @@ public final class VloxScreen extends Screen {
 	private void drawRail(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
 		int x = this.panelX + 18;
 
-		Ui.textScaled(graphics, this.font, "VLOX", x, this.panelY + 26, Ui.ACCENT, 1.85F);
+		Ui.textScaled(graphics, this.font, "VLOX", x, this.panelY + 26, Ui.accent(), 1.85F);
 		Ui.text(graphics, this.font, "SETTINGS", x + 1, this.panelY + 50, Ui.FAINT);
 
 		int itemY = this.panelY + 78;
@@ -233,8 +236,8 @@ public final class VloxScreen extends Screen {
 			boolean hovered = Ui.inside(mouseX, mouseY, x - 6, itemY, RAIL_WIDTH - 24, 26);
 
 			if (active) {
-				Ui.rounded(graphics, x - 6, itemY, RAIL_WIDTH - 24, 26, 6, Ui.alpha(Ui.ACCENT, 28));
-				graphics.fill(x - 6, itemY + 6, x - 4, itemY + 20, Ui.ACCENT);
+				Ui.rounded(graphics, x - 6, itemY, RAIL_WIDTH - 24, 26, 6, Ui.alpha(Ui.accent(), 28));
+				graphics.fill(x - 6, itemY + 6, x - 4, itemY + 20, Ui.accent());
 			} else if (hovered) {
 				Ui.rounded(graphics, x - 6, itemY, RAIL_WIDTH - 24, 26, 6, 0x0DFFFFFF);
 			}
@@ -245,7 +248,7 @@ public final class VloxScreen extends Screen {
 			int count = countIn(cat);
 			Ui.text(graphics, this.font, Integer.toString(count),
 					this.panelX + RAIL_WIDTH - 34 - this.font.width(Integer.toString(count)),
-					itemY + 9, active ? Ui.alpha(Ui.ACCENT, 200) : Ui.FAINT);
+					itemY + 9, active ? Ui.alpha(Ui.accent(), 200) : Ui.FAINT);
 
 			itemY += 30;
 		}
@@ -280,7 +283,7 @@ public final class VloxScreen extends Screen {
 
 		if (!this.query.isEmpty() && (System.currentTimeMillis() / 500L) % 2L == 0L) {
 			int caretX = this.searchX + 16 + Math.min(this.font.width(this.query), this.searchWidth - 26);
-			graphics.fill(caretX, this.searchY + 5, caretX + 1, this.searchY + 14, Ui.ACCENT);
+			graphics.fill(caretX, this.searchY + 5, caretX + 1, this.searchY + 14, Ui.accent());
 		}
 
 		graphics.fill(this.contentX + 16, this.listY - 6, this.contentX + this.contentWidth - 16,
@@ -313,7 +316,7 @@ public final class VloxScreen extends Screen {
 
 			if (next > 0.05F) {
 				graphics.fill(row.x(), row.y() + 7, row.x() + 2, row.y() + ROW_HEIGHT - 9,
-						Ui.alpha(Ui.ACCENT, (int) (230 * next)));
+						Ui.alpha(Ui.accent(), (int) (230 * next)));
 			}
 
 			int labelY = row.y() + 7;
@@ -373,15 +376,15 @@ public final class VloxScreen extends Screen {
 
 		int width = 34;
 		int height = 16;
-		int track = on ? Ui.alpha(Ui.ACCENT, 90) : 0xFF1B2430;
+		int track = on ? Ui.alpha(Ui.accent(), 90) : 0xFF1B2430;
 
 		Ui.rounded(graphics, x, y, width, height, 8, track);
 		if (on) {
-			Ui.rounded(graphics, x, y, width, height, 8, Ui.alpha(Ui.ACCENT, 60));
+			Ui.rounded(graphics, x, y, width, height, 8, Ui.alpha(Ui.accent(), 60));
 		}
 
 		int knobX = x + 3 + Math.round(current * (width - 6 - 10));
-		Ui.rounded(graphics, knobX, y + 3, 10, 10, 5, on ? Ui.ACCENT : 0xFF6C7A8C);
+		Ui.rounded(graphics, knobX, y + 3, 10, 10, 5, on ? Ui.accent() : 0xFF6C7A8C);
 	}
 
 	private void drawChip(GuiGraphicsExtractor graphics, int x, int y, int width, int height, String text,
@@ -394,7 +397,7 @@ public final class VloxScreen extends Screen {
 
 		String shown = Ui.fit(this.font, text, width - 12);
 		int textX = x + (width - this.font.width(shown)) / 2;
-		Ui.text(graphics, this.font, shown, textX, y + (height - 8) / 2, accent ? Ui.ACCENT : Ui.TEXT);
+		Ui.text(graphics, this.font, shown, textX, y + (height - 8) / 2, accent ? Ui.accent() : Ui.TEXT);
 	}
 
 	private void drawStepper(GuiGraphicsExtractor graphics, Row row, Feature feature, int mouseX, int mouseY) {
@@ -415,8 +418,8 @@ public final class VloxScreen extends Screen {
 			Ui.rounded(graphics, x + width - 22, y, 22, height, 5, 0x14FFFFFF);
 		}
 
-		Ui.text(graphics, this.font, "-", x + 9, y + 5, hoverMinus ? Ui.ACCENT : Ui.MUTED);
-		Ui.text(graphics, this.font, "+", x + width - 13, y + 5, hoverPlus ? Ui.ACCENT : Ui.MUTED);
+		Ui.text(graphics, this.font, "-", x + 9, y + 5, hoverMinus ? Ui.accent() : Ui.MUTED);
+		Ui.text(graphics, this.font, "+", x + width - 13, y + 5, hoverPlus ? Ui.accent() : Ui.MUTED);
 
 		String value = feature.describeValue(VloxConfig.get(feature));
 		Ui.text(graphics, this.font, value, x + (width - this.font.width(value)) / 2, y + 5, Ui.TEXT);
@@ -435,10 +438,21 @@ public final class VloxScreen extends Screen {
 			}
 		}
 
-		String hint = hoveredFeature != null ? hoveredFeature.description
-				: "Hover a setting to see what it does";
-		Ui.text(graphics, this.font, Ui.fit(this.font, hint, this.contentWidth - 140),
-				this.contentX + 16, y + 9, hoveredFeature != null ? Ui.MUTED : Ui.FAINT);
+		boolean showingStatus = this.status != null
+				&& System.currentTimeMillis() - this.statusAt < 2200L;
+		if (!showingStatus) {
+			this.status = null;
+		}
+
+		if (showingStatus) {
+			Ui.text(graphics, this.font, Ui.fit(this.font, this.status, this.contentWidth - 140),
+					this.contentX + 16, y + 9, Ui.accent());
+		} else {
+			String hint = hoveredFeature != null ? hoveredFeature.description
+					: "Hover a setting to see what it does";
+			Ui.text(graphics, this.font, Ui.fit(this.font, hint, this.contentWidth - 140),
+					this.contentX + 16, y + 9, hoveredFeature != null ? Ui.MUTED : Ui.FAINT);
+		}
 
 		String close = "Right Shift to close";
 		Ui.text(graphics, this.font, close,
@@ -609,14 +623,54 @@ public final class VloxScreen extends Screen {
 		if (feature == Features.MENU_RESET) {
 			VloxConfig.resetAll();
 			refresh();
+			status("Every setting is back to its default");
 			return;
 		}
 		if (feature == Features.MENU_COPY_PATH) {
-			Minecraft minecraft = Minecraft.getInstance();
-			if (minecraft != null && minecraft.keyboardHandler != null) {
-				minecraft.keyboardHandler.setClipboard(VloxConfig.file().toAbsolutePath().toString());
-			}
+			copy(VloxConfig.file().toAbsolutePath().toString(), "Config path copied");
+			return;
 		}
+		if (feature == Features.MENU_COPY_COORDS) {
+			Minecraft minecraft = Minecraft.getInstance();
+			if (minecraft == null || minecraft.player == null) {
+				status("No world loaded");
+				return;
+			}
+			var player = minecraft.player;
+			String coords = Math.round(player.getX()) + " " + Math.round(player.getY()) + " " + Math.round(player.getZ());
+			copy(coords, "Copied " + coords);
+			return;
+		}
+		if (feature == Features.MENU_PRESET_PVP) {
+			Presets.pvp();
+			refresh();
+			status("PvP layout applied");
+			return;
+		}
+		if (feature == Features.MENU_PRESET_EXPLORER) {
+			Presets.explorer();
+			refresh();
+			status("Explorer layout applied");
+			return;
+		}
+		if (feature == Features.MENU_PRESET_PERFORMANCE) {
+			Presets.performance();
+			refresh();
+			status("Performance options applied to options.txt");
+		}
+	}
+
+	private void copy(String value, String message) {
+		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft != null && minecraft.keyboardHandler != null) {
+			minecraft.keyboardHandler.setClipboard(value);
+			status(message);
+		}
+	}
+
+	private void status(String message) {
+		this.status = message;
+		this.statusAt = System.currentTimeMillis();
 	}
 
 	@Override

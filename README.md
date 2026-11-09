@@ -1,7 +1,7 @@
 # VLOX
 
-A client-side settings menu for **Minecraft 26.2** on **Fabric**, with 92 settings
-in one in-game screen. Press **Right Shift** to open it.
+A client-side settings menu for **Minecraft 26.2** on **Fabric**, with 103 settings
+in one in-game screen. Press **Right Shift** to open it, and **V** to zoom.
 
 No mixins, no server-side code, nothing that changes combat or movement: every
 setting either draws VLOX's own HUD or forwards to a vanilla option that already
@@ -11,11 +11,11 @@ exists in the Minecraft options screen.
 
 | Category | Count | Examples |
 | --- | --- | --- |
-| **HUD** | 38 | FPS, coordinates, Nether coordinates, biome, dimension, world time, light level, memory, ping, health, **armour as the worn items with durability bars**, held item with its icon, **keystrokes**, **CPS**, **PvP item counts** (totems, pearls, arrows, gapples), **potion effect timers**, XP, fall distance, "looking at" block |
+| **HUD** | 40 | FPS, coordinates, Nether coordinates, biome, dimension, world time, light level, memory, ping, health, **armour as the worn items with durability bars**, held item with its icon, **keystrokes**, **CPS**, **PvP item counts** (totems, pearls, arrows, gapples), **potion effect timers**, XP, fall distance, "looking at" block |
 | **Graphics** | 24 | Render distance, simulation distance, entity distance, FPS limit, clouds, cloud range, weather radius, cutout leaves, vignette, transparency, ambient occlusion, chunk fade, mipmaps, biome blend, anisotropic filtering, menu blur, panorama speed |
-| **Input** | 11 | Mouse sensitivity, wheel sensitivity, invert axes, raw input, discrete scrolling, cursor changes, auto jump, rotate with minecart, main hand |
+| **Input** | 15 | Mouse sensitivity, wheel sensitivity, invert axes, raw input, discrete scrolling, cursor changes, auto jump, rotate with minecart, main hand, **auto sprint**, **zoom**, **zoom amount**, **smooth zoom** |
 | **Chat** | 12 | Visibility, opacity, scale, line spacing, width, height (open/closed), colours, links, message delay, text backdrop |
-| **Menu** | 7 | Descriptions, compact rows, FPS in title, remember category, focus search, reset all, copy config path |
+| **Menu** | 12 | Descriptions, compact rows, FPS in title, remember category, focus search, **accent colour**, **three layout presets**, copy coordinates, reset all, copy config path |
 
 The menu is drawn by hand rather than assembled from vanilla widgets:
 
@@ -42,9 +42,33 @@ Settings come in two kinds:
   so the range, the step size, the clamping and the saving are exactly the
   options screen's, and the value lives in `options.txt` where the game already
   keeps it. VLOX does not reinterpret them.
-- **45 are VLOX's own.** HUD lines and menu behaviour, stored in `config/vlox.json`
-  and written within half a second of a change rather than on every pixel of a
-  slider drag.
+- **56 are VLOX's own.** HUD lines, zoom, auto sprint, layouts and menu
+  behaviour, stored in `config/vlox.json` and written within half a second of a
+  change rather than on every pixel of a slider drag.
+
+## What the modules actually do
+
+- **Zoom** holds your field of view at a fraction of its normal value while `V`
+  is down. It writes the live FOV option and never saves it, and it restores on
+  release, on opening any screen, and when the world unloads. The range stops at
+  the vanilla FOV floor of 30, so from a 70 field of view the strongest zoom is
+  about 2.3×.
+- **Auto sprint** keeps you sprinting while forward is held, skipping the cases
+  vanilla refuses: sneaking, using an item, or below six hunger.
+- **Death point** records where you died, once per death, together with the
+  dimension, and stores it in the config so it survives a restart. The HUD line
+  shows the coordinates and your distance to them when you are in the same
+  dimension.
+- **Layouts** are one-click bundles. *PvP* turns on armour icons with durability,
+  health, hunger, ping, held item, keystrokes, CPS, item counts, effect timers
+  and auto sprint, and moves the HUD to the top right. *Explorer* turns on
+  coordinates, facing, biome, dimension, time, day, light, chunk, speed, Nether
+  conversion and the death point. *Performance* sets render distance 8,
+  simulation distance 8, entity distance 0.5, entity shadows off and chunk fade
+  0, then saves options.txt the way the vanilla screen does.
+- **Accent colour** repaints the rail, the toggles, the switches, the HUD bar and
+  the keystroke highlights in one of five colours. Every action reports what it
+  did in the footer for two seconds.
 
 ## Install
 
@@ -73,12 +97,13 @@ gradle build
 | File | Role |
 | --- | --- |
 | `feature/Feature.java` | One setting: id, label, description, type, range, default, choices |
-| `feature/Features.java` | The registry of all 92 settings, plus the map from a setting to its vanilla option |
+| `feature/Features.java` | The registry of all 103 settings, plus the map from a setting to its vanilla option |
 | `config/VloxConfig.java` | JSON persistence, clamping and step quantisation |
 | `gui/VloxScreen.java` | The menu: rail, hand-drawn rows, controls, search, scrolling |
 | `gui/Ui.java` | Drawing helpers: rounded panels with shadow, scaled text, truncation |
 | `hud/VloxHud.java` | The HUD rows: text, item icons, keystrokes, and the panel layout |
 | `hud/CombatInput.java` | Samples held keys and counts clicks per second |
+| `config/Presets.java` | The layout bundles and the performance preset |
 | `VloxClient.java` | Entrypoint: keybind, HUD element registration, startup |
 
 Values for VLOX's own settings live in one map keyed by feature id, so adding a
@@ -128,7 +153,7 @@ What that means per kind of setting:
 
 - The **47 option-backed rows** are low risk by construction: the widget and the
   value are vanilla's, and the only new code is which row to put them on.
-- The **38 HUD lines** are the real unknown: they are VLOX's own drawing and its
+- The **40 HUD lines** are the real unknown: they are VLOX's own drawing and its
   own reading of game state, and none of that has been seen running. The item
   icons in particular rely on `GuiGraphicsExtractor.item` honouring the pose VLOX
   pushes for scaling, which cannot be checked without a client.

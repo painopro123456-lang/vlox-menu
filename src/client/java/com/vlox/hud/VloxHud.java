@@ -82,8 +82,9 @@ public final class VloxHud implements HudElement {
 		int y = corner == 2 || corner == 3 ? screenHeight - boxHeight - 4 : 4;
 
 		if (VloxConfig.flag(Features.HUD_BACKGROUND)) {
-			Ui.rounded(graphics, x, y, boxWidth, boxHeight, 6, 0x9A0A0F15);
-			graphics.fill(x + 1, y + 7, x + 2, y + boxHeight - 7, Ui.alpha(Ui.ACCENT, 170));
+			int backdrop = Math.round(154 * (float) VloxConfig.get(Features.HUD_BACKDROP_OPACITY));
+			Ui.rounded(graphics, x, y, boxWidth, boxHeight, 6, Ui.alpha(0x0A0F15, backdrop));
+			graphics.fill(x + 1, y + 7, x + 2, y + boxHeight - 7, Ui.alpha(Ui.accent(), 170));
 		}
 
 		Matrix3x2fStack pose = graphics.pose();
@@ -300,6 +301,9 @@ public final class VloxHud implements HudElement {
 			line("Difficulty  ").append(minecraft.level.getDifficulty());
 			addLine();
 		}
+		if (VloxConfig.flag(Features.HUD_DEATH_POINT)) {
+			addDeathPoint(minecraft);
+		}
 
 		if (rows.isEmpty()) {
 			boxWidth = 0;
@@ -320,6 +324,50 @@ public final class VloxHud implements HudElement {
 		}
 		boxWidth = Math.round((textWidth + PAD * 2) * scale);
 		boxHeight = Math.round((height + PAD * 2) * scale);
+	}
+
+	/** The stored death position, with the distance to it when it is in this dimension. */
+	private void addDeathPoint(Minecraft minecraft) {
+		if (!VloxConfig.hasText("death.x")) {
+			line("Last death  none yet");
+			addLine();
+			return;
+		}
+
+		double x = number("death.x");
+		double y = number("death.y");
+		double z = number("death.z");
+		String dimension = VloxConfig.getText("death.dim", "");
+		boolean inThisDimension = dimension.equals(minecraft.level.dimension().identifier().toString());
+
+		line("Last death  ");
+		appendFixed(text, x, 0);
+		text.append(" / ");
+		appendFixed(text, y, 0);
+		text.append(" / ");
+		appendFixed(text, z, 0);
+
+		if (inThisDimension) {
+			LocalPlayer player = minecraft.player;
+			double dx = player.getX() - x;
+			double dy = player.getY() - y;
+			double dz = player.getZ() - z;
+			text.append("  ");
+			appendFixed(text, Math.sqrt(dx * dx + dy * dy + dz * dz), 0);
+			text.append('m');
+		} else if (!dimension.isEmpty()) {
+			int colon = dimension.indexOf(':');
+			text.append("  ").append(colon >= 0 ? dimension.substring(colon + 1) : dimension);
+		}
+		addLine();
+	}
+
+	private static double number(String key) {
+		try {
+			return Double.parseDouble(VloxConfig.getText(key, "0"));
+		} catch (NumberFormatException e) {
+			return 0.0D;
+		}
 	}
 
 	/** Draws the four equipped armour pieces as their real items. */
@@ -613,15 +661,15 @@ public final class VloxHud implements HudElement {
 				int dotX = x + MOUSE_X + MOUSE_WIDTH + 3;
 				int dotY = y + 3;
 				if (CombatInput.jump) {
-					graphics.fill(dotX, dotY, dotX + 3, dotY + 3, Ui.ACCENT);
+					graphics.fill(dotX, dotY, dotX + 3, dotY + 3, Ui.accent());
 					dotY += 5;
 				}
 				if (CombatInput.sprint) {
-					graphics.fill(dotX, dotY, dotX + 3, dotY + 3, Ui.ACCENT);
+					graphics.fill(dotX, dotY, dotX + 3, dotY + 3, Ui.accent());
 					dotY += 5;
 				}
 				if (CombatInput.sneak) {
-					graphics.fill(dotX, dotY, dotX + 3, dotY + 3, Ui.ACCENT);
+					graphics.fill(dotX, dotY, dotX + 3, dotY + 3, Ui.accent());
 				}
 			}
 		}
@@ -632,8 +680,8 @@ public final class VloxHud implements HudElement {
 
 		private static void key(GuiGraphicsExtractor graphics, Font font, int x, int y, int width, String label,
 				boolean pressed) {
-			int background = pressed ? Ui.alpha(Ui.ACCENT, 215) : 0x8A0A0F15;
-			int border = pressed ? Ui.ACCENT : 0x3AFFFFFF;
+			int background = pressed ? Ui.alpha(Ui.accent(), 215) : 0x8A0A0F15;
+			int border = pressed ? Ui.accent() : 0x3AFFFFFF;
 			graphics.fill(x, y, x + width, y + KEY_HEIGHT, border);
 			graphics.fill(x + 1, y + 1, x + width - 1, y + KEY_HEIGHT - 1, background);
 			graphics.centeredText(font, label, x + width / 2,

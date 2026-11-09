@@ -68,6 +68,10 @@ public final class Features {
 			"Show a count, or list each effect with its remaining time.", new String[] { "Off", "Count", "List with timers" }, 0);
 	public static final Feature HUD_FALL = toggle(Category.HUD, "hud.fall", "Fall distance", "Distance fallen, so you know when to water bucket.", false);
 	public static final Feature HUD_DIFFICULTY = toggle(Category.HUD, "hud.difficulty", "Difficulty", "Current world difficulty.", false);
+	public static final Feature HUD_DEATH_POINT = toggle(Category.HUD, "hud.deathPoint", "Death point",
+			"Where you last died, and how far away it is. Remembered across sessions.", false);
+	public static final Feature HUD_BACKDROP_OPACITY = number(Category.HUD, "hud.backdropOpacity", "Backdrop opacity",
+			"How solid the panel behind the HUD is.", 0.3, 1.0, 0.05, 1.0);
 
 	public static final Feature VIDEO_RENDER_DISTANCE = number(Category.GRAPHICS, "video.renderDistance", "Render distance",
 			"Chunks drawn in each direction.", 2, 32, 1, 12);
@@ -134,6 +138,15 @@ public final class Features {
 	public static final Feature INPUT_SUGGESTIONS = toggle(Category.INPUT, "input.suggestions", "Command suggestions",
 			"Show the command suggestion list.", true);
 
+	public static final Feature INPUT_AUTO_SPRINT = toggle(Category.INPUT, "input.autoSprint", "Auto sprint",
+			"Sprint whenever you hold forward, without pressing the sprint key.", false);
+	public static final Feature INPUT_ZOOM = toggle(Category.INPUT, "input.zoom", "Zoom",
+			"Hold the zoom key to narrow your field of view.", false);
+	public static final Feature INPUT_ZOOM_AMOUNT = number(Category.INPUT, "input.zoomAmount", "Zoom amount",
+			"How far the zoom key narrows the view. Vanilla clamps field of view at 30.", 1.5, 3.0, 0.1, 2.0);
+	public static final Feature INPUT_ZOOM_SMOOTH = toggle(Category.INPUT, "input.zoomSmooth", "Smooth zoom",
+			"Ease into the zoom instead of snapping to it.", true);
+
 	public static final Feature CHAT_VISIBILITY = choice(Category.CHAT, "chat.visibility", "Visibility",
 			"How much chat is shown.", new String[] { "Full", "Commands only", "Hidden" }, 0);
 	public static final Feature CHAT_OPACITY = number(Category.CHAT, "chat.opacity", "Opacity",
@@ -167,8 +180,19 @@ public final class Features {
 			"Reopen the menu on the category you used last.", true);
 	public static final Feature MENU_SEARCH_FOCUS = toggle(Category.MENU, "menu.searchFocus", "Focus search",
 			"Put the cursor in the search box when the menu opens.", false);
+	public static final Feature MENU_ACCENT = choice(Category.MENU, "menu.accent", "Accent colour",
+			"The highlight colour used by the menu and the HUD.",
+			new String[] { "Green", "Cyan", "Amber", "Violet", "Rose" }, 0);
+	public static final Feature MENU_PRESET_PVP = Feature.action(Category.MENU, "menu.presetPvp", "Layout: PvP",
+			"Turn on the HUD lines a fight needs and set auto sprint.");
+	public static final Feature MENU_PRESET_EXPLORER = Feature.action(Category.MENU, "menu.presetExplorer", "Layout: explorer",
+			"Coordinates, biome, dimension, time, light and speed.");
+	public static final Feature MENU_PRESET_PERFORMANCE = Feature.action(Category.MENU, "menu.presetPerformance", "Preset: performance",
+			"Lower render and simulation distance, drop shadows, apply to options.txt.");
 	public static final Feature MENU_RESET = Feature.action(Category.MENU, "menu.reset", "Reset all settings",
 			"Return every VLOX setting to its default.");
+	public static final Feature MENU_COPY_COORDS = Feature.action(Category.MENU, "menu.copyCoords", "Copy coordinates",
+			"Copy your exact position to the clipboard.");
 	public static final Feature MENU_COPY_PATH = Feature.action(Category.MENU, "menu.copyPath", "Copy config path",
 			"Copy the config file location to the clipboard.");
 

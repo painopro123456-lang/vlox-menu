@@ -19,6 +19,8 @@ import java.util.Map;
 public final class VloxConfig {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static final Map<String, Double> VALUES = new HashMap<>();
+	/** Free-form text kept beside the settings, such as the last death point. */
+	private static final Map<String, String> TEXT = new HashMap<>();
 	private static final long WRITE_DELAY_MS = 400L;
 
 	/** Bumped on every change, so the HUD knows when its cached layout is stale. */
@@ -46,6 +48,14 @@ public final class VloxConfig {
 				for (String key : values.keySet()) {
 					if (values.get(key).isJsonPrimitive()) {
 						VALUES.put(key, values.get(key).getAsDouble());
+					}
+				}
+			}
+			JsonObject text = root.getAsJsonObject("text");
+			if (text != null) {
+				for (String key : text.keySet()) {
+					if (text.get(key).isJsonPrimitive()) {
+						TEXT.put(key, text.get(key).getAsString());
 					}
 				}
 			}
@@ -83,9 +93,15 @@ public final class VloxConfig {
 			values.addProperty(key, VALUES.get(key));
 		}
 
+		JsonObject text = new JsonObject();
+		for (String key : TEXT.keySet()) {
+			text.addProperty(key, TEXT.get(key));
+		}
+
 		JsonObject root = new JsonObject();
 		root.addProperty("version", 1);
 		root.add("values", values);
+		root.add("text", text);
 
 		try {
 			Files.createDirectories(file().getParent());
@@ -93,6 +109,26 @@ public final class VloxConfig {
 		} catch (Exception e) {
 			System.err.println("[vlox] could not save config: " + e.getMessage());
 		}
+	}
+
+	public static String getText(String key, String fallback) {
+		return TEXT.getOrDefault(key, fallback);
+	}
+
+	public static boolean hasText(String key) {
+		return TEXT.containsKey(key);
+	}
+
+	/** Stores free-form text and schedules a write. */
+	public static void putText(String key, String value) {
+		if (value == null) {
+			TEXT.remove(key);
+		} else {
+			TEXT.put(key, value);
+		}
+		revision++;
+		dirty = true;
+		dirtyAt = System.currentTimeMillis();
 	}
 
 	public static double get(Feature feature) {

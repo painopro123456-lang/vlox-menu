@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.vlox.FeatureRegistryTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-09T15:35:31.040Z" hostname="freestyle-vm" time="0.062">
+<testsuite name="com.vlox.FeatureRegistryTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-09T15:46:22.564Z" hostname="freestyle-vm" time="0.083">
   <properties/>
-  <testcase name="everyCategoryHasFeatures()" classname="com.vlox.FeatureRegistryTest" time="0.024"/>
-  <testcase name="choicesAreDeclared()" classname="com.vlox.FeatureRegistryTest" time="0.003"/>
-  <testcase name="registryHasAtLeastSeventyFiveFeatures()" classname="com.vlox.FeatureRegistryTest" time="0.005"/>
+  <testcase name="everyCategoryHasFeatures()" classname="com.vlox.FeatureRegistryTest" time="0.032"/>
+  <testcase name="choicesAreDeclared()" classname="com.vlox.FeatureRegistryTest" time="0.002"/>
+  <testcase name="registryHasAtLeastSeventyFiveFeatures()" classname="com.vlox.FeatureRegistryTest" time="0.001"/>
   <testcase name="defaultsAreInsideTheirRange()" classname="com.vlox.FeatureRegistryTest" time="0.002"/>
   <testcase name="idsAreUnique()" classname="com.vlox.FeatureRegistryTest" time="0.002"/>
   <system-out><![CDATA[]]></system-out>

@@ -1,5 +1,7 @@
 package com.vlox.gui;
 
+import com.vlox.config.VloxConfig;
+import com.vlox.feature.Features;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.joml.Matrix3x2fStack;
@@ -9,10 +11,31 @@ public final class Ui {
 	public static final int TEXT = 0xFFF2F6FA;
 	public static final int MUTED = 0xFF8290A3;
 	public static final int FAINT = 0xFF46515F;
-	public static final int ACCENT = 0xFF35E08A;
 	public static final int TRACK = 0xFF1B2430;
 
+	/** The selectable accent colours, in menu order. */
+	private static final int[] ACCENTS = {
+			0xFF35E08A, 0xFF3AC8FF, 0xFFFFB03A, 0xFFA97BFF, 0xFFFF6F9B
+	};
+
+	private static int accent = ACCENTS[0];
+	private static long accentRevision = Long.MIN_VALUE;
+
 	private Ui() {
+	}
+
+	/**
+	 * The current accent colour. Re-read only when the config changes, so drawing
+	 * code can call this freely.
+	 */
+	public static int accent() {
+		long revision = VloxConfig.revision();
+		if (revision != accentRevision) {
+			accentRevision = revision;
+			int index = VloxConfig.index(Features.MENU_ACCENT);
+			accent = ACCENTS[Math.max(0, Math.min(ACCENTS.length - 1, index))];
+		}
+		return accent;
 	}
 
 	public static int alpha(int color, int alpha) {
