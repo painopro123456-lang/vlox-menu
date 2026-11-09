@@ -3,6 +3,7 @@ package com.vlox.hud;
 import com.vlox.VloxClient;
 import com.vlox.config.VloxConfig;
 import com.vlox.feature.Features;
+import com.vlox.gui.Ui;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -64,7 +65,8 @@ public final class VloxHud implements HudElement {
 		int y = corner == 2 || corner == 3 ? screenHeight - boxHeight - 4 : 4;
 
 		if (VloxConfig.flag(Features.HUD_BACKGROUND)) {
-			graphics.fill(x, y, x + boxWidth, y + boxHeight, 0x9A0B0F14);
+			Ui.rounded(graphics, x, y, boxWidth, boxHeight, 6, 0x9A0A0F15);
+			graphics.fill(x + 1, y + 7, x + 2, y + boxHeight - 7, Ui.alpha(Ui.ACCENT, 170));
 		}
 
 		Matrix3x2fStack pose = graphics.pose();
@@ -75,7 +77,7 @@ public final class VloxHud implements HudElement {
 		boolean shadow = VloxConfig.flag(Features.HUD_SHADOW);
 		int textY = pad;
 		for (String line : lines) {
-			graphics.text(font, line, pad, textY, ON, shadow);
+			graphics.text(font, line, pad + 4, textY, ON, shadow);
 			textY += lineHeight;
 		}
 

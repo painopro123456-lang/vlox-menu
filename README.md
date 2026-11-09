@@ -17,8 +17,22 @@ exists in the Minecraft options screen.
 | **Chat** | 12 | Visibility, opacity, scale, line spacing, width, height (open/closed), colours, links, message delay, text backdrop |
 | **Menu** | 7 | Descriptions, compact rows, FPS in title, remember category, focus search, reset all, copy config path |
 
-Open the menu, pick a category along the top, scroll to page through the list, and
-search by name, id or description.
+The menu is drawn by hand rather than assembled from vanilla widgets:
+
+- a dark side rail with the VLOX wordmark, one item per category, each showing how
+  many settings it holds, with an accent bar on the selected one
+- rounded row cards that fade in under the cursor, with the accent bar sliding in
+- animated pill switches whose knob glides between off and on
+- value chips for cycles, and `- value +` steppers for VLOX's own numbers
+- a search field with a blinking caret
+- a footer that shows the full description of whatever row you hover
+- a thin scrollbar, and a soft fade at the top and bottom of the list
+
+The HUD uses the same language: a rounded translucent card with the same accent
+bar down its left edge.
+
+Pick a category on the left, scroll to page through the list, and search by name,
+id or description.
 
 Settings come in two kinds:
 
@@ -58,7 +72,8 @@ gradle build
 | `feature/Feature.java` | One setting: id, label, description, type, range, default, choices |
 | `feature/Features.java` | The registry of all 89 settings, plus the map from a setting to its vanilla option |
 | `config/VloxConfig.java` | JSON persistence, clamping and step quantisation |
-| `gui/VloxScreen.java` | The menu: category tabs, search, scrolling rows |
+| `gui/VloxScreen.java` | The menu: rail, hand-drawn rows, controls, search, scrolling |
+| `gui/Ui.java` | Drawing helpers: rounded panels with shadow, scaled text, truncation |
 | `hud/VloxHud.java` | The HUD lines and their placement |
 | `VloxClient.java` | Entrypoint: keybind, HUD element registration, startup |
 
