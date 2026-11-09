@@ -39,17 +39,21 @@ public class VloxClient implements ClientModInitializer {
 				Identifier.fromNamespaceAndPath(MOD_ID, "hud"),
 				new VloxHud());
 
+		// Registering the same category twice throws, so both keys share this one.
+		KeyMapping.Category category = KeyMapping.Category.register(
+				Identifier.fromNamespaceAndPath(MOD_ID, "main"));
+
 		menuKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.vlox.menu",
 				InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_RIGHT_SHIFT,
-				KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "main"))));
+				category));
 
 		zoomKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.vlox.zoom",
 				InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_V,
-				KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "main"))));
+				category));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			VloxConfig.flushIfDirty();
