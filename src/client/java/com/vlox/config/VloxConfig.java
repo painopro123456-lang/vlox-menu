@@ -32,7 +32,7 @@ public final class VloxConfig {
 	}
 
 	public static Path file() {
-		return FabricLoader.getInstance().getConfigDir().resolve("vlox.json");
+		return FabricLoader.getInstance().getConfigDir().resolve("nova.json");
 	}
 
 	public static void load() {
@@ -60,7 +60,7 @@ public final class VloxConfig {
 				}
 			}
 		} catch (Exception e) {
-			System.err.println("[vlox] could not read config: " + e.getMessage());
+			System.err.println("[nova] could not read config: " + e.getMessage());
 		}
 	}
 
@@ -107,7 +107,7 @@ public final class VloxConfig {
 			Files.createDirectories(file().getParent());
 			Files.writeString(file(), GSON.toJson(root), StandardCharsets.UTF_8);
 		} catch (Exception e) {
-			System.err.println("[vlox] could not save config: " + e.getMessage());
+			System.err.println("[nova] could not save config: " + e.getMessage());
 		}
 	}
 
