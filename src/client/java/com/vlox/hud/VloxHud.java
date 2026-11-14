@@ -742,61 +742,39 @@ public final class VloxHud implements HudElement {
 		}
 	}
 
-	/** Nova keystrokes: readable keycaps in a familiar WASD + mouse layout. */
+	/** Traditional compact keystrokes: WASD and separate mouse buttons only. */
 	private record KeysRow() implements Row {
-		private static final int KEY_WIDTH = 22;
-		private static final int KEY_HEIGHT = 19;
+		private static final int KEY = 22;
 		private static final int GAP = 3;
-		private static final int KEYBOARD_WIDTH = KEY_WIDTH * 3 + GAP * 2;
-		private static final int MOUSE_WIDTH = 36;
-		private static final int MOUSE_X = KEYBOARD_WIDTH + 7;
-		private static final int TOTAL_HEIGHT = KEY_HEIGHT * 4 + GAP * 3;
+		private static final int HEIGHT = 2 * KEY + GAP;
+		private static final int MOUSE_X = KEY * 3 + GAP * 2 + 7;
+		private static final int MOUSE_W = 34;
 
-		@Override
-		public int width(Font font) {
-			return MOUSE_X + MOUSE_WIDTH;
-		}
-
-		@Override
-		public int height(Font font) {
-			return TOTAL_HEIGHT;
-		}
+		@Override public int width(Font font) { return MOUSE_X + MOUSE_W; }
+		@Override public int height(Font font) { return HEIGHT; }
 
 		@Override
 		public void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow, int style) {
-			int middle = x + KEY_WIDTH + GAP;
-			key(graphics, font, middle, y, KEY_WIDTH, "W", CombatInput.up);
-			int row2 = y + KEY_HEIGHT + GAP;
-			key(graphics, font, x, row2, KEY_WIDTH, "A", CombatInput.left);
-			key(graphics, font, middle, row2, KEY_WIDTH, "S", CombatInput.down);
-			key(graphics, font, x + (KEY_WIDTH + GAP) * 2, row2, KEY_WIDTH, "D", CombatInput.right);
-			int row3 = row2 + KEY_HEIGHT + GAP;
-			key(graphics, font, x, row3, KEYBOARD_WIDTH, "SPACE", CombatInput.jump);
-			int row4 = row3 + KEY_HEIGHT + GAP;
-			key(graphics, font, x, row4, KEYBOARD_WIDTH, "SHIFT", CombatInput.sneak);
-
-			key(graphics, font, x + MOUSE_X, y, MOUSE_WIDTH, "LMB", CombatInput.attack);
-			key(graphics, font, x + MOUSE_X, row2, MOUSE_WIDTH, "RMB", CombatInput.use);
-			key(graphics, font, x + MOUSE_X, row3, MOUSE_WIDTH, "SPRINT", CombatInput.sprint);
-			int cpsY = row4 + (KEY_HEIGHT - font.lineHeight) / 2 + 1;
-			graphics.centeredText(font, CombatInput.cps(false) + " / " + CombatInput.cps(true),
-					x + MOUSE_X + MOUSE_WIDTH / 2, cpsY, 0xFF9AA8BA);
+			int middle = x + KEY + GAP;
+			int second = y + KEY + GAP;
+			key(graphics, font, middle, y, "W", CombatInput.up);
+			key(graphics, font, x, second, "A", CombatInput.left);
+			key(graphics, font, middle, second, "S", CombatInput.down);
+			key(graphics, font, x + (KEY + GAP) * 2, second, "D", CombatInput.right);
+			mouseKey(graphics, font, x + MOUSE_X, y, "LMB", CombatInput.attack);
+			mouseKey(graphics, font, x + MOUSE_X, second, "RMB", CombatInput.use);
 		}
 
-		private static void key(GuiGraphicsExtractor graphics, Font font, int x, int y, int width,
-				String label, boolean pressed) {
-			int outer = pressed ? Ui.accent() : 0xFF354153;
-			int inner = pressed ? Ui.alpha(Ui.accent(), 225) : 0xE5101722;
-			int face = pressed ? Ui.alpha(Ui.accent(), 95) : 0xD91B2635;
-			// Outer rim, dark lower edge and inset face make each key read as a physical keycap.
-			graphics.fill(x, y, x + width, y + KEY_HEIGHT, outer);
-			graphics.fill(x + 1, y + 1, x + width - 1, y + KEY_HEIGHT - 1, inner);
-			graphics.fill(x + 2, y + 2, x + width - 2, y + KEY_HEIGHT - 2, face);
-			graphics.fill(x + 3, y + 2, x + width - 3, y + 3,
-					pressed ? 0x66FFFFFF : 0x334D6078);
-			graphics.centeredText(font, label, x + width / 2,
-					y + (KEY_HEIGHT - font.lineHeight) / 2 + 1,
-					pressed ? 0xFFFFFFFF : 0xFFE5ECF5);
+		private static void key(GuiGraphicsExtractor g, Font f, int x, int y, String label, boolean pressed) {
+			g.fill(x, y, x + KEY, y + KEY, pressed ? Ui.accent() : 0xFF252D39);
+			g.centeredText(f, label, x + KEY / 2, y + (KEY - f.lineHeight) / 2 + 1,
+					pressed ? 0xFFFFFFFF : 0xFFE2E7EF);
+		}
+
+		private static void mouseKey(GuiGraphicsExtractor g, Font f, int x, int y, String label, boolean pressed) {
+			g.fill(x, y, x + MOUSE_W, y + KEY, pressed ? Ui.accent() : 0xFF252D39);
+			g.centeredText(f, label, x + MOUSE_W / 2, y + (KEY - f.lineHeight) / 2 + 1,
+					pressed ? 0xFFFFFFFF : 0xFFE2E7EF);
 		}
 	}
 }
