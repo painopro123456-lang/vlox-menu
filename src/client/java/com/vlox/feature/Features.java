@@ -47,6 +47,11 @@ public final class Features {
 	public static final Feature HUD_PING = toggle(Category.HUD, "hud.ping", "Ping", "Latency to the current server.", false);
 	public static final Feature HUD_HEALTH = toggle(Category.HUD, "hud.health", "Health", "Health and absorption as numbers.", false);
 	public static final Feature HUD_HUNGER = toggle(Category.HUD, "hud.hunger", "Hunger", "Food level and saturation.", false);
+	public static final Feature HUD_LOW_HEALTH_ALERT = toggle(Category.HUD, "hud.lowHealthAlert", "Low health alert",
+			"Show a warning when your health falls to three hearts or less.", false);
+	public static final Feature HUD_ARMOR_WARNING = toggle(Category.HUD, "hud.armorWarning", "Low armour durability alert",
+			"List equipped armour pieces when their remaining durability drops below 20%.", false);
+
 	public static final Feature HUD_ARMOR = choice(Category.HUD, "hud.armor", "Armour",
 			"Show armour as points, as the worn items, or with durability bars.", new String[] { "Points", "Icons", "Icons + durability" }, 2);
 	public static final Feature HUD_KEYSTROKES = toggle(Category.HUD, "hud.keystrokes", "Keystrokes",
