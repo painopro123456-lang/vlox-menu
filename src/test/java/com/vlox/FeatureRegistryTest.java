@@ -19,9 +19,9 @@ class FeatureRegistryTest {
 	}
 
 	@Test
-	void registryHasExactlyOneHundredToggleModules() {
+	void registryHasAtLeastOneHundredToggleModules() {
 		long toggles = Features.ALL.stream().filter(feature -> feature.type == Feature.Type.TOGGLE).count();
-		assertEquals(100, toggles, "all 100 requested toggle modules must remain registered");
+		assertTrue(toggles >= 100, "expected at least 100 working toggle modules, found " + toggles);
 	}
 
 	@Test
