@@ -13,6 +13,8 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +65,7 @@ public class VloxClient implements ClientModInitializer {
             }
             tickZoom(client);
             tickAutoSprint(client);
+            tickAutoTool(client);
             tickDeathPoint(client);
         });
 
@@ -114,6 +117,36 @@ public class VloxClient implements ClientModInitializer {
 
     private static boolean inGame(Minecraft client) {
         return client.mouseHandler != null && client.mouseHandler.isMouseGrabbed();
+    }
+
+    /** Selects the hotbar item with the best destroy speed for the targeted block. */
+    private static void tickAutoTool(Minecraft client) {
+        LocalPlayer player = client.player;
+        if (!VloxConfig.flag(Features.INPUT_AUTO_TOOL) || player == null || client.level == null
+                || !inGame(client) || !(client.hitResult instanceof BlockHitResult hit)
+                || (VloxConfig.flag(Features.INPUT_AUTO_TOOL_ONLY_WHEN_MINING)
+                    && (client.options == null || !client.options.keyAttack.isDown()))) {
+            return;
+        }
+
+        var state = client.level.getBlockState(hit.getBlockPos());
+        var inventory = player.getInventory();
+        int bestSlot = inventory.selected;
+        float bestSpeed = inventory.getItem(bestSlot).getDestroySpeed(state);
+
+        for (int slot = 0; slot < 9; slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (stack.isEmpty()) continue;
+            float speed = stack.getDestroySpeed(state);
+            if (speed > bestSpeed + 0.01F) {
+                bestSpeed = speed;
+                bestSlot = slot;
+            }
+        }
+
+        if (bestSlot != inventory.selected) {
+            inventory.selected = bestSlot;
+        }
     }
 
     private static void tickDeathPoint(Minecraft client) {
