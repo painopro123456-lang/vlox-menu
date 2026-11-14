@@ -318,7 +318,7 @@ public final class NovaScreen extends Screen {
                 refreshModules();
                 return true;
             }
-            tabY += 36;
+            tabY += 39;
         }
         int searchW = Math.min(300, contentW);
         if (Ui.inside(mx, my, contentX, panelY + 104, searchW, 26)) {
