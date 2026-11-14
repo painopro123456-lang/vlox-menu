@@ -249,6 +249,25 @@ public final class VloxHud implements HudElement {
 			}
 			addLine();
 		}
+        if (VloxConfig.flag(Features.HUD_LOW_HEALTH_ALERT) && player.getHealth() <= 6.0F) {
+            line("LOW HEALTH  ").append(Math.max(0, Math.round(player.getHealth() * 10.0F) / 10.0F)).append(" HP");
+            addLine();
+        }
+        if (VloxConfig.flag(Features.HUD_ARMOR_WARNING)) {
+            EquipmentSlot[] warningSlots = { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
+            for (EquipmentSlot slot : warningSlots) {
+                ItemStack worn = player.getItemBySlot(slot);
+                if (worn.isDamageableItem()) {
+                    int remaining = worn.getMaxDamage() - worn.getDamageValue();
+                    double percent = remaining * 100.0 / worn.getMaxDamage();
+                    if (percent <= 20.0) {
+                        line("LOW ARMOUR  ").append(slot.getName()).append("  ").append(remaining).append(" durability");
+                        addLine();
+                    }
+                }
+            }
+        }
+
 		if (VloxConfig.flag(Features.HUD_HUNGER)) {
 			line("Hunger  ").append(player.getFoodData().getFoodLevel())
 					.append("  sat ").append(Math.round(player.getFoodData().getSaturationLevel()));
