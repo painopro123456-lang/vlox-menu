@@ -19,6 +19,12 @@ class FeatureRegistryTest {
 	}
 
 	@Test
+	void registryHasExactlyOneHundredToggleModules() {
+		long toggles = Features.ALL.stream().filter(feature -> feature.type == Feature.Type.TOGGLE).count();
+		assertEquals(100, toggles, "all 100 requested toggle modules must remain registered");
+	}
+
+	@Test
 	void idsAreUnique() {
 		Set<String> seen = new HashSet<>();
 		for (Feature feature : Features.ALL) {
