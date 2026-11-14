@@ -742,14 +742,15 @@ public final class VloxHud implements HudElement {
 		}
 	}
 
-	/** WASD plus both mouse buttons, lit while held: the classic PvP keystroke block. */
+	/** Nova keystrokes: readable keycaps in a familiar WASD + mouse layout. */
 	private record KeysRow() implements Row {
-		private static final int KEY_WIDTH = 13;
-		private static final int KEY_HEIGHT = 11;
-		private static final int KEY_GAP = 1;
-		private static final int MOUSE_WIDTH = 20;
-		private static final int BLOCK_WIDTH = KEY_WIDTH * 3 + KEY_GAP * 2;
-		private static final int MOUSE_X = BLOCK_WIDTH + 4;
+		private static final int KEY_WIDTH = 22;
+		private static final int KEY_HEIGHT = 19;
+		private static final int GAP = 3;
+		private static final int KEYBOARD_WIDTH = KEY_WIDTH * 3 + GAP * 2;
+		private static final int MOUSE_WIDTH = 36;
+		private static final int MOUSE_X = KEYBOARD_WIDTH + 7;
+		private static final int TOTAL_HEIGHT = KEY_HEIGHT * 4 + GAP * 3;
 
 		@Override
 		public int width(Font font) {
@@ -758,48 +759,44 @@ public final class VloxHud implements HudElement {
 
 		@Override
 		public int height(Font font) {
-			return KEY_HEIGHT * 2 + KEY_GAP;
+			return TOTAL_HEIGHT;
 		}
 
 		@Override
 		public void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow, int style) {
-			int secondRow = y + KEY_HEIGHT + KEY_GAP;
-			key(graphics, font, x + KEY_WIDTH + KEY_GAP, y, "W", CombatInput.up);
-			key(graphics, font, x, secondRow, "A", CombatInput.left);
-			key(graphics, font, x + KEY_WIDTH + KEY_GAP, secondRow, "S", CombatInput.down);
-			key(graphics, font, x + (KEY_WIDTH + KEY_GAP) * 2, secondRow, "D", CombatInput.right);
+			int middle = x + KEY_WIDTH + GAP;
+			key(graphics, font, middle, y, KEY_WIDTH, "W", CombatInput.up);
+			int row2 = y + KEY_HEIGHT + GAP;
+			key(graphics, font, x, row2, KEY_WIDTH, "A", CombatInput.left);
+			key(graphics, font, middle, row2, KEY_WIDTH, "S", CombatInput.down);
+			key(graphics, font, x + (KEY_WIDTH + GAP) * 2, row2, KEY_WIDTH, "D", CombatInput.right);
+			int row3 = row2 + KEY_HEIGHT + GAP;
+			key(graphics, font, x, row3, KEYBOARD_WIDTH, "SPACE", CombatInput.jump);
+			int row4 = row3 + KEY_HEIGHT + GAP;
+			key(graphics, font, x, row4, KEYBOARD_WIDTH, "SHIFT", CombatInput.sneak);
+
 			key(graphics, font, x + MOUSE_X, y, MOUSE_WIDTH, "LMB", CombatInput.attack);
-			key(graphics, font, x + MOUSE_X, secondRow, MOUSE_WIDTH, "RMB", CombatInput.use);
-
-			if (CombatInput.jump || CombatInput.sprint || CombatInput.sneak) {
-				int dotX = x + MOUSE_X + MOUSE_WIDTH + 3;
-				int dotY = y + 3;
-				if (CombatInput.jump) {
-					graphics.fill(dotX, dotY, dotX + 3, dotY + 3, Ui.accent());
-					dotY += 5;
-				}
-				if (CombatInput.sprint) {
-					graphics.fill(dotX, dotY, dotX + 3, dotY + 3, Ui.accent());
-					dotY += 5;
-				}
-				if (CombatInput.sneak) {
-					graphics.fill(dotX, dotY, dotX + 3, dotY + 3, Ui.accent());
-				}
-			}
+			key(graphics, font, x + MOUSE_X, row2, MOUSE_WIDTH, "RMB", CombatInput.use);
+			key(graphics, font, x + MOUSE_X, row3, MOUSE_WIDTH, "SPRINT", CombatInput.sprint);
+			int cpsY = row4 + (KEY_HEIGHT - font.lineHeight) / 2 + 1;
+			graphics.centeredText(font, CombatInput.cps(false) + " / " + CombatInput.cps(true),
+					x + MOUSE_X + MOUSE_WIDTH / 2, cpsY, 0xFF9AA8BA);
 		}
 
-		private static void key(GuiGraphicsExtractor graphics, Font font, int x, int y, String label, boolean pressed) {
-			key(graphics, font, x, y, KEY_WIDTH, label, pressed);
-		}
-
-		private static void key(GuiGraphicsExtractor graphics, Font font, int x, int y, int width, String label,
-				boolean pressed) {
-			int background = pressed ? Ui.alpha(Ui.accent(), 215) : 0x8A0A0F15;
-			int border = pressed ? Ui.accent() : 0x3AFFFFFF;
-			graphics.fill(x, y, x + width, y + KEY_HEIGHT, border);
-			graphics.fill(x + 1, y + 1, x + width - 1, y + KEY_HEIGHT - 1, background);
+		private static void key(GuiGraphicsExtractor graphics, Font font, int x, int y, int width,
+				String label, boolean pressed) {
+			int outer = pressed ? Ui.accent() : 0xFF354153;
+			int inner = pressed ? Ui.alpha(Ui.accent(), 225) : 0xE5101722;
+			int face = pressed ? Ui.alpha(Ui.accent(), 95) : 0xD91B2635;
+			// Outer rim, dark lower edge and inset face make each key read as a physical keycap.
+			graphics.fill(x, y, x + width, y + KEY_HEIGHT, outer);
+			graphics.fill(x + 1, y + 1, x + width - 1, y + KEY_HEIGHT - 1, inner);
+			graphics.fill(x + 2, y + 2, x + width - 2, y + KEY_HEIGHT - 2, face);
+			graphics.fill(x + 3, y + 2, x + width - 3, y + 3,
+					pressed ? 0x66FFFFFF : 0x334D6078);
 			graphics.centeredText(font, label, x + width / 2,
-					y + (KEY_HEIGHT - font.lineHeight) / 2 + 1, pressed ? 0xFF0A0F15 : ON);
+					y + (KEY_HEIGHT - font.lineHeight) / 2 + 1,
+					pressed ? 0xFFFFFFFF : 0xFFE5ECF5);
 		}
 	}
 }
