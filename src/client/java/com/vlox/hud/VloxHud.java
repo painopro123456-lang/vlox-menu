@@ -672,6 +672,7 @@ public final class VloxHud implements HudElement {
 		@Override
 		public void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow, int style) {
 			if (style == 0) {
+				Ui.rounded(graphics, x - 4, y - 2, font.width(this.text) + 12, font.lineHeight + 4, 4, 0x661B1928);
 				int split = this.text.indexOf("  ");
 				if (split > 0) {
 					String label = this.text.substring(0, split).trim();
