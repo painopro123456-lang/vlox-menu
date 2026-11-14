@@ -183,17 +183,17 @@ public final class Features {
 	public static final Feature MENU_ACCENT = choice(Category.MENU, "menu.accent", "Accent colour",
 			"The highlight colour used by the menu and the HUD.",
 			new String[] { "Ice blue", "Violet", "Amber", "Rose", "Mint" }, 0);
-	public static final Feature MENU_PRESET_PVP = Feature.action(Category.MENU, "menu.presetPvp", "Layout: PvP",
+	public static final Feature MENU_PRESET_PVP = action(Category.MENU, "menu.presetPvp", "Layout: PvP",
 			"Turn on the HUD lines a fight needs and set auto sprint.");
-	public static final Feature MENU_PRESET_EXPLORER = Feature.action(Category.MENU, "menu.presetExplorer", "Layout: explorer",
+	public static final Feature MENU_PRESET_EXPLORER = action(Category.MENU, "menu.presetExplorer", "Layout: explorer",
 			"Coordinates, biome, dimension, time, light and speed.");
-	public static final Feature MENU_PRESET_PERFORMANCE = Feature.action(Category.MENU, "menu.presetPerformance", "Preset: performance",
+	public static final Feature MENU_PRESET_PERFORMANCE = action(Category.MENU, "menu.presetPerformance", "Preset: performance",
 			"Lower render and simulation distance, drop shadows, apply to options.txt.");
-	public static final Feature MENU_RESET = Feature.action(Category.MENU, "menu.reset", "Reset all settings",
+	public static final Feature MENU_RESET = action(Category.MENU, "menu.reset", "Reset all settings",
 			"Return every VLOX setting to its default.");
-	public static final Feature MENU_COPY_COORDS = Feature.action(Category.MENU, "menu.copyCoords", "Copy coordinates",
+	public static final Feature MENU_COPY_COORDS = action(Category.MENU, "menu.copyCoords", "Copy coordinates",
 			"Copy your exact position to the clipboard.");
-	public static final Feature MENU_COPY_PATH = Feature.action(Category.MENU, "menu.copyPath", "Copy config path",
+	public static final Feature MENU_COPY_PATH = action(Category.MENU, "menu.copyPath", "Copy config path",
 			"Copy the config file location to the clipboard.");
 
 	public static final Feature HUD_X = toggle(Category.HUD, "hud.x", "X coordinate", "Your precise X position.", false);
@@ -252,6 +252,12 @@ public final class Features {
 
 	private static Feature choice(Category category, String id, String label, String description, String[] choices, int def) {
 		Feature feature = Feature.choice(category, id, label, description, choices, def);
+		ALL.add(feature);
+		return feature;
+	}
+
+	private static Feature action(Category category, String id, String label, String description) {
+		Feature feature = Feature.action(category, id, label, description);
 		ALL.add(feature);
 		return feature;
 	}
