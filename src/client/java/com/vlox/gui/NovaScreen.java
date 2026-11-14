@@ -207,12 +207,12 @@ public final class NovaScreen extends Screen {
             int col = i % columns;
             int row = i / columns;
             int x = contentX + col * (cardW + CARD_GAP);
-            int y = start + row * (CARD_HEIGHT + ROW_GAP) - Math.round(scroll);
+            int y = start + row * (cardHeight() + ROW_GAP) - Math.round(scroll);
             if (y + cardHeight() < gridY || y > gridY + gridH) continue;
             Feature feature = modules.get(i);
             boolean hovered = Ui.inside(mouseX, mouseY, x, y, cardW, cardHeight());
             boolean enabled = isEnabled(feature);
-            Ui.rounded(graphics, x, y, cardW, CARD_HEIGHT, 9, hovered ? CARD_HOVER : CARD_BG);
+            Ui.rounded(graphics, x, y, cardW, cardHeight(), 9, hovered ? CARD_HOVER : CARD_BG);
             graphics.fill(x + 12, y + 12, x + 14, y + cardHeight() - 12,
                     enabled ? Ui.accent() : 0x334F6074);
             Ui.text(graphics, font, Ui.fit(font, feature.label, cardW - 72), x + 22, y + 17,
@@ -314,13 +314,13 @@ public final class NovaScreen extends Screen {
         }
         if (tab != Tab.MODS && my >= gridY && my <= gridY + gridH) {
             int col = (int) ((mx - contentX) / (cardW + CARD_GAP));
-            int row = (int) ((my - gridY + scroll) / (CARD_HEIGHT + ROW_GAP));
+            int row = (int) ((my - gridY + scroll) / (cardHeight() + ROW_GAP));
             if (col >= 0 && col < columns && row >= 0) {
                 int index = row * columns + col;
                 if (index < modules.size()) {
                     int cardX = contentX + col * (cardW + CARD_GAP);
                     int cardY = gridY + row * (CARD_HEIGHT + ROW_GAP) - Math.round(scroll);
-                    if (Ui.inside(mx, my, cardX, cardY, cardW, CARD_HEIGHT)) {
+                    if (Ui.inside(mx, my, cardX, cardY, cardW, cardHeight())) {
                         toggle(modules.get(index));
                         return true;
                     }
