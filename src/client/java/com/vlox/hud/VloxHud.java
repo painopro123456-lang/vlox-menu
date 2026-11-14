@@ -85,12 +85,14 @@ public final class VloxHud implements HudElement {
 		x = Math.max(0, Math.min(Math.max(0, screenWidth - boxWidth), x + (int) Math.round(VloxConfig.get(Features.HUD_OFFSET_X))));
 		y = Math.max(0, Math.min(Math.max(0, screenHeight - boxHeight), y + (int) Math.round(VloxConfig.get(Features.HUD_OFFSET_Y))));
 
-		if (VloxConfig.flag(Features.HUD_BACKGROUND)) {
-			int backdrop = Math.round(154 * (float) VloxConfig.get(Features.HUD_BACKDROP_OPACITY));
-			// Accent underneath, panel on top: the accent border follows the panel's own
-			// curve and runs the full height, with no dark caps at either end.
-			Ui.rounded(graphics, x, y, boxWidth, boxHeight, 6, Ui.alpha(Ui.accent(), 200));
-			Ui.rounded(graphics, x + 3, y, boxWidth - 3, boxHeight, 6, Ui.alpha(0x0A0F15, backdrop));
+		int hudStyle = VloxConfig.index(Features.HUD_STYLE);
+		if (VloxConfig.flag(Features.HUD_BACKGROUND) && hudStyle != 1) {
+			int backdrop = Math.round((hudStyle == 2 ? 178 : 154) * (float) VloxConfig.get(Features.HUD_BACKDROP_OPACITY));
+			Ui.panel(graphics, x, y, boxWidth, boxHeight, hudStyle == 2 ? 4 : 7, Ui.alpha(0x0A1019, backdrop));
+			if (hudStyle == 0) {
+				Ui.rounded(graphics, x, y, 3, boxHeight, 2, Ui.accent());
+				Ui.rounded(graphics, x + 9, y + 5, 5, 5, 2, Ui.accent());
+			}
 		}
 
 		Matrix3x2fStack pose = graphics.pose();
@@ -100,10 +102,17 @@ public final class VloxHud implements HudElement {
 
 		boolean shadow = VloxConfig.flag(Features.HUD_SHADOW);
 		int cursorY = PAD;
+		if (hudStyle == 0) {
+			graphics.text(font, "NOVA", PAD + 16, cursorY, Ui.accent(), false);
+			graphics.text(font, "LIVE HUD", PAD + 49, cursorY, 0xFF8795A8, false);
+			cursorY += 11;
+			graphics.fill(PAD + 4, cursorY, boxWidth / Math.max(0.5F, scale) - PAD, cursorY + 1, 0x443F5065);
+			cursorY += 5;
+		}
 		for (int i = 0; i < rows.size(); i++) {
 			Row row = rows.get(i);
-			row.draw(graphics, font, PAD + 4, cursorY, shadow);
-			cursorY += row.height(font) + gap;
+			row.draw(graphics, font, PAD + 4, cursorY, shadow, hudStyle);
+			cursorY += row.height(font) + (hudStyle == 2 ? 0 : gap);
 		}
 
 		pose.popMatrix();
@@ -384,8 +393,10 @@ public final class VloxHud implements HudElement {
 				height += gap;
 			}
 		}
-		boxWidth = Math.round((textWidth + PAD * 2) * scale);
-		boxHeight = Math.round((height + PAD * 2) * scale);
+		int style = VloxConfig.index(Features.HUD_STYLE);
+		int headerHeight = style == 0 ? 16 : 0;
+		boxWidth = Math.round((Math.max(textWidth, style == 0 ? font.width("NOVA  LIVE HUD") + 24 : 0) + PAD * 2 + (style == 0 ? 5 : 0)) * scale);
+		boxHeight = Math.round((height + PAD * 2 + headerHeight) * scale);
 	}
 
 	/** The stored death position, with the distance to it when it is in this dimension. */
@@ -644,7 +655,7 @@ public final class VloxHud implements HudElement {
 
 		int height(Font font);
 
-		void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow);
+		void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow, int style);
 	}
 
 	private record TextRow(String text) implements Row {
@@ -659,7 +670,17 @@ public final class VloxHud implements HudElement {
 		}
 
 		@Override
-		public void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow) {
+		public void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow, int style) {
+			if (style == 0) {
+				int split = this.text.indexOf("  ");
+				if (split > 0) {
+					String label = this.text.substring(0, split).trim();
+					String value = this.text.substring(split).trim();
+					graphics.text(font, label, x, y, 0xFF8795A8, false);
+					graphics.text(font, value, x + font.width(label) + 7, y, ON, shadow);
+					return;
+				}
+			}
 			graphics.text(font, this.text, x, y, ON, shadow);
 		}
 	}
@@ -676,7 +697,7 @@ public final class VloxHud implements HudElement {
 		}
 
 		@Override
-		public void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow) {
+		public void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow, int style) {
 			for (int i = 0; i < this.stacks.length; i++) {
 				int dx = x + i * 18;
 				graphics.item(this.stacks[i], dx, y + 1);
