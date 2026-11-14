@@ -8,14 +8,14 @@ import org.joml.Matrix3x2fStack;
 
 /** Small drawing helpers so the menu can be laid out by hand. */
 public final class Ui {
-	public static final int TEXT = 0xFFF2F6FA;
-	public static final int MUTED = 0xFF8290A3;
-	public static final int FAINT = 0xFF46515F;
-	public static final int TRACK = 0xFF1B2430;
+	public static final int TEXT = 0xFFF4F2FA;
+	public static final int MUTED = 0xFF9294A5;
+	public static final int FAINT = 0xFF555565;
+	public static final int TRACK = 0xFF242331;
 
 	/** The selectable accent colours, in menu order. */
 	private static final int[] ACCENTS = {
-			0xFF75BFFF, 0xFF9B8CFF, 0xFFFFB65C, 0xFFFF7FA6, 0xFF63D9B1
+			0xFFB39BFF, 0xFF65D6B2, 0xFFFFB86B, 0xFFFF829D, 0xFF83C8FF
 	};
 
 	private static int accent = ACCENTS[0];
