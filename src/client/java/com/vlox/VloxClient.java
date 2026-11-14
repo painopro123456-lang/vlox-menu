@@ -55,7 +55,7 @@ public class VloxClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             VloxConfig.flushIfDirty();
             while (menuKey.consumeClick()) {
-                if (client.getScreen() instanceof NovaScreen || client.getScreen() instanceof com.vlox.gui.VloxScreen) {
+                if (client.screen instanceof NovaScreen || client.screen instanceof com.vlox.gui.VloxScreen) {
                     client.setScreenAndShow(null);
                 } else {
                     client.setScreenAndShow(new NovaScreen());
