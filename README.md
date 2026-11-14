@@ -1,162 +1,48 @@
-# VLOX
+# Nova Mod Menu
 
-A client-side settings menu for **Minecraft 26.2** on **Fabric**, with 103 settings
-in one in-game screen. Press **Right Shift** to open it, and **V** to zoom.
+A standalone, client-side Fabric mod for Minecraft **26.2**. This is a prototype for the Nova in-game menu; it is kept separate from the Nova launcher until the menu is approved.
 
-No mixins, no server-side code, nothing that changes combat or movement: every
-setting either draws VLOX's own HUD or forwards to a vanilla option that already
-exists in the Minecraft options screen.
+## Open the menu
 
-## Features
+- Press **Right Shift** in game.
+- Press **V** to use the optional zoom feature when it is enabled.
+- The menu uses a three-column module grid, a midnight navy translucent panel, restrained violet details and an icy-blue default accent.
+- Categories: **All**, **HUD**, **Visual**, **Player**, and **Mods**.
+- Click a module card to toggle it.
+- The **Mods** page lists Fabric mods loaded in the current instance.
+- **Advanced settings** opens the detailed settings screen for sliders, choices, presets and other options.
 
-| Category | Count | Examples |
-| --- | --- | --- |
-| **HUD** | 40 | FPS, coordinates, Nether coordinates, biome, dimension, world time, light level, memory, ping, health, **armour as the worn items with durability bars**, held item with its icon, **keystrokes**, **CPS**, **PvP item counts** (totems, pearls, arrows, gapples), **potion effect timers**, XP, fall distance, "looking at" block |
-| **Graphics** | 24 | Render distance, simulation distance, entity distance, FPS limit, clouds, cloud range, weather radius, cutout leaves, vignette, transparency, ambient occlusion, chunk fade, mipmaps, biome blend, anisotropic filtering, menu blur, panorama speed |
-| **Input** | 15 | Mouse sensitivity, wheel sensitivity, invert axes, raw input, discrete scrolling, cursor changes, auto jump, rotate with minecart, main hand, **auto sprint**, **zoom**, **zoom amount**, **smooth zoom** |
-| **Chat** | 12 | Visibility, opacity, scale, line spacing, width, height (open/closed), colours, links, message delay, text backdrop |
-| **Menu** | 12 | Descriptions, compact rows, FPS in title, remember category, focus search, **accent colour**, **three layout presets**, copy coordinates, reset all, copy config path |
+## Current prototype scope
 
-The menu is drawn by hand rather than assembled from vanilla widgets:
+The module grid exposes Nova's own client-side toggles and vanilla options. The installed-mod page is an inventory view; it does not hot-disable arbitrary Fabric mods. Fabric mods are loaded at startup, so safely enabling or disabling third-party mods requires changing the instance's mod set and restarting Minecraft.
 
-- a dark side rail with the VLOX wordmark, one item per category, each showing how
-  many settings it holds, with an accent bar on the selected one
-- rounded row cards that fade in under the cursor, with the accent bar sliding in
-- animated pill switches whose knob glides between off and on
-- value chips for cycles, and `- value +` steppers for VLOX's own numbers
-- a search field with a blinking caret
-- a footer that shows the full description of whatever row you hover
-- a thin scrollbar, and a soft fade at the top and bottom of the list
+Mod discovery and dependency-aware installation are a planned follow-up, not part of this first prototype. Nothing is installed or downloaded by this build.
 
-The HUD uses the same language: a rounded translucent card with the same accent
-bar down its left edge. Its rows can hold text, item icons or the keystroke
-block, so armour, the held item and your own clicks are shown rather than
-described.
+## Compatibility
 
-Pick a category on the left, scroll to page through the list, and search by name,
-id or description.
-
-Settings come in two kinds:
-
-- **47 wrap a vanilla option.** These rows render Minecraft's own control widget,
-  so the range, the step size, the clamping and the saving are exactly the
-  options screen's, and the value lives in `options.txt` where the game already
-  keeps it. VLOX does not reinterpret them.
-- **56 are VLOX's own.** HUD lines, zoom, auto sprint, layouts and menu
-  behaviour, stored in `config/vlox.json` and written within half a second of a
-  change rather than on every pixel of a slider drag.
-
-## What the modules actually do
-
-- **Zoom** holds your field of view at a fraction of its normal value while `V`
-  is down. It writes the live FOV option and never saves it, and it restores on
-  release, on opening any screen, and when the world unloads. The range stops at
-  the vanilla FOV floor of 30, so from a 70 field of view the strongest zoom is
-  about 2.3×.
-- **Auto sprint** keeps you sprinting while forward is held, skipping the cases
-  vanilla refuses: sneaking, using an item, or below six hunger.
-- **Death point** records where you died, once per death, together with the
-  dimension, and stores it in the config so it survives a restart. The HUD line
-  shows the coordinates and your distance to them when you are in the same
-  dimension.
-- **Layouts** are one-click bundles. *PvP* turns on armour icons with durability,
-  health, hunger, ping, held item, keystrokes, CPS, item counts, effect timers
-  and auto sprint, and moves the HUD to the top right. *Explorer* turns on
-  coordinates, facing, biome, dimension, time, day, light, chunk, speed, Nether
-  conversion and the death point. *Performance* sets render distance 8,
-  simulation distance 8, entity distance 0.5, entity shadows off and chunk fade
-  0, then saves options.txt the way the vanilla screen does.
-- **Accent colour** repaints the rail, the toggles, the switches, the HUD bar and
-  the keystroke highlights in one of five colours. Every action reports what it
-  did in the footer for two seconds.
+- Minecraft **26.2**
+- Fabric Loader **0.20.1** or newer
+- Fabric API **0.161.0+26.2**
+- Java **25**
+- Client-side only; no server mod is required
 
 ## Install
 
-1. Install **Fabric Loader 0.20.1** or newer for Minecraft 26.2.
-2. Put **Fabric API 0.161.0+26.2** in your `mods` folder.
-3. Put `vlox-1.0.0.jar` in your `mods` folder.
-4. Launch the game with Java 25 and press **Right Shift**.
+1. Install Fabric Loader for Minecraft 26.2.
+2. Add Fabric API `0.161.0+26.2` to the instance's `mods` folder.
+3. Put `nova-mod-menu-0.1.0.jar` in the same `mods` folder.
+4. Launch Minecraft and press **Right Shift**.
 
-## Build from source
+## Build
 
-Requires **JDK 25**:
-
-```bash
-./gradlew build
-```
-
-The jar lands in `build/libs/vlox-1.0.0.jar`. If you don't have a wrapper, any
-Gradle 9.x works:
+Requires JDK 25 and Gradle 9.8 or newer:
 
 ```bash
-gradle build
+gradle clean test build
 ```
 
-## How it is put together
+The mod JAR is written to `build/libs/nova-mod-menu-0.1.0.jar`. GitHub Actions builds this branch and publishes the JAR as a workflow artifact and release asset.
 
-| File | Role |
-| --- | --- |
-| `feature/Feature.java` | One setting: id, label, description, type, range, default, choices |
-| `feature/Features.java` | The registry of all 103 settings, plus the map from a setting to its vanilla option |
-| `config/VloxConfig.java` | JSON persistence, clamping and step quantisation |
-| `gui/VloxScreen.java` | The menu: rail, hand-drawn rows, controls, search, scrolling |
-| `gui/Ui.java` | Drawing helpers: rounded panels with shadow, scaled text, truncation |
-| `hud/VloxHud.java` | The HUD rows: text, item icons, keystrokes, and the panel layout |
-| `hud/CombatInput.java` | Samples held keys and counts clicks per second |
-| `config/Presets.java` | The layout bundles and the performance preset |
-| `VloxClient.java` | Entrypoint: keybind, HUD element registration, startup |
+## Notes
 
-Values for VLOX's own settings live in one map keyed by feature id, so adding a
-setting means adding one line to `Features` — no new class, no new config field.
-Option-backed settings are resolved by a single switch in `Features.optionFor`,
-which returns the live `OptionInstance`; the menu then asks that instance to
-build its own button. Nothing is copied, clamped or rewritten by VLOX, and no
-vanilla setting is touched until the player changes it.
-
-## Performance
-
-The HUD draws every frame but rebuilds rarely:
-
-- the row list, the measured width and the panel size are cached and refreshed at
-  most every 50 ms, or immediately after a setting changes — the config keeps a
-  revision counter that the HUD compares against, so a toggle shows up on the next
-  frame instead of waiting for the tick
-- text is assembled in one reused `StringBuilder`, and decimals are appended with
-  integer maths instead of `String.format`, which costs a locale lookup and an
-  allocation on every call
-- a HUD with every line switched off returns before measuring or allocating
-  anything
-- settings are written to disk at most every 400 ms while a slider is dragged,
-  instead of one full JSON rewrite per pixel, and are flushed on the next tick
-  and on reset
-
-This removes per-frame work; it is not a claim about a measured framerate, since
-no framerate has been observed on this machine.
-
-## Testing
-
-```bash
-gradle test
-```
-
-Five registry tests check that there are at least 75 settings, that ids are
-unique, that defaults sit inside their ranges, that choices are declared and that
-every category has settings. They run in a few seconds and need no game launch.
-
-**Not verified:** the mod has been compiled and unit tested, but it has never
-been launched in a real Minecraft client — this build machine has no display and
-no X server, so the client cannot start here. Nothing about the on-screen result
-has been observed: not the menu layout, not the HUD placement, not a single
-option changing in game.
-
-What that means per kind of setting:
-
-- The **47 option-backed rows** are low risk by construction: the widget and the
-  value are vanilla's, and the only new code is which row to put them on.
-- The **40 HUD lines** are the real unknown: they are VLOX's own drawing and its
-  own reading of game state, and none of that has been seen running. The item
-  icons in particular rely on `GuiGraphicsExtractor.item` honouring the pose VLOX
-  pushes for scaling, which cannot be checked without a client.
-- The **7 menu settings** are simple toggles, but the menu itself is untested.
-
-If something looks wrong in game, say what you see and it can be corrected.
+This prototype is built from the existing client-side feature registry, with a separate Nova-branded module grid. The Nova launcher is not modified. Test the JAR in a real Minecraft client before deciding whether to integrate it.
