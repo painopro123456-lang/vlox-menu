@@ -19,6 +19,8 @@ import java.util.List;
 
 /** Nova's compact three-column in-game module browser. */
 public final class NovaScreen extends Screen {
+    private static boolean open;
+    public static boolean isOpen() { return open; }
     private static final int SIDEBAR = 150;
     private static final int CARD_HEIGHT = 78;
     private static final int CARD_GAP = 10;
@@ -48,6 +50,7 @@ public final class NovaScreen extends Screen {
 
     @Override
     protected void init() {
+        open = true;
         panelW = Math.min(860, width - 28);
         panelH = Math.min(520, height - 28);
         panelX = (width - panelW) / 2;
@@ -291,6 +294,12 @@ public final class NovaScreen extends Screen {
         float maxScroll = Math.max(0, contentHeight - gridH);
         scroll = Math.max(0, Math.min(maxScroll, scroll - (float) vertical * 42.0F));
         return true;
+    }
+
+    @Override
+    public void removed() {
+        open = false;
+        super.removed();
     }
 
     @Override
