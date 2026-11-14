@@ -24,13 +24,13 @@ import java.util.Map;
 
 /** Nova's matching settings workspace, drawn by hand. */
 public final class VloxScreen extends Screen {
-	private static final int ROW_HEIGHT = 34;
-	private static final int ROW_GAP = 5;
-	private static final int RAIL_WIDTH = 168;
+	private static final int ROW_HEIGHT = 48;
+	private static final int ROW_GAP = 9;
+	private static final int RAIL_WIDTH = 190;
 	private static final int FOOTER_HEIGHT = 34;
 
-	private static final int PANEL_BG = 0xF20A111E;
-	private static final int RAIL_BG = 0xF7080E19;
+	private static final int PANEL_BG = 0xF20A1019;
+	private static final int RAIL_BG = 0xF70B1420;
 	private static final int ROW_HOVER = 0x0FFFFFFF;
 	private static final int ROW_ALT = 0x05FFFFFF;
 
@@ -61,7 +61,7 @@ public final class VloxScreen extends Screen {
 	private int searchX;
 	private int searchY;
 	private int searchWidth;
-	private int searchHeight = 18;
+	private int searchHeight = 24;
 
 	private record Row(Feature feature, int y, int x, int width,
 			int controlX, int controlY, int controlWidth, int controlHeight) {
@@ -73,15 +73,15 @@ public final class VloxScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.panelWidth = Math.min(820, this.width - 32);
-		this.panelHeight = Math.min(560, this.height - 32);
+		this.panelWidth = Math.min(980, this.width - 32);
+		this.panelHeight = Math.min(680, this.height - 32);
 		this.panelX = (this.width - this.panelWidth) / 2;
 		this.panelY = (this.height - this.panelHeight) / 2;
 
 		this.contentX = this.panelX + RAIL_WIDTH;
 		this.contentWidth = this.panelWidth - RAIL_WIDTH;
-		this.listY = this.panelY + 116;
-		this.listHeight = this.panelHeight - 116 - FOOTER_HEIGHT;
+		this.listY = this.panelY + 126;
+		this.listHeight = this.panelHeight - 126 - FOOTER_HEIGHT;
 
 		this.searchX = this.contentX + 16;
 		this.searchY = this.panelY + 78;
@@ -317,22 +317,22 @@ public final class VloxScreen extends Screen {
 			int alternate = (rows.indexOf(row) % 2 == 1) ? ROW_ALT : 0;
 
 			if (bg != 0 || alternate != 0) {
-				Ui.rounded(graphics, row.x(), row.y(), row.width(), ROW_HEIGHT - 2, 6, bg != 0 ? bg : alternate);
+				Ui.rounded(graphics, row.x(), row.y(), row.width(), ROW_HEIGHT - 3, 9, bg != 0 ? bg : alternate != 0 ? alternate : 0xFF111B28);
 			}
 
 			if (next > 0.05F) {
-				graphics.fill(row.x(), row.y() + 7, row.x() + 2, row.y() + ROW_HEIGHT - 9,
+				graphics.fill(row.x(), row.y() + 10, row.x() + 2, row.y() + ROW_HEIGHT - 12,
 						Ui.alpha(Ui.accent(), (int) (230 * next)));
 			}
 
-			int labelY = row.y() + 7;
+			int labelY = row.y() + 10;
 			Ui.text(graphics, this.font, Ui.fit(this.font, feature.label, row.width() - row.controlWidth() - 40),
 					row.x() + 12, labelY, hovered ? Ui.TEXT : 0xFFDCE5EF);
 
 			if (VloxConfig.flag(Features.MENU_DESCRIPTIONS) && !VloxConfig.flag(Features.MENU_COMPACT)) {
 				Ui.text(graphics, this.font,
 						Ui.fit(this.font, feature.description, row.width() - row.controlWidth() - 40),
-						row.x() + 12, labelY + 10, hovered ? Ui.MUTED : Ui.FAINT);
+						row.x() + 12, labelY + 13, hovered ? Ui.MUTED : Ui.FAINT);
 			}
 
 			drawControl(graphics, row, mouseX, mouseY, dt);
@@ -395,7 +395,7 @@ public final class VloxScreen extends Screen {
 
 	private void drawChip(GuiGraphicsExtractor graphics, int x, int y, int width, int height, String text,
 			boolean hovered, boolean accent) {
-		int bg = hovered ? 0xFF1B2431 : 0xFF151C26;
+		int bg = hovered ? 0xFF26374A : 0xFF172332;
 		Ui.rounded(graphics, x, y, width, height, 5, bg);
 		if (hovered) {
 			Ui.rounded(graphics, x, y, width, height, 5, 0x0DFFFFFF);
@@ -412,7 +412,7 @@ public final class VloxScreen extends Screen {
 		int width = row.controlWidth();
 		int height = row.controlHeight();
 
-		Ui.rounded(graphics, x, y, width, height, 5, 0xFF151C26);
+		Ui.rounded(graphics, x, y, width, height, 7, 0xFF101A27);
 
 		boolean hoverMinus = Ui.inside(mouseX, mouseY, x, y, 22, height);
 		boolean hoverPlus = Ui.inside(mouseX, mouseY, x + width - 22, y, 22, height);
