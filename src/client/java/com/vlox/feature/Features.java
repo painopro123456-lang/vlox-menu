@@ -26,6 +26,10 @@ public final class Features {
 			"Draw the drop shadow behind HUD text.", true);
 	public static final Feature HUD_CORNER = choice(Category.HUD, "hud.corner", "Corner",
 			"Which screen corner the HUD sits in.", new String[] { "Top left", "Top right", "Bottom left", "Bottom right" }, 0);
+	public static final Feature HUD_OFFSET_X = number(Category.HUD, "hud.offsetX", "Horizontal position",
+			"Move the HUD left or right from its selected corner.", -1000, 1000, 4, 0);
+	public static final Feature HUD_OFFSET_Y = number(Category.HUD, "hud.offsetY", "Vertical position",
+			"Move the HUD up or down from its selected corner.", -1000, 1000, 4, 0);
 	public static final Feature HUD_SCALE = number(Category.HUD, "hud.scale", "Scale",
 			"HUD text size multiplier.", 0.5, 2.0, 0.1, 1.0);
 	public static final Feature HUD_SPACING = number(Category.HUD, "hud.spacing", "Line spacing",
