@@ -30,6 +30,7 @@ public final class Presets {
 		VloxConfig.setFlag(Features.HUD_KEYSTROKES, true);
 		VloxConfig.setFlag(Features.HUD_CPS, true);
 		VloxConfig.setFlag(Features.HUD_ITEMS, true);
+		VloxConfig.setFlag(Features.HUD_ARMOR_WARNING, true);
 		VloxConfig.set(Features.HUD_EFFECTS, 2);
 		VloxConfig.setFlag(Features.HUD_SPRINT, true);
 		VloxConfig.setFlag(Features.INPUT_AUTO_SPRINT, true);
