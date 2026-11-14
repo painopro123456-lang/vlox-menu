@@ -308,15 +308,15 @@ public final class NovaScreen extends Screen {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
         double mx = event.x();
         double my = event.y();
-        int tabY = panelY + 110;
+        int tabY = panelY + 124;
         for (Tab item : Tab.values()) {
-            if (Ui.inside(mx, my, panelX + 12, tabY, SIDEBAR - 24, 32)) {
+            if (Ui.inside(mx, my, panelX + 14, tabY, SIDEBAR - 28, 36)) {
                 tab = item;
                 if (VloxConfig.flag(Features.MENU_REMEMBER)) lastTab = item;
                 refreshModules();
                 return true;
             }
-            tabY += 39;
+            tabY += 43;
         }
         int searchW = contentW;
         if (Ui.inside(mx, my, contentX, panelY + 158, searchW, 38)) {
