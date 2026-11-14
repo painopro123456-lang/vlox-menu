@@ -29,11 +29,11 @@ public final class NovaScreen extends Screen {
     private static boolean open;
     public static boolean isOpen() { return open; }
 
-    private static final int BG = 0xF2090D14;
-    private static final int RAIL = 0xFF0D131D;
-    private static final int SURFACE = 0xFF151E2A;
-    private static final int SURFACE_HOVER = 0xFF202D3D;
-    private static final int LINE = 0x243F536B;
+    private static final int BG = 0xF20B0B12;
+    private static final int RAIL = 0xFF101019;
+    private static final int SURFACE = 0xFF171722;
+    private static final int SURFACE_HOVER = 0xFF252536;
+    private static final int LINE = 0x2D69617F;
 
     private enum Tab {
         ALL("Overview"), HUD("HUD"), VISUAL("Visuals"), PLAYER("Player"),
@@ -152,7 +152,7 @@ public final class NovaScreen extends Screen {
         Ui.text(g, font, active, detailX + detailW - font.width(active) - 14, panelY + 37, Ui.accent());
 
         // Large feature strip gives the page a distinct identity.
-        Ui.rounded(g, mainX, panelY + 78, mainW, 76, 9, 0xFF172536);
+        Ui.rounded(g, mainX, panelY + 78, mainW, 76, 9, 0xFF1B1928);
         g.fill(mainX, panelY + 91, mainX + 3, panelY + 141, Ui.accent());
         Ui.text(g, font, tab == Tab.MODS ? "YOUR MOD ENVIRONMENT" : "MAKE THE CLIENT YOURS", mainX + 18, panelY + 96, Ui.TEXT);
         Ui.text(g, font, tab == Tab.MODS ? "A quick look at everything loaded with this instance." : "A clean space for the tools you actually use.", mainX + 18, panelY + 117, Ui.MUTED);
@@ -181,7 +181,7 @@ public final class NovaScreen extends Screen {
         for (Tab t : Tab.values()) {
             boolean active = tab == t;
             boolean hover = Ui.inside(mx, my, panelX + 12, y, railW - 24, 32);
-            int bg = active ? Ui.alpha(Ui.accent(), 34) : hover ? 0xFF182433 : 0;
+            int bg = active ? Ui.alpha(Ui.accent(), 34) : hover ? 0xFF211F2D : 0;
             if (bg != 0) Ui.rounded(g, panelX + 12, y, railW - 24, 32, 6, bg);
             if (active) g.fill(panelX + 12, y + 8, panelX + 14, y + 24, Ui.accent());
             Ui.text(g, font, t.label, x + 7, y + 12, active ? Ui.TEXT : hover ? 0xFFD6E0EB : Ui.MUTED);
@@ -190,7 +190,7 @@ public final class NovaScreen extends Screen {
             y += 38;
         }
         int bottom = panelY + panelH - 58;
-        Ui.rounded(g, panelX + 12, bottom, railW - 24, 38, 7, 0xFF182638);
+        Ui.rounded(g, panelX + 12, bottom, railW - 24, 38, 7, 0xFF211F30);
         Ui.text(g, font, "PREFERENCES  ↗", panelX + 27, bottom + 15, Ui.TEXT);
         Ui.text(g, font, "RIGHT SHIFT  ·  CLOSE", panelX + 20, panelY + panelH - 14, Ui.FAINT);
     }
@@ -212,12 +212,12 @@ public final class NovaScreen extends Screen {
             boolean enabled = !mod && isEnabled(f);
             boolean chosen = !mod && selected == f;
             boolean hover = Ui.inside(mx, my, x, y, cardW, rowH);
-            int bg = chosen ? 0xFF24364A : hover ? SURFACE_HOVER : SURFACE;
+            int bg = chosen ? 0xFF302A43 : hover ? SURFACE_HOVER : SURFACE;
             Ui.rounded(g, x, y, cardW, rowH, 7, bg);
             if (chosen) g.fill(x, y + 9, x + 3, y + rowH - 9, Ui.accent());
             String label = mod ? installedMods.get(i).getMetadata().getName() : f.label;
             String sub = mod ? installedMods.get(i).getMetadata().getId() + "  ·  " + installedMods.get(i).getMetadata().getVersion().getFriendlyString() : Ui.fit(font, f.description, cardW - 86);
-            Ui.rounded(g, x + 12, y + 12, 32, 32, 7, mod ? 0xFF26384A : enabled ? Ui.alpha(Ui.accent(), 36) : 0xFF26303D);
+            Ui.rounded(g, x + 12, y + 12, 32, 32, 7, mod ? 0xFF29263A : enabled ? Ui.alpha(Ui.accent(), 36) : 0xFF292735);
             String glyph = label.isEmpty() ? "N" : label.substring(0, 1).toUpperCase(java.util.Locale.ROOT);
             Ui.textScaled(g, font, glyph, x + 23, y + 21, enabled ? Ui.accent() : Ui.TEXT, 1.1F);
             Ui.text(g, font, Ui.fit(font, label, cardW - (mod ? 60 : 104)), x + 54, y + 16, Ui.TEXT);
@@ -235,7 +235,7 @@ public final class NovaScreen extends Screen {
 
     private void drawDetails(GuiGraphicsExtractor g) {
         int y = panelY + 78;
-        Ui.rounded(g, detailX, y, detailW, panelH - 108, 9, 0xFF101823);
+        Ui.rounded(g, detailX, y, detailW, panelH - 108, 9, 0xFF12121C);
         Ui.text(g, font, "MODULE DETAILS", detailX + 16, y + 18, Ui.FAINT);
         if (tab == Tab.MODS) {
             Ui.textScaled(g, font, "MODS", detailX + 16, y + 48, Ui.TEXT, 1.25F);
