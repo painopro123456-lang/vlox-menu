@@ -411,25 +411,15 @@ public final class VloxHud implements HudElement {
 		}
 	}
 
-	/** Draws the four equipped armour pieces as their real items. */
+	/** OneClient-style armour status: each worn piece has its own icon and live durability value. */
 	private void addArmour(LocalPlayer player, boolean durability) {
-		ItemStack[] worn = new ItemStack[4];
 		EquipmentSlot[] slots = { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
-		int count = 0;
 		for (EquipmentSlot slot : slots) {
 			ItemStack stack = player.getItemBySlot(slot);
 			if (!stack.isEmpty()) {
-				worn[count++] = stack;
+				rows.add(new ArmorPieceRow(stack));
 			}
 		}
-		if (count == 0) {
-			line("Armour  none");
-			addLine();
-			return;
-		}
-		ItemStack[] trimmed = new ItemStack[count];
-		System.arraycopy(worn, 0, trimmed, 0, count);
-		rows.add(new ItemRow(trimmed, durability));
 	}
 
 	private void addHeldItem(LocalPlayer player) {
@@ -621,7 +611,7 @@ public final class VloxHud implements HudElement {
 	}
 
 	/** One line of the HUD: plain text, a strip of items, or the keystroke block. */
-	private sealed interface Row permits TextRow, ItemRow, KeysRow {
+	private sealed interface Row permits TextRow, ItemRow, ArmorPieceRow, KeysRow {
 		int width(Font font);
 
 		int height(Font font);
@@ -666,6 +656,40 @@ public final class VloxHud implements HudElement {
 					graphics.itemDecorations(font, this.stacks[i], dx, y + 1);
 				}
 			}
+		}
+	}
+
+	/** Compact OneClient/EvergreenHUD-style item + remaining durability row. */
+	private record ArmorPieceRow(ItemStack stack) implements Row {
+		private String value() {
+			if (!stack.isDamageableItem()) {
+				return "∞";
+			}
+			return Integer.toString(Math.max(0, stack.getMaxDamage() - stack.getDamageValue()));
+		}
+
+		private int valueColor() {
+			if (!stack.isDamageableItem()) {
+				return 0xFFE8EEF6;
+			}
+			double remaining = (double) Math.max(0, stack.getMaxDamage() - stack.getDamageValue()) / stack.getMaxDamage();
+			return remaining <= 0.10 ? 0xFFFF5555 : remaining <= 0.35 ? 0xFFFFC04D : 0xFF72D98B;
+		}
+
+		@Override
+		public int width(Font font) {
+			return 20 + font.width(value());
+		}
+
+		@Override
+		public int height(Font font) {
+			return 18;
+		}
+
+		@Override
+		public void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow) {
+			graphics.item(stack, x, y + 1);
+			graphics.text(font, value(), x + 20, y + 5, valueColor(), shadow);
 		}
 	}
 
