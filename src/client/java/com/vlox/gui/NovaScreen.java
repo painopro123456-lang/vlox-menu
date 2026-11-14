@@ -24,14 +24,14 @@ import java.util.List;
 public final class NovaScreen extends Screen {
     private static boolean open;
     public static boolean isOpen() { return open; }
-    private static final int SIDEBAR = 190;
-    private static final int CARD_HEIGHT = 112;
-    private static final int CARD_GAP = 14;
-    private static final int ROW_GAP = 14;
-    private static final int PANEL_BG = 0xF20A101B;
+    private static final int SIDEBAR = 0;
+    private static final int CARD_HEIGHT = 66;
+    private static final int CARD_GAP = 9;
+    private static final int ROW_GAP = 8;
+    private static final int PANEL_BG = 0xF20B0F17;
     private static final int SIDEBAR_BG = 0xFF0B1421;
-    private static final int CARD_BG = 0xE5111D2B;
-    private static final int CARD_HOVER = 0xF01B2B40;
+    private static final int CARD_BG = 0xE817202C;
+    private static final int CARD_HOVER = 0xF0212D3C;
 
     private enum Tab {
         ALL("All"), HUD("HUD"), VISUAL("Visuals"), PLAYER("Player"), CHAT("Chat"), UTILITY("Utility"), MODS("Mods");
@@ -57,18 +57,18 @@ public final class NovaScreen extends Screen {
     @Override
     protected void init() {
         open = true;
-        panelW = Math.min(1160, width - 24);
-        panelH = Math.min(700, height - 24);
+        panelW = Math.min(980, width - 24);
+        panelH = Math.min(650, height - 24);
         panelX = (width - panelW) / 2;
         panelY = (height - panelH) / 2;
-        contentX = panelX + SIDEBAR + 30;
-        contentW = panelW - SIDEBAR - 60;
-        gridY = panelY + 224;
-        gridH = panelH - 284;
-        columns = 2;
+        contentX = panelX + 28;
+        contentW = panelW - 56;
+        gridY = panelY + 218;
+        gridH = panelH - 270;
+        columns = 1;
         cardW = Math.max(120, (contentW - CARD_GAP * (columns - 1)) / columns);
-        advancedW = 136;
-        advancedH = 32;
+        advancedW = 124;
+        advancedH = 30;
         advancedX = panelX + panelW - advancedW - 24;
         advancedY = panelY + panelH - 48;
         installedMods.clear();
@@ -115,53 +115,30 @@ public final class NovaScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         graphics.fill(0, 0, width, height, 0xD0060A12);
         Ui.panel(graphics, panelX, panelY, panelW, panelH, 18, PANEL_BG);
-        Ui.rounded(graphics, panelX, panelY, SIDEBAR, panelH, 18, SIDEBAR_BG);
-        graphics.fill(panelX + SIDEBAR - 1, panelY + 20, panelX + SIDEBAR, panelY + panelH - 20, 0x22FFFFFF);
-
-        // Brand block and primary navigation
-        Ui.rounded(graphics, panelX + 22, panelY + 24, 42, 42, 12, Ui.alpha(Ui.accent(), 42));
-        Ui.textScaled(graphics, font, "N", panelX + 35, panelY + 34, Ui.TEXT, 1.7F);
-        Ui.textScaled(graphics, font, "NOVA", panelX + 76, panelY + 25, Ui.TEXT, 1.65F);
-        Ui.text(graphics, font, "CLIENT  /  26.2", panelX + 77, panelY + 51, Ui.accent());
-        graphics.fill(panelX + 22, panelY + 84, panelX + SIDEBAR - 22, panelY + 85, 0x22FFFFFF);
-        Ui.text(graphics, font, "LIBRARY", panelX + 24, panelY + 104, Ui.FAINT);
-
-        int tabY = panelY + 124;
+        Ui.rounded(graphics, panelX + 20, panelY + 20, 38, 38, 11, Ui.alpha(Ui.accent(), 42));
+        Ui.textScaled(graphics, font, "N", panelX + 32, panelY + 29, Ui.TEXT, 1.55F);
+        Ui.textScaled(graphics, font, "NOVA", panelX + 70, panelY + 21, Ui.TEXT, 1.55F);
+        Ui.text(graphics, font, "FABRIC 26.2", panelX + 71, panelY + 43, Ui.MUTED);
+        Ui.text(graphics, font, "RIGHT SHIFT  ·  CLOSE", panelX + panelW - 174, panelY + 34, Ui.FAINT);
+        int tabX = contentX, tabY = panelY + 82;
         for (Tab item : Tab.values()) {
-            boolean active = item == tab;
-            boolean hovered = Ui.inside(mouseX, mouseY, panelX + 14, tabY, SIDEBAR - 28, 36);
-            if (active) {
-                Ui.rounded(graphics, panelX + 14, tabY, SIDEBAR - 28, 36, 9, Ui.alpha(Ui.accent(), 34));
-                graphics.fill(panelX + 14, tabY + 9, panelX + 17, tabY + 27, Ui.accent());
-            } else if (hovered) {
-                Ui.rounded(graphics, panelX + 14, tabY, SIDEBAR - 28, 36, 9, 0x16FFFFFF);
-            }
-            Ui.text(graphics, font, item.label, panelX + 31, tabY + 13,
-                    active ? Ui.TEXT : hovered ? 0xFFDCE7F4 : Ui.MUTED);
-            int count = item == Tab.MODS ? installedMods.size() : countFor(item);
-            String countText = Integer.toString(count);
-            Ui.text(graphics, font, countText, panelX + SIDEBAR - 34 - font.width(countText),
-                    tabY + 13, active ? Ui.accent() : Ui.FAINT);
-            tabY += 43;
+            String shown = item.label + "  " + (item == Tab.MODS ? installedMods.size() : countFor(item));
+            int tabW = font.width(shown) + 24;
+            boolean activeTab = item == tab;
+            boolean hoveredTab = Ui.inside(mouseX, mouseY, tabX, tabY, tabW, 30);
+            Ui.rounded(graphics, tabX, tabY, tabW, 30, 8, activeTab ? Ui.alpha(Ui.accent(), 40) : hoveredTab ? 0xFF202B39 : 0xFF141D29);
+            Ui.text(graphics, font, shown, tabX + 12, tabY + 10, activeTab ? Ui.accent() : hoveredTab ? Ui.TEXT : Ui.MUTED);
+            tabX += tabW + 7;
         }
 
-        Ui.rounded(graphics, panelX + 18, panelY + panelH - 64, SIDEBAR - 36, 38, 9, 0xFF172536);
-        Ui.text(graphics, font, "RIGHT SHIFT  ·  CLOSE", panelX + 29, panelY + panelH - 49, Ui.MUTED);
-
-        // Main workspace header
-        String heading = tab == Tab.MODS ? "Installed mods" : (tab == Tab.ALL ? "Your modules" : tab.label + " modules");
-        String subtitle = tab == Tab.MODS
-                ? "Everything loaded by Fabric in this instance"
-                : "A clean control center for your Minecraft experience";
-        Ui.text(graphics, font, "NOVA  /  WORKSPACE", contentX, panelY + 28, Ui.accent());
-        Ui.textScaled(graphics, font, heading, contentX, panelY + 52, Ui.TEXT, 1.7F);
-        Ui.text(graphics, font, subtitle, contentX, panelY + 82, Ui.MUTED);
-
-        String active = activeCount() + " ACTIVE";
-        int badgeW = font.width(active) + 30;
-        Ui.rounded(graphics, contentX + contentW - badgeW, panelY + 46, badgeW, 28, 9, Ui.alpha(Ui.accent(), 34));
-        Ui.rounded(graphics, contentX + contentW - badgeW + 10, panelY + 57, 6, 6, 3, Ui.accent());
-        Ui.text(graphics, font, active, contentX + contentW - badgeW + 22, panelY + 56, Ui.accent());
+        String heading = tab == Tab.MODS ? "Installed mods" : (tab == Tab.ALL ? "Modules" : tab.label);
+        String subtitle = tab == Tab.MODS ? "Mods loaded in this Minecraft instance" : "Choose what runs in your client";
+        Ui.text(graphics, font, heading, contentX, panelY + 126, Ui.TEXT);
+        Ui.text(graphics, font, subtitle, contentX, panelY + 145, Ui.MUTED);
+        String active = activeCount() + " ON";
+        int badgeW = font.width(active) + 22;
+        Ui.rounded(graphics, contentX + contentW - badgeW, panelY + 126, badgeW, 25, 8, Ui.alpha(Ui.accent(), 30));
+        Ui.text(graphics, font, active, contentX + contentW - badgeW + 11, panelY + 135, Ui.accent());
 
         // Search is a full-width toolbar, separate from the module cards.
         drawSearch(graphics, mouseX, mouseY);
@@ -182,7 +159,7 @@ public final class NovaScreen extends Screen {
 
     private void drawSearch(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         int x = contentX;
-        int y = panelY + 158;
+        int y = panelY + 170;
         int w = contentW;
         boolean hover = Ui.inside(mouseX, mouseY, x, y, w, 38);
         int bg = searchFocused ? Ui.alpha(Ui.accent(), 28) : hover ? 0xFF1B293A : 0xFF121C2A;
@@ -224,22 +201,14 @@ public final class NovaScreen extends Screen {
             Feature feature = modules.get(i);
             boolean hovered = Ui.inside(mouseX, mouseY, x, y, cardW, cardHeight());
             boolean enabled = isEnabled(feature);
-            Ui.rounded(graphics, x, y, cardW, cardHeight(), 13, hovered ? CARD_HOVER : CARD_BG);
-            Ui.rounded(graphics, x + 14, y + 17, 48, 48, 13,
-                    enabled ? Ui.alpha(Ui.accent(), 48) : 0xFF1B2938);
+            Ui.rounded(graphics, x, y, cardW, cardHeight(), 10, hovered ? CARD_HOVER : CARD_BG);
+            graphics.fill(x, y + 10, x + 3, y + cardHeight() - 10, enabled ? Ui.accent() : 0xFF344153);
+            Ui.rounded(graphics, x + 15, y + 15, 36, 36, 9, enabled ? Ui.alpha(Ui.accent(), 35) : 0xFF202A37);
             String glyph = feature.label.isEmpty() ? "N" : feature.label.substring(0, 1).toUpperCase(java.util.Locale.ROOT);
-            Ui.textScaled(graphics, font, glyph, x + 31, y + 31, enabled ? Ui.accent() : 0xFF9BAABD, 1.55F);
-            Ui.text(graphics, font, Ui.fit(font, feature.label, cardW - 150), x + 76, y + 21,
-                    enabled ? Ui.TEXT : 0xFFD4DEEA);
-            Ui.text(graphics, font, Ui.fit(font, feature.category.label.toUpperCase(java.util.Locale.ROOT), cardW - 150),
-                    x + 76, y + 40, enabled ? Ui.accent() : Ui.FAINT);
-            if (VloxConfig.flag(Features.MENU_DESCRIPTIONS) && !VloxConfig.flag(Features.MENU_COMPACT)) {
-                Ui.text(graphics, font, Ui.fit(font, feature.description, cardW - 30), x + 16, y + 78, Ui.MUTED);
-            }
-            graphics.fill(x + 16, y + cardHeight() - 17, x + cardW - 16, y + cardHeight() - 16, 0x18FFFFFF);
-            Ui.text(graphics, font, enabled ? "RUNNING" : "READY", x + 17, y + cardHeight() - 11,
-                    enabled ? Ui.accent() : Ui.FAINT);
-            drawSwitch(graphics, x + cardW - 52, y + 25, enabled);
+            Ui.textScaled(graphics, font, glyph, x + 28, y + 25, enabled ? Ui.accent() : 0xFF9BAABD, 1.2F);
+            Ui.text(graphics, font, Ui.fit(font, feature.label, cardW - 150), x + 64, y + 20, enabled ? Ui.TEXT : 0xFFD4DEEA);
+            Ui.text(graphics, font, Ui.fit(font, feature.description, cardW - 150), x + 64, y + 39, Ui.MUTED);
+            drawSwitch(graphics, x + cardW - 48, y + 24, enabled);            drawSwitch(graphics, x + cardW - 52, y + 25, enabled);
         }
         drawScrollHint(graphics, contentHeight);
     }
@@ -308,18 +277,19 @@ public final class NovaScreen extends Screen {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
         double mx = event.x();
         double my = event.y();
-        int tabY = panelY + 124;
+        int tabX = contentX, tabY = panelY + 82;
         for (Tab item : Tab.values()) {
-            if (Ui.inside(mx, my, panelX + 14, tabY, SIDEBAR - 28, 36)) {
+            int tabW = font.width(item.label + "  " + (item == Tab.MODS ? installedMods.size() : countFor(item))) + 24;
+            if (Ui.inside(mx, my, tabX, tabY, tabW, 30)) {
                 tab = item;
                 if (VloxConfig.flag(Features.MENU_REMEMBER)) lastTab = item;
                 refreshModules();
                 return true;
             }
-            tabY += 43;
+            tabX += tabW + 7;
         }
         int searchW = contentW;
-        if (Ui.inside(mx, my, contentX, panelY + 158, searchW, 38)) {
+        if (Ui.inside(mx, my, contentX, panelY + 170, searchW, 38)) {
             searchFocused = true;
             return true;
         }
