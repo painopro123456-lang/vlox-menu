@@ -182,7 +182,7 @@ public final class Features {
 			"Put the cursor in the search box when the menu opens.", false);
 	public static final Feature MENU_ACCENT = choice(Category.MENU, "menu.accent", "Accent colour",
 			"The highlight colour used by the menu and the HUD.",
-			new String[] { "Green", "Cyan", "Amber", "Violet", "Rose" }, 0);
+			new String[] { "Ice blue", "Violet", "Amber", "Rose", "Mint" }, 0);
 	public static final Feature MENU_PRESET_PVP = Feature.action(Category.MENU, "menu.presetPvp", "Layout: PvP",
 			"Turn on the HUD lines a fight needs and set auto sprint.");
 	public static final Feature MENU_PRESET_EXPLORER = Feature.action(Category.MENU, "menu.presetExplorer", "Layout: explorer",
