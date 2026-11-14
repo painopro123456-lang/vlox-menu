@@ -24,6 +24,8 @@ public final class Features {
 			"Draw a dark panel behind the HUD text.", true);
 	public static final Feature HUD_SHADOW = toggle(Category.HUD, "hud.shadow", "Text shadow",
 			"Draw the drop shadow behind HUD text.", true);
+	public static final Feature HUD_STYLE = choice(Category.HUD, "hud.style", "HUD design",
+			"Choose the visual layout used by the Nova HUD widgets.", new String[] { "Nova Glass", "Clean", "Compact" }, 0);
 	public static final Feature HUD_CORNER = choice(Category.HUD, "hud.corner", "Corner",
 			"Which screen corner the HUD sits in.", new String[] { "Top left", "Top right", "Bottom left", "Bottom right" }, 0);
 	public static final Feature HUD_OFFSET_X = number(Category.HUD, "hud.offsetX", "Horizontal position",
