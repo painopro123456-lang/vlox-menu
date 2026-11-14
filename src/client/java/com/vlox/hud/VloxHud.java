@@ -737,7 +737,8 @@ public final class VloxHud implements HudElement {
 
 		@Override
 		public void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow, int style) {
-			graphics.item(stack, x, y + 1);
+			Ui.rounded(graphics, x - 2, y - 1, 18, 19, 4, 0xCC182332);
+			graphics.item(stack, x - 1, y);
 			graphics.text(font, value(), x + 20, y + 5, valueColor(), shadow);
 		}
 	}
@@ -766,13 +767,17 @@ public final class VloxHud implements HudElement {
 		}
 
 		private static void key(GuiGraphicsExtractor g, Font f, int x, int y, String label, boolean pressed) {
-			g.fill(x, y, x + KEY, y + KEY, pressed ? Ui.accent() : 0xFF252D39);
+			Ui.rounded(g, x, y + 1, KEY, KEY, 4, 0x99000000);
+			Ui.rounded(g, x, y, KEY, KEY, 4, pressed ? Ui.accent() : 0xFF202B39);
+			g.fill(x + 4, y + 2, x + KEY - 4, y + 3, pressed ? 0x66FFFFFF : 0x223F536B);
 			g.centeredText(f, label, x + KEY / 2, y + (KEY - f.lineHeight) / 2 + 1,
 					pressed ? 0xFFFFFFFF : 0xFFE2E7EF);
 		}
 
 		private static void mouseKey(GuiGraphicsExtractor g, Font f, int x, int y, String label, boolean pressed) {
-			g.fill(x, y, x + MOUSE_W, y + KEY, pressed ? Ui.accent() : 0xFF252D39);
+			Ui.rounded(g, x, y + 1, MOUSE_W, KEY, 4, 0x99000000);
+			Ui.rounded(g, x, y, MOUSE_W, KEY, 4, pressed ? Ui.accent() : 0xFF202B39);
+			g.fill(x + 4, y + 2, x + MOUSE_W - 4, y + 3, pressed ? 0x66FFFFFF : 0x223F536B);
 			g.centeredText(f, label, x + MOUSE_W / 2, y + (KEY - f.lineHeight) / 2 + 1,
 					pressed ? 0xFFFFFFFF : 0xFFE2E7EF);
 		}
