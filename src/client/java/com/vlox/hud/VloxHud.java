@@ -414,11 +414,18 @@ public final class VloxHud implements HudElement {
 	/** OneClient-style armour status: each worn piece has its own icon and live durability value. */
 	private void addArmour(LocalPlayer player, boolean durability) {
 		EquipmentSlot[] slots = { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
+		ItemStack[] worn = new ItemStack[slots.length];
+		int count = 0;
 		for (EquipmentSlot slot : slots) {
 			ItemStack stack = player.getItemBySlot(slot);
 			if (!stack.isEmpty()) {
-				rows.add(new ArmorPieceRow(stack));
+				worn[count++] = stack;
 			}
+		}
+		if (durability) {
+			for (int i = 0; i < count; i++) rows.add(new ArmorPieceRow(worn[i]));
+		} else if (count > 0) {
+			rows.add(new ItemRow(java.util.Arrays.copyOf(worn, count), false));
 		}
 	}
 
