@@ -196,6 +196,44 @@ public final class Features {
 	public static final Feature MENU_COPY_PATH = Feature.action(Category.MENU, "menu.copyPath", "Copy config path",
 			"Copy the config file location to the clipboard.");
 
+	public static final Feature HUD_X = toggle(Category.HUD, "hud.x", "X coordinate", "Your precise X position.", false);
+	public static final Feature HUD_Y = toggle(Category.HUD, "hud.y", "Y coordinate", "Your precise Y position.", false);
+	public static final Feature HUD_Z = toggle(Category.HUD, "hud.z", "Z coordinate", "Your precise Z position.", false);
+	public static final Feature HUD_BLOCK_POS = toggle(Category.HUD, "hud.blockPos", "Block position", "Integer block coordinates.", false);
+	public static final Feature HUD_HORIZONTAL_SPEED = toggle(Category.HUD, "hud.horizontalSpeed", "Horizontal speed", "Movement speed across the X/Z plane.", false);
+	public static final Feature HUD_VERTICAL_SPEED = toggle(Category.HUD, "hud.verticalSpeed", "Vertical speed", "Upward or downward movement speed.", false);
+	public static final Feature HUD_TOTAL_SPEED = toggle(Category.HUD, "hud.totalSpeed", "Total speed", "Full three-dimensional movement speed.", false);
+	public static final Feature HUD_YAW = toggle(Category.HUD, "hud.yaw", "Yaw", "Exact horizontal camera rotation.", false);
+	public static final Feature HUD_PITCH = toggle(Category.HUD, "hud.pitch", "Pitch", "Exact vertical camera rotation.", false);
+	public static final Feature HUD_WEATHER = toggle(Category.HUD, "hud.weather", "Weather", "Current rain and thunder state.", false);
+	public static final Feature HUD_RAIN_STRENGTH = toggle(Category.HUD, "hud.rainStrength", "Rain strength", "Current rain intensity.", false);
+	public static final Feature HUD_THUNDER_STRENGTH = toggle(Category.HUD, "hud.thunderStrength", "Thunder strength", "Current thunder intensity.", false);
+	public static final Feature HUD_BLOCK_LIGHT = toggle(Category.HUD, "hud.blockLight", "Block light", "Light emitted by nearby blocks.", false);
+	public static final Feature HUD_SKY_LIGHT = toggle(Category.HUD, "hud.skyLight", "Sky light", "Sky light level at your position.", false);
+	public static final Feature HUD_HEALTH_PERCENT = toggle(Category.HUD, "hud.healthPercent", "Health percent", "Health as a percentage of maximum.", false);
+	public static final Feature HUD_MAX_HEALTH = toggle(Category.HUD, "hud.maxHealth", "Max health", "Your maximum health value.", false);
+	public static final Feature HUD_ABSORPTION = toggle(Category.HUD, "hud.absorption", "Absorption", "Extra absorption hearts as a number.", false);
+	public static final Feature HUD_FOOD_SATURATION = toggle(Category.HUD, "hud.foodSaturation", "Food saturation", "Your current saturation value.", false);
+	public static final Feature HUD_AIR_SUPPLY = toggle(Category.HUD, "hud.airSupply", "Air supply", "Remaining underwater breathing ticks.", false);
+	public static final Feature HUD_XP_TOTAL = toggle(Category.HUD, "hud.xpTotal", "Total XP", "Total experience points collected.", false);
+	public static final Feature HUD_XP_PROGRESS = toggle(Category.HUD, "hud.xpProgress", "XP progress", "Progress toward the next level.", false);
+	public static final Feature HUD_HOTBAR_SLOT = toggle(Category.HUD, "hud.hotbarSlot", "Selected slot", "Currently selected hotbar slot.", false);
+	public static final Feature HUD_HELD_COUNT = toggle(Category.HUD, "hud.heldCount", "Held item count", "Stack size of your main-hand item.", false);
+	public static final Feature HUD_HELD_NAME = toggle(Category.HUD, "hud.heldName", "Held item name", "Name of the item in your main hand.", false);
+	public static final Feature HUD_HELD_DURABILITY = toggle(Category.HUD, "hud.heldDurability", "Held durability", "Remaining durability of your main-hand item.", false);
+	public static final Feature HUD_OFFHAND_NAME = toggle(Category.HUD, "hud.offhandName", "Offhand item", "Name of the item in your offhand.", false);
+	public static final Feature HUD_OFFHAND_COUNT = toggle(Category.HUD, "hud.offhandCount", "Offhand count", "Stack size of your offhand item.", false);
+	public static final Feature HUD_TARGET_BLOCK_NAME = toggle(Category.HUD, "hud.targetBlockName", "Target block", "Name of the block under your crosshair.", false);
+	public static final Feature HUD_TARGET_BLOCK_DISTANCE = toggle(Category.HUD, "hud.targetBlockDistance", "Block distance", "Distance to the block under your crosshair.", false);
+	public static final Feature HUD_TARGET_ENTITY_NAME = toggle(Category.HUD, "hud.targetEntityName", "Target entity", "Name of the entity under your crosshair.", false);
+	public static final Feature HUD_TARGET_ENTITY_DISTANCE = toggle(Category.HUD, "hud.targetEntityDistance", "Entity distance", "Distance to the entity under your crosshair.", false);
+	public static final Feature HUD_FALL_DISTANCE_EXACT = toggle(Category.HUD, "hud.fallDistanceExact", "Fall distance", "Exact distance fallen in blocks.", false);
+	public static final Feature HUD_ON_GROUND = toggle(Category.HUD, "hud.onGround", "Ground state", "Whether you are touching the ground.", false);
+	public static final Feature HUD_MOVEMENT_STATE = toggle(Category.HUD, "hud.movementState", "Movement state", "Shows your current movement mode.", false);
+	public static final Feature HUD_SWIMMING = toggle(Category.HUD, "hud.swimming", "Swimming", "Shows when you are swimming.", false);
+	public static final Feature HUD_FLYING = toggle(Category.HUD, "hud.flying", "Elytra flight", "Shows when you are gliding with an elytra.", false);
+	public static final Feature HUD_IN_WATER = toggle(Category.HUD, "hud.inWater", "In water", "Shows when your player is in water.", false);
+
 	private Features() {
 	}
 
