@@ -22,15 +22,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** The VLOX menu, drawn by hand. */
+/** Nova's matching settings workspace, drawn by hand. */
 public final class VloxScreen extends Screen {
-	private static final int ROW_HEIGHT = 28;
-	private static final int ROW_GAP = 2;
-	private static final int RAIL_WIDTH = 152;
-	private static final int FOOTER_HEIGHT = 26;
+	private static final int ROW_HEIGHT = 34;
+	private static final int ROW_GAP = 5;
+	private static final int RAIL_WIDTH = 168;
+	private static final int FOOTER_HEIGHT = 34;
 
-	private static final int PANEL_BG = 0xFF0D1219;
-	private static final int RAIL_BG = 0xFF0A0F15;
+	private static final int PANEL_BG = 0xF20A111E;
+	private static final int RAIL_BG = 0xF7080E19;
 	private static final int ROW_HOVER = 0x0FFFFFFF;
 	private static final int ROW_ALT = 0x05FFFFFF;
 
@@ -68,24 +68,24 @@ public final class VloxScreen extends Screen {
 	}
 
 	public VloxScreen() {
-		super(Component.literal("NOVA"));
+		super(Component.literal("Nova Settings"));
 	}
 
 	@Override
 	protected void init() {
-		this.panelWidth = Math.min(640, this.width - 24);
-		this.panelHeight = Math.min(440, this.height - 24);
+		this.panelWidth = Math.min(820, this.width - 32);
+		this.panelHeight = Math.min(560, this.height - 32);
 		this.panelX = (this.width - this.panelWidth) / 2;
 		this.panelY = (this.height - this.panelHeight) / 2;
 
 		this.contentX = this.panelX + RAIL_WIDTH;
 		this.contentWidth = this.panelWidth - RAIL_WIDTH;
-		this.listY = this.panelY + 92;
-		this.listHeight = this.panelHeight - 92 - FOOTER_HEIGHT;
+		this.listY = this.panelY + 116;
+		this.listHeight = this.panelHeight - 116 - FOOTER_HEIGHT;
 
 		this.searchX = this.contentX + 16;
-		this.searchY = this.panelY + 58;
-		this.searchWidth = Math.min(240, this.contentWidth - 32);
+		this.searchY = this.panelY + 78;
+		this.searchWidth = Math.min(320, this.contentWidth - 32);
 
 		if (!VloxConfig.flag(Features.MENU_REMEMBER)) {
 			lastCategory = Category.HUD;
@@ -205,10 +205,10 @@ public final class VloxScreen extends Screen {
 
 		graphics.fill(0, 0, this.width, this.height, 0xC804070B);
 
-		Ui.panel(graphics, this.panelX, this.panelY, this.panelWidth, this.panelHeight, 10, PANEL_BG);
+		Ui.panel(graphics, this.panelX, this.panelY, this.panelWidth, this.panelHeight, 16, PANEL_BG);
 
 		// Side rail
-		Ui.rounded(graphics, this.panelX, this.panelY, RAIL_WIDTH, this.panelHeight, 10, RAIL_BG);
+		Ui.rounded(graphics, this.panelX, this.panelY, RAIL_WIDTH, this.panelHeight, 16, RAIL_BG);
 		graphics.fill(this.panelX + RAIL_WIDTH - 1, this.panelY + 12, this.panelX + RAIL_WIDTH,
 				this.panelY + this.panelHeight - 12, 0x14FFFFFF);
 
@@ -224,12 +224,16 @@ public final class VloxScreen extends Screen {
 	}
 
 	private void drawRail(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-		int x = this.panelX + 18;
+		int x = this.panelX + 20;
 
-		Ui.textScaled(graphics, this.font, "NOVA", x, this.panelY + 26, Ui.accent(), 1.85F);
-		Ui.text(graphics, this.font, "ADVANCED SETTINGS", x + 1, this.panelY + 50, Ui.FAINT);
+		Ui.rounded(graphics, x, this.panelY + 22, 36, 36, 10, Ui.alpha(Ui.accent(), 42));
+		Ui.textScaled(graphics, this.font, "N", x + 11, this.panelY + 30, Ui.TEXT, 1.45F);
+		Ui.textScaled(graphics, this.font, "NOVA", x + 46, this.panelY + 23, Ui.TEXT, 1.45F);
+		Ui.text(graphics, this.font, "SETTINGS", x + 47, this.panelY + 48, Ui.accent());
+		graphics.fill(x, this.panelY + 76, this.panelX + RAIL_WIDTH - 18, this.panelY + 77, 0x22FFFFFF);
+		Ui.text(graphics, this.font, "PREFERENCES", x, this.panelY + 92, Ui.FAINT);
 
-		int itemY = this.panelY + 78;
+		int itemY = this.panelY + 108;
 
 		for (Category cat : Category.values()) {
 			boolean active = cat == this.category;
@@ -253,7 +257,8 @@ public final class VloxScreen extends Screen {
 			itemY += 30;
 		}
 
-		Ui.text(graphics, this.font, "NOVA 0.1.0", x, this.panelY + this.panelHeight - 22, Ui.FAINT);
+		Ui.rounded(graphics, x - 6, this.panelY + this.panelHeight - 54, RAIL_WIDTH - 28, 30, 8, 0xFF182638);
+		Ui.text(graphics, this.font, "BACK TO MODULES", x + 5, this.panelY + this.panelHeight - 44, Ui.TEXT);
 	}
 
 	private int countIn(Category cat) {
@@ -267,12 +272,13 @@ public final class VloxScreen extends Screen {
 	}
 
 	private void drawHeader(GuiGraphicsExtractor graphics) {
-		Ui.text(graphics, this.font, this.category.label, this.contentX + 16, this.panelY + 22, Ui.TEXT);
+		Ui.text(graphics, this.font, "NOVA  /  SETTINGS", this.contentX + 16, this.panelY + 22, Ui.accent());
+		Ui.textScaled(graphics, this.font, this.category.label, this.contentX + 16, this.panelY + 42, Ui.TEXT, 1.25F);
 
 		String count = this.visible.size() + " of " + countIn(this.category);
 		Ui.text(graphics, this.font, count,
 				this.contentX + this.contentWidth - 16 - this.font.width(count),
-				this.panelY + 23, Ui.MUTED);
+				this.panelY + 48, Ui.MUTED);
 
 		Ui.rounded(graphics, this.searchX, this.searchY, this.searchWidth, this.searchHeight, 9, 0xFF131A24);
 		graphics.fill(this.searchX + 9, this.searchY + 4, this.searchX + 10, this.searchY + 14, Ui.FAINT);
@@ -504,8 +510,14 @@ public final class VloxScreen extends Screen {
 		double mouseX = event.x();
 		double mouseY = event.y();
 
+		// Return to Nova's module library.
+		if (Ui.inside(mouseX, mouseY, this.panelX + 12, this.panelY + this.panelHeight - 54, RAIL_WIDTH - 28, 30)) {
+			Minecraft.getInstance().setScreenAndShow(new NovaScreen());
+			return true;
+		}
+
 		// Category rail
-		int itemY = this.panelY + 78;
+		int itemY = this.panelY + 108;
 		int railX = this.panelX + 12;
 		for (Category cat : Category.values()) {
 			if (Ui.inside(mouseX, mouseY, railX, itemY, RAIL_WIDTH - 24, 26)) {
