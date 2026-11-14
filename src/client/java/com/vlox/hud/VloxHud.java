@@ -106,7 +106,7 @@ public final class VloxHud implements HudElement {
 			graphics.text(font, "NOVA", PAD + 16, cursorY, Ui.accent(), false);
 			graphics.text(font, "LIVE HUD", PAD + 49, cursorY, 0xFF8795A8, false);
 			cursorY += 11;
-			graphics.fill(PAD + 4, cursorY, boxWidth / Math.max(0.5F, scale) - PAD, cursorY + 1, 0x443F5065);
+			graphics.fill(PAD + 4, cursorY, (int) (boxWidth / Math.max(0.5F, scale) - PAD), cursorY + 1, 0x443F5065);
 			cursorY += 5;
 		}
 		for (int i = 0; i < rows.size(); i++) {
