@@ -11,6 +11,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
@@ -69,6 +70,44 @@ public final class VloxHud implements HudElement {
 			rebuild(minecraft);
 			builtAt = now;
 		}
+		if (VloxConfig.flag(Features.HUD_X)) { line("X  "); appendFixed(text, player.getX(), 2); addLine(); }
+		if (VloxConfig.flag(Features.HUD_Y)) { line("Y  "); appendFixed(text, player.getY(), 2); addLine(); }
+		if (VloxConfig.flag(Features.HUD_Z)) { line("Z  "); appendFixed(text, player.getZ(), 2); addLine(); }
+		if (VloxConfig.flag(Features.HUD_BLOCK_POS)) { line("Block  ").append(pos.getX()).append(" / ").append(pos.getY()).append(" / ").append(pos.getZ()); addLine(); }
+		if (VloxConfig.flag(Features.HUD_HORIZONTAL_SPEED)) { double dx=player.getDeltaMovement().x, dz=player.getDeltaMovement().z; line("Horizontal  "); appendFixed(text, Math.sqrt(dx*dx+dz*dz)*20.0, 2); text.append(" b/s"); addLine(); }
+		if (VloxConfig.flag(Features.HUD_VERTICAL_SPEED)) { line("Vertical  "); appendFixed(text, player.getDeltaMovement().y*20.0, 2); text.append(" b/s"); addLine(); }
+		if (VloxConfig.flag(Features.HUD_TOTAL_SPEED)) { var v=player.getDeltaMovement(); line("Total speed  "); appendFixed(text, Math.sqrt(v.x*v.x+v.y*v.y+v.z*v.z)*20.0, 2); text.append(" b/s"); addLine(); }
+		if (VloxConfig.flag(Features.HUD_YAW)) { line("Yaw  "); appendFixed(text, player.getYRot(), 1); text.append('\u00B0'); addLine(); }
+		if (VloxConfig.flag(Features.HUD_PITCH)) { line("Pitch  "); appendFixed(text, player.getXRot(), 1); text.append('\u00B0'); addLine(); }
+		if (VloxConfig.flag(Features.HUD_WEATHER)) { line("Weather  ").append(minecraft.level.isThundering() ? "Thunder" : minecraft.level.isRaining() ? "Rain" : "Clear"); addLine(); }
+		if (VloxConfig.flag(Features.HUD_RAIN_STRENGTH)) { line("Rain  "); appendFixed(text, minecraft.level.getRainLevel(1.0F)*100.0, 0); text.append('%'); addLine(); }
+		if (VloxConfig.flag(Features.HUD_THUNDER_STRENGTH)) { line("Thunder  "); appendFixed(text, minecraft.level.getThunderLevel(1.0F)*100.0, 0); text.append('%'); addLine(); }
+		if (VloxConfig.flag(Features.HUD_BLOCK_LIGHT)) { line("Block light  ").append(minecraft.level.getBrightness(LightLayer.BLOCK, pos)); addLine(); }
+		if (VloxConfig.flag(Features.HUD_SKY_LIGHT)) { line("Sky light  ").append(minecraft.level.getBrightness(LightLayer.SKY, pos)); addLine(); }
+		if (VloxConfig.flag(Features.HUD_HEALTH_PERCENT)) { line("Health  "); appendFixed(text, player.getHealth()*100.0/Math.max(1.0F, player.getMaxHealth()), 0); text.append('%'); addLine(); }
+		if (VloxConfig.flag(Features.HUD_MAX_HEALTH)) { line("Max health  "); appendFixed(text, player.getMaxHealth(), 1); addLine(); }
+		if (VloxConfig.flag(Features.HUD_ABSORPTION)) { line("Absorption  "); appendFixed(text, player.getAbsorptionAmount(), 1); addLine(); }
+		if (VloxConfig.flag(Features.HUD_FOOD_SATURATION)) { line("Saturation  "); appendFixed(text, player.getFoodData().getSaturationLevel(), 1); addLine(); }
+		if (VloxConfig.flag(Features.HUD_AIR_SUPPLY)) { line("Air  ").append(player.getAirSupply()).append(" ticks"); addLine(); }
+		if (VloxConfig.flag(Features.HUD_XP_TOTAL)) { line("Total XP  ").append(player.totalExperience); addLine(); }
+		if (VloxConfig.flag(Features.HUD_XP_PROGRESS)) { line("XP progress  "); appendFixed(text, player.experienceProgress*100.0F, 1); text.append('%'); addLine(); }
+		if (VloxConfig.flag(Features.HUD_HOTBAR_SLOT)) { line("Hotbar slot  ").append(player.getInventory().getSelectedSlot()+1); addLine(); }
+		if (VloxConfig.flag(Features.HUD_HELD_COUNT)) { line("Held count  ").append(player.getMainHandItem().getCount()); addLine(); }
+		if (VloxConfig.flag(Features.HUD_HELD_NAME)) { line("Held item  ").append(player.getMainHandItem().isEmpty() ? "empty" : player.getMainHandItem().getHoverName().getString()); addLine(); }
+		if (VloxConfig.flag(Features.HUD_HELD_DURABILITY)) { var held=player.getMainHandItem(); line("Held durability  ").append(held.isDamageableItem() ? (held.getMaxDamage()-held.getDamageValue())+"/"+held.getMaxDamage() : "N/A"); addLine(); }
+		if (VloxConfig.flag(Features.HUD_OFFHAND_NAME)) { var off=player.getOffhandItem(); line("Offhand  ").append(off.isEmpty() ? "empty" : off.getHoverName().getString()); addLine(); }
+		if (VloxConfig.flag(Features.HUD_OFFHAND_COUNT)) { line("Offhand count  ").append(player.getOffhandItem().getCount()); addLine(); }
+		if (VloxConfig.flag(Features.HUD_TARGET_BLOCK_NAME) && minecraft.hitResult instanceof BlockHitResult blockHitName) { line("Target block  ").append(minecraft.level.getBlockState(blockHitName.getBlockPos()).getBlock().getName().getString()); addLine(); }
+		if (VloxConfig.flag(Features.HUD_TARGET_BLOCK_DISTANCE) && minecraft.hitResult instanceof BlockHitResult blockHitDistance) { line("Block distance  "); appendFixed(text, Math.sqrt(player.distanceToSqr(blockHitDistance.getBlockPos().getCenter())), 2); text.append(" m"); addLine(); }
+		if (VloxConfig.flag(Features.HUD_TARGET_ENTITY_NAME) && minecraft.hitResult instanceof net.minecraft.world.phys.EntityHitResult entityHitName) { line("Target entity  ").append(entityHitName.getEntity().getName().getString()); addLine(); }
+		if (VloxConfig.flag(Features.HUD_TARGET_ENTITY_DISTANCE) && minecraft.hitResult instanceof net.minecraft.world.phys.EntityHitResult entityHitDistance) { line("Entity distance  "); appendFixed(text, player.distanceTo(entityHitDistance.getEntity()), 2); text.append(" m"); addLine(); }
+		if (VloxConfig.flag(Features.HUD_FALL_DISTANCE_EXACT)) { line("Fall distance  "); appendFixed(text, player.fallDistance, 2); text.append(" m"); addLine(); }
+		if (VloxConfig.flag(Features.HUD_ON_GROUND)) { line("On ground  ").append(player.onGround() ? "Yes" : "No"); addLine(); }
+		if (VloxConfig.flag(Features.HUD_MOVEMENT_STATE)) { line("Movement  ").append(player.isFallFlying() ? "Gliding" : player.isSwimming() ? "Swimming" : player.isCrouching() ? "Sneaking" : player.isSprinting() ? "Sprinting" : player.onGround() ? "Walking" : "Airborne"); addLine(); }
+		if (VloxConfig.flag(Features.HUD_SWIMMING) && player.isSwimming()) { line("Swimming"); addLine(); }
+		if (VloxConfig.flag(Features.HUD_FLYING) && player.isFallFlying()) { line("Elytra flight"); addLine(); }
+		if (VloxConfig.flag(Features.HUD_IN_WATER) && player.isInWater()) { line("In water"); addLine(); }
+
 		if (rows.isEmpty()) {
 			return;
 		}
