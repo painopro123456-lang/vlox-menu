@@ -138,6 +138,11 @@ public final class Features {
 	public static final Feature INPUT_SUGGESTIONS = toggle(Category.INPUT, "input.suggestions", "Command suggestions",
 			"Show the command suggestion list.", true);
 
+	public static final Feature INPUT_AUTO_TOOL = toggle(Category.INPUT, "input.autoTool", "Auto tool",
+			"Automatically select the strongest hotbar tool for the block you are mining.", false);
+	public static final Feature INPUT_AUTO_TOOL_ONLY_WHEN_MINING = toggle(Category.INPUT, "input.autoToolOnlyWhenMining", "Auto tool only while mining",
+			"Only switch tools while the attack button is held.", true);
+
 	public static final Feature INPUT_AUTO_SPRINT = toggle(Category.INPUT, "input.autoSprint", "Auto sprint",
 			"Sprint whenever you hold forward, without pressing the sprint key.", false);
 	public static final Feature INPUT_ZOOM = toggle(Category.INPUT, "input.zoom", "Zoom",
