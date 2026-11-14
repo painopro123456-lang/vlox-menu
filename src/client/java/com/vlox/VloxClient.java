@@ -131,7 +131,7 @@ public class VloxClient implements ClientModInitializer {
 
         var state = client.level.getBlockState(hit.getBlockPos());
         var inventory = player.getInventory();
-        int bestSlot = inventory.selected;
+        int bestSlot = inventory.getSelectedSlot();
         float bestSpeed = inventory.getItem(bestSlot).getDestroySpeed(state);
 
         for (int slot = 0; slot < 9; slot++) {
@@ -144,8 +144,8 @@ public class VloxClient implements ClientModInitializer {
             }
         }
 
-        if (bestSlot != inventory.selected) {
-            inventory.selected = bestSlot;
+        if (bestSlot != inventory.getSelectedSlot()) {
+            inventory.setSelectedSlot(bestSlot);
         }
     }
 
