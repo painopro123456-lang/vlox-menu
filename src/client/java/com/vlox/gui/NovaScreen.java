@@ -29,7 +29,7 @@ public final class NovaScreen extends Screen {
     private static final int CARD_HOVER = 0xEE1D2B40;
 
     private enum Tab {
-        ALL("All"), HUD("HUD"), VISUAL("Visual"), PLAYER("Player"), MODS("Mods");
+        ALL("All"), HUD("HUD"), VISUAL("Visuals"), PLAYER("Player"), CHAT("Chat"), UTILITY("Utility"), MODS("Mods");
         final String label;
         Tab(String label) { this.label = label; }
     }
@@ -82,6 +82,8 @@ public final class NovaScreen extends Screen {
             case HUD -> feature.category == Category.HUD;
             case VISUAL -> feature.category == Category.GRAPHICS;
             case PLAYER -> feature.category == Category.INPUT;
+            case CHAT -> feature.category == Category.CHAT;
+            case UTILITY -> feature.category == Category.MENU;
             case ALL, MODS -> false;
         };
     }
