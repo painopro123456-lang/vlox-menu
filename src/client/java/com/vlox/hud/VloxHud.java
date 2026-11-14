@@ -82,6 +82,8 @@ public final class VloxHud implements HudElement {
 		int screenHeight = graphics.guiHeight();
 		int x = corner == 1 || corner == 3 ? screenWidth - boxWidth - 4 : 4;
 		int y = corner == 2 || corner == 3 ? screenHeight - boxHeight - 4 : 4;
+		x = Math.max(0, Math.min(Math.max(0, screenWidth - boxWidth), x + (int) Math.round(VloxConfig.get(Features.HUD_OFFSET_X))));
+		y = Math.max(0, Math.min(Math.max(0, screenHeight - boxHeight), y + (int) Math.round(VloxConfig.get(Features.HUD_OFFSET_Y))));
 
 		if (VloxConfig.flag(Features.HUD_BACKGROUND)) {
 			int backdrop = Math.round(154 * (float) VloxConfig.get(Features.HUD_BACKDROP_OPACITY));
