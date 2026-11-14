@@ -319,7 +319,7 @@ public final class NovaScreen extends Screen {
                 int index = row * columns + col;
                 if (index < modules.size()) {
                     int cardX = contentX + col * (cardW + CARD_GAP);
-                    int cardY = gridY + row * (CARD_HEIGHT + ROW_GAP) - Math.round(scroll);
+                    int cardY = gridY + row * (cardHeight() + ROW_GAP) - Math.round(scroll);
                     if (Ui.inside(mx, my, cardX, cardY, cardW, cardHeight())) {
                         toggle(modules.get(index));
                         return true;
