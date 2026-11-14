@@ -68,7 +68,7 @@ public final class VloxScreen extends Screen {
 	}
 
 	public VloxScreen() {
-		super(Component.literal("VLOX"));
+		super(Component.literal("NOVA"));
 	}
 
 	@Override
@@ -226,8 +226,8 @@ public final class VloxScreen extends Screen {
 	private void drawRail(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
 		int x = this.panelX + 18;
 
-		Ui.textScaled(graphics, this.font, "VLOX", x, this.panelY + 26, Ui.accent(), 1.85F);
-		Ui.text(graphics, this.font, "SETTINGS", x + 1, this.panelY + 50, Ui.FAINT);
+		Ui.textScaled(graphics, this.font, "NOVA", x, this.panelY + 26, Ui.accent(), 1.85F);
+		Ui.text(graphics, this.font, "ADVANCED SETTINGS", x + 1, this.panelY + 50, Ui.FAINT);
 
 		int itemY = this.panelY + 78;
 
@@ -253,7 +253,7 @@ public final class VloxScreen extends Screen {
 			itemY += 30;
 		}
 
-		Ui.text(graphics, this.font, "v1.0.0", x, this.panelY + this.panelHeight - 22, Ui.FAINT);
+		Ui.text(graphics, this.font, "NOVA 0.1.0", x, this.panelY + this.panelHeight - 22, Ui.FAINT);
 	}
 
 	private int countIn(Category cat) {
