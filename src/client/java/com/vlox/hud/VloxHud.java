@@ -736,7 +736,7 @@ public final class VloxHud implements HudElement {
 		}
 
 		@Override
-		public void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow) {
+		public void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow, int style) {
 			graphics.item(stack, x, y + 1);
 			graphics.text(font, value(), x + 20, y + 5, valueColor(), shadow);
 		}
@@ -762,7 +762,7 @@ public final class VloxHud implements HudElement {
 		}
 
 		@Override
-		public void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow) {
+		public void draw(GuiGraphicsExtractor graphics, Font font, int x, int y, boolean shadow, int style) {
 			int secondRow = y + KEY_HEIGHT + KEY_GAP;
 			key(graphics, font, x + KEY_WIDTH + KEY_GAP, y, "W", CombatInput.up);
 			key(graphics, font, x, secondRow, "A", CombatInput.left);
